@@ -1,0 +1,52 @@
+<h2 translate>Processes</h2>
+<p translate>This list gives an overview over currently running system processes and their status.</p>
+
+<div class="l2-grid l2-grid-hover">
+	<div class="row">
+		<div class="cell clearfix caption col-xs-1" translate>
+			PID
+		</div><div class="cell clearfix caption col-xs-1" translate>
+			Owner
+		</div><div class="cell clearfix caption col-xs-7" translate>
+			Command
+		</div><div class="cell clearfix caption col-xs-1" translate>
+			CPU usage (%)
+		</div><div class="cell clearfix caption col-xs-1" translate>
+			Memory usage (%)
+		</div><div class="cell clearfix caption col-xs-1" translate>
+			Actions
+		</div>
+	</div>
+
+	<div class="row animate-repeat" ng-repeat="process in processes | orderBy:'pid' track by process.pid">
+		<div class="cell clearfix content col-xs-1">
+			{{process.pid}}
+		</div><div class="cell clearfix content col-xs-1">
+			{{process.user}}
+		</div><div class="cell clearfix content nowrap col-xs-7">
+			<code>{{process.command}}</code>
+		</div><div class="cell clearfix content col-xs-1">
+			{{process.cpu_percent}}%
+		</div><div class="cell clearfix content col-xs-1">
+			{{process.vsize_percent}}%
+		</div><div class="cell clearfix content col-xs-1">
+			<div class="btn-group" dropdown>
+				<button class="btn btn-primary btn-sm dropdown-toggle" dropdown-toggle translate>Signal…</button>
+				<ul class="dropdown-menu pull-right">
+					<li><a href="#" ng-click="sendSignal(process.pid, 1); $event.preventDefault()">
+						<span translate translate-context="UNIX signal">Reload</span>
+						(<code>HUP</code>)
+					</a></li>
+					<li><a href="#" ng-click="sendSignal(process.pid, 15); $event.preventDefault()">
+						<span translate translate-context="UNIX signal">Terminate</span>
+						(<code>TERM</code>)
+					</a></li>
+					<li><a href="#" ng-click="sendSignal(process.pid, 9); $event.preventDefault()">
+						<span translate translate-context="UNIX signal">Kill immediately</span>
+						(<code>KILL</code>)
+					</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>

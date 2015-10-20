@@ -1,0 +1,48 @@
+<h1>System</h1>
+<div  ng-init="radio='radio0'">
+
+<div cbi-map="wireless" title="Wifi" waitfor="View.load()">
+	<div cbi-section="@wifi-device" collapse addremove anonymous onadd="View.addWifiIface(uciSectionName)" onremove="View.removeWifiIface(uciSectionName)" title="Wireless Devices">
+		<tabset>
+			<tab heading="Foo">
+				<div cbi-option="wireless.radio0.path" title="HW ID" widget="input">
+					<cbi-input />
+				</div>
+				<div cbi-option="type" title="Type" widget="input" preview validate="require string">
+					<cbi-input />
+				</div>
+			</tab>
+			<tab heading="Bar">
+				<div cbi-option="channel" validate="require or(uinteger,'auto')" depends="{ type: 'mac80211' }" title="Channel" preview>
+					<cbi-input />
+				</div>
+			</tab>
+		</tabset>
+	</div>
+	<div cbi-section="network.@interface" filter="uciSectionName != 'loopback'" collapse addremove sortable onadd="View.addNetwork(uciSectionName)" title="Network Devices">
+		<div cbi-option="auto" title="Auto" preview>
+			<cbi-flag default-on on="1" off="0" />
+		</div>
+		<div cbi-option="proto" title="Protocol" preview>
+			<cbi-select ng-options="proto.name as proto.description for proto in View.protocols" />
+		</div>
+
+		<div cbi-option="type" title="Bridge interfaces" depends="{proto:View.isNonVirtualProtocol}" list preview>
+			<cbi-flag on="bridge" off="" />
+		</div>
+		<div cbi-option="ifname" name="ifname1" title="Interface" depends="{type:undefined, proto:View.isNonVirtualProtocol}" preview>
+			<cbi-device-list />
+		</div>
+		<div cbi-option="ifname" name="ifname2" title="Interfaces" depends="{type:'bridge', proto:View.isNonVirtualProtocol}" preview>
+			<cbi-device-list multiple />
+		</div>
+
+		<div cbi-option="ipaddr" title="IP address" validate="require ip4addr" depends="{ proto: 'static' }" preview>
+			<cbi-input />
+		</div>
+	</div>
+</div>
+
+{{protocols}}
+
+</div>

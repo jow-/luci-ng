@@ -1,1 +1,1 @@
-# luci-ng
+LuCI/Angular JS WIP
