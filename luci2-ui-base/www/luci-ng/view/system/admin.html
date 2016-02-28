@@ -1,0 +1,86 @@
+<h2 translate>Administration</h2>
+
+<tabset>
+	<tab heading="{{'Router Password' | translate}}">
+		<p translate>Changes the administrator password for accessing the device</p>
+
+		<form class="form-horizontal">
+			<!-- workaround broken browser auto completion -->
+			<input type="password" style="display:none">
+
+			<div class="panel panel-default list-group-item">
+				<div class="row">
+					<label class="col-lg-2 control-label text-right" translate>Password</label>
+					<div class="col-lg-5"><input type="password" class="form-control" ng-model="View.password1"></div>
+				</div>
+				<br>
+				<div class="row">
+					<label class="col-lg-2 control-label text-right" translate>Confirmation</label>
+					<div class="col-lg-5"><input type="password" class="form-control" ng-model="View.password2"></div>
+				</div>
+			</div>
+
+			<div class="alert alert-success" ng-show="View.isPasswordChanged">
+				<button type="button" class="close" ng-click="View.isPasswordChanged = false">&times;</button>
+				<translate>The login password has been changed.</translate>
+			</div>
+
+			<div class="panel panel-default panel-body text-right">
+				<button class="btn btn-primary" type="button" translate ng-disabled="!View.password1.length || View.password1 !== View.password2" ng-click="View.changePassword()">Apply</button>
+			</div>
+		</form>
+	</tab>
+	<tab heading="{{'SSH Access' | translate}}">
+		<p translate>Dropbear offers SSH network shell access and an integrated SCP server</p>
+
+		<div cbi-map="dropbear">
+			<div cbi-section="@dropbear" collapse addremove anonymous>
+				<div cbi-option="Interface" title="{{'Interface' | translate}}" description="{{'Listen only on the given interface or, if unspecified, on all' | translate}}" preview>
+					<cbi-device-list bridges />
+				</div>
+
+				<div cbi-option="Port" placeholder="22" title="{{'Port' | translate}}" description="{{'Specifies the listening port of this Dropbear instance' | translate}}" preview validate="optional port">
+					<cbi-input />
+				</div>
+
+				<div cbi-option="PasswordAuth" title="{{'Password logins' | translate}}" description="{{'Allow SSH password authentication' | translate}}" preview>
+					<cbi-flag default-on on="on" off="off" />
+				</div>
+
+				<div cbi-option="RootPasswordAuth" title="{{'Root password login' | translate}}" description="{{'Allow the root user to login with password' | translate}}" preview>
+					<cbi-flag default-on on="on" off="off" />
+				</div>
+
+				<div cbi-option="GatewayPorts" title="{{'Gateway ports' | translate}}" description="{{'Allow remote hosts to connect to local SSH forwarded ports' | translate}}" preview>
+					<cbi-flag default-off on="on" off="off" />
+				</div>
+			</div>
+		</div>
+	</tab>
+	<tab heading="{{'Authorized Keys' | translate}}">
+		<p translate>Manage authorized keys for passwordless root logins</p>
+		<div class="input-group" ng-repeat="key in View.authorizedKeys">
+			<input class="form-control" type="text" readonly="readonly" value="{{'%dBit %s - %s'.format(key.bits, key.type, key.comment || '?')}}" ng-click="View.displayPubkey(key.index)">
+			<span class="input-group-btn"><button class="btn btn-danger" title="{{'Remove public key' | translate}}" ng-click="View.savePubkeys(key.index)">–</button></span>
+		</div>
+		<br>
+		<button class="btn btn-success" translate ng-click="View.addPubkey()">Add public key …</button>
+	</tab>
+</tabset>
+
+</div>
+
+<script type="text/ng-template" id="system/admin/addkey.html">
+	<div class="modal-header">
+		<h4 translate>Add new public key</h4>
+	</div>
+	<div class="modal-body">
+		<p translate>Paste the public key line into the field below and press "Ok" to continue.</p>
+		<p class="alert alert-danger" ng-show="Dialog.isInvalid" translate>Unrecognized public key! Please add only RSA or DSA keys.</p>
+		<p><input type="text" placeholder="{{'Paste key here' | translate}}" class="form-control" ng-model="Dialog.value"></p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success" translate ng-click="Dialog.confirm()" ng-disabled="!Dialog.value.length">Ok</button>
+		<button class="btn btn-danger" translate ng-click="Dialog.dismiss()">Cancel</button>
+	</div>
+</script>

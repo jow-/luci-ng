@@ -1,0 +1,161 @@
+<h2 translate>System Startup</h2>
+
+<strong translate>File system usage:</strong><br>
+<div class="progress">
+	<div class="progress-bar progress-bar-info" style="width: {{100 / View.diskFree.total * View.diskFree.used | format:'%d'}}%"></div>
+	<small>
+		{{View.diskFree.used | format:'%mB'}} / {{View.diskFree.total | format:'%mB'}}
+		{{(100 / View.diskFree.total * View.diskFree.used) | format:'(%d%%)'}}
+	</small>
+</div>
+
+<div class="input-group">
+	<input type="text" class="form-control" placeholder="{{'Filter packages…' | translate}}" ng-model="View.pkgSearch" ng-keydown="($event.which === 13) ? View.applySearch() : return" ng-blur="View.applySearch()">
+	<span class="input-group-btn">
+		<button class="btn btn-primary" type="button" ng-click="View.applySearch()" translate>Search</button>
+	</span>
+</div>
+
+<hr>
+
+<div ng-if="View.isLoading" class="alert alert-info" translate>
+	Loading package list…
+</div>
+
+<div ng-if="!View.isLoading">
+	<div ng-if="!View.pkgList.length" class="alert alert-warning" translate>
+		<div class="row">
+			<div class="col-xs-10">
+				<translate>Could not find any package matching the search criteria.</translate>
+			</div><div class="col-xs-2 text-right">
+				<button class="btn btn-xs" type="button" ng-click="View.pkgSearch = ''; View.applySearch()">Reset</button>
+			</div>
+		</div>
+	</div>
+
+	<div ng-if="View.pkgList.length">
+		<div ng-if="View.pkgPattern != '*'" class="alert alert-info">
+			<div class="row">
+				<div class="col-xs-10">
+					<translate>Displaying only packages containing "{{View.pkgPattern}}".</translate>
+				</div><div class="col-xs-2 text-right">
+					<button class="btn btn-xs" type="button" ng-click="View.pkgSearch = ''; View.applySearch()">Reset</button>
+				</div>
+			</div>
+		</div>
+
+		<table class="table table-striped" style="max-width:100%">
+			<tr>
+				<th translate translate-context="Package table">Name</th>
+				<th translate translate-context="Package table">Version</th>
+				<th translate translate-context="Package table">Est. Size</th>
+				<th translate translate-context="Package table">Description</th>
+				<th></th>
+			</tr>
+			<tr ng-repeat="package in View.pkgList">
+				<td style="width:15%; white-space:nowrap">{{package[0]}}</td>
+				<td style="width:5%"><div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100px">{{package[1]}}</div></td>
+				<td style="width:5%"><div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100px">{{package[2] | format:'%mB':'?'}}</div></td>
+				<td style="width:75%"><div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:500px"><a href="#" ng-click="View.displayInfo(package[0]); $event.preventDefault()">{{package[3] || 'More…'|translate}}</a></div></td>
+				<td>
+					<button ng-if="View.pkgInstalled[package[0]]" type="button" class="btn btn-danger" translate>Remove</button>
+					<button ng-if="!View.pkgInstalled[package[0]]" type="button" class="btn btn-success" translate>Install</button>
+				</td>
+			</tr>
+		</table>
+
+		<button type="button" class="btn btn-primary" ng-disabled="!View.isPrevAvail" ng-click="View.getPrevList()">&laquo; Previous</button>
+		<button type="button" class="btn btn-primary" ng-disabled="!View.isNextAvail" ng-click="View.getNextList()">Next &raquo;</button>
+	</div>
+</div>
+
+<script type="text/ng-template" id="system/software/info-deps.html">
+	<span title="{{pkgInfo.description}}">{{pkgInfo.package}}</span> -
+	<span ng-if="!pkgInfo.isMissing">{{pkgInfo.size | format:'%mB':'…'}}</span>
+	[<small ng-switch="pkgInfo.state">
+		<strong ng-switch-when="installed" style="color:green" translate>installed</strong>
+		<strong ng-switch-when="missing" style="color:red" translate>unavailable</strong>
+		<strong ng-switch-default style="color:grey" translate>not installed</strong>
+	]</small>
+	<ul>
+		<li ng-repeat="pkgInfo in pkgInfo.childs track by pkgInfo.md5sum" ng-include="'system/software/info-deps.html'"></li>
+	</ul>
+</script>
+
+<script type="text/ng-template" id="system/software/info.html">
+	<style type="text/css">
+		ul.deps, ul.deps ul, ul.errors {
+			padding-left: 1em;
+		}
+
+		ul.deps li, ul.errors li {
+			list-style: none;
+		}
+
+		ul.deps li:before {
+			content: "↳";
+		}
+
+		ul.errors li {
+			font-size: 90%;
+			font-weight: bold;
+		}
+
+		ul.errors li:before {
+			content: "⚠ ";
+		}
+	</style>
+	<div class="modal-header">
+		<h4 translate>Details for {{Dialog.pkgInfo.package}}</h4>
+	</div>
+	<div class="modal-body">
+		<p translate ng-if="!Dialog.pkgInfo.version">Fetching details…</p>
+		<div ng-if="Dialog.pkgInfo.version">
+			<ul>
+				<li ng-if="Dialog.pkgInfo.version"><strong translate>Version:</strong> {{Dialog.pkgInfo.version}}</li>
+				<li ng-if="Dialog.pkgInfo.section"><strong translate>Section:</strong> {{Dialog.pkgInfo.section}}</li>
+				<li ng-if="Dialog.pkgInfo.architecture"><strong translate>Architecture:</strong> {{Dialog.pkgInfo.architecture}}</li>
+				<li ng-if="Dialog.pkgInfo.maintainer"><strong translate>Maintainer:</strong> {{Dialog.pkgInfo.maintainer}}</li>
+				<li ng-if="Dialog.pkgInfo.size"><strong translate>Size:</strong> {{Dialog.pkgInfo.size | format:'%mB':'?'}}</li>
+				<li ng-if="Dialog.depCache">
+					<strong translate>Dependency tree:</strong>
+					<ul ng-if="Dialog.depCache" class="deps">
+						<li ng-include="'system/software/info-deps.html'"></li>
+					</ul>
+				</li>
+			</ul>
+
+			<ul ng-if="Dialog.depCache.isSizeWarning || Dialog.depCache.isSizeError || Dialog.depCache.isMissing" class="errors">
+				<li ng-if="Dialog.depCache.isSizeWarning" style="color:#f90" translate>This package and its dependencies likely exceed the available space</li>
+				<li ng-if="Dialog.depCache.isSizeError" style="color:#f00" translate>This package and its dependencies exceed the available space</li>
+				<li ng-if="Dialog.depCache.isMissing" style="color:#f00" translate>One or more packages are not available in the repository</li>
+			</ul>
+
+			<div ng-if="Dialog.depCache.loading" translate>
+				Calculating dependencies…
+			</div>
+
+			<div ng-if="Dialog.depCache.needed.length">
+				<hr>
+				<span translate>Packages requiring installation:</span>
+				<span ng-repeat="pkgName in Dialog.depCache.needed">
+					<a href="#" ng-click="Dialog.loadInfo(pkgName); $event.preventDefault()" title="{{Dialog.depCache.info[pkgName].description}}">{{pkgName}}</a><span ng-if="!$last">,</span>
+				</span>
+				<br>
+				<span translate>Estimated space requirement:</span>
+				<strong translate>
+					{{Dialog.depCache.size | format:'%mB'}}
+					<span ng-if="Dialog.softwareCtrl.diskFree.total" translate>({{Dialog.softwareCtrl.diskFree.free | format:'%mB'}} available)</span>
+				</strong>
+			</div>
+
+			<div ng-if="Dialog.pkgInfo.description">
+				<hr>
+				{{Dialog.pkgInfo.description}}
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" translate ng-click="Dialog.dismiss()">Ok</button>
+	</div>
+</script>

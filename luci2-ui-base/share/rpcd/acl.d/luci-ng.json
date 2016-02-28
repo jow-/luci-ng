@@ -149,7 +149,8 @@
 					"list",
 					"list_installed",
 					"find",
-					"config_get"
+					"config_get",
+					"info"
 				]
 			}
 		},

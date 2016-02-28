@@ -1214,6 +1214,7 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					name:            name,
 
 					title:           iAttr.title || RegExp.$3,
+					placeholder:     iAttr.placeholder,
 					description:     iAttr.description,
 
 					isList:          iAttr.hasOwnProperty('list'),
@@ -1294,7 +1295,7 @@ L2.registerDirective('cbiInput', [function() {
 	return {
 		restrict: 'AE',
 		replace: true,
-		template: '<input id="{{Option.id}}" ng-model="Option.formValue" ng-model-options="{getterSetter:true}" class="form-control" type="text">'
+		template: '<input id="{{Option.id}}" ng-model="Option.formValue" ng-model-options="{getterSetter:true}" class="form-control" type="text" ng-attr-placeholder="{{Option.placeholder}}">'
 	};
 }]);
 

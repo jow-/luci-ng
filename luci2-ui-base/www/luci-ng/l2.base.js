@@ -477,9 +477,15 @@
 					expect: { access: false }
 				}),
 
-				list: l2rpc.declare({
+				data: l2rpc.declare({
 					object: 'session',
-					method: 'list',
+					method: 'get',
+					expect: { values: { } }
+				}),
+
+				acls: l2rpc.declare({
+					object: 'session',
+					method: 'access',
 					expect: { '': { } }
 				}),
 
@@ -525,13 +531,28 @@
 				},
 
 				init: function() {
-					l2rpc.token($cookie.get('l2-session'));
+					var sid = $cookie.get('l2-session');
 
-					_auth.list().then(function(session) {
-						if (angular.isObject(session.data) && session.data.username) {
+					l2rpc.token(sid);
+					l2rpc.batch();
+
+					_auth.data();
+					_auth.acls();
+
+					l2rpc.flush().then(function(data) {
+						if (angular.isArray(data) &&
+						    angular.isObject(data[1]) &&
+						    angular.isObject(data[0]) &&
+						    angular.isString(data[0].username)) {
 							_auth.heartbeat();
-							$rootScope.$broadcast('session.setup', session);
-						} else {
+							$rootScope.$broadcast('session.setup', {
+								data: data[0],
+								acls: data[1],
+								ubus_rpc_session: sid
+							});
+						}
+						else {
+							l2rpc.token(undefined);
 							_auth.prompt();
 						}
 					});
