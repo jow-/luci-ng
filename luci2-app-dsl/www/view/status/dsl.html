@@ -1,0 +1,255 @@
+<h2 translate>xDSL Status</h2>
+
+<fieldset class="cbi-section">
+	<legend translate>DSL Line Status header</legend>
+	<div class="l2-grid l2-grid-hover">
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Status
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.line_state}} [{{dsl.dsl.line_state_detail}}]
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Power Management Mode
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.power_mode_s}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+			DSL Uptime
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.line_uptime_s}}
+			</div>
+		</div>
+	</div>
+</fieldset>
+
+<fieldset class="cbi-section">
+	<legend translate>DSL Line Information header</legend>
+	<div class="l2-grid l2-grid-hover">
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				DSL Downstream
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				DSL Upstream
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Line Attenuation
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.line_attenuation_down}} dB
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.line_attenuation_up}} dB
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Signal Attenuation
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.signal_attenuation_down}} dB
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.signal_attenuation_up}} dB
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Noise Margin
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.noise_margin_down}} dB
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.noise_margin_up}} dB
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Aggregate Transmit Power
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.actatp_down}} dB
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.actatp_up}} dB
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Latency Interleave Delay
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.latency_num_down}} [{{dsl.dsl.latency_s_down}}]
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.latency_num_up}} [{{dsl.dsl.latency_s_up}}]
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Data Rate
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.data_rate_down_s}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.data_rate_up_s}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Attainable Data Rate
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.max_data_rate_down_s}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.max_data_rate_up_s}}
+			</div>
+		</div>
+	</div>
+</fieldset>
+<fieldset class="cbi-section">
+	<legend translate>DSL Performance header</legend>
+	<div class="l2-grid l2-grid-hover">
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				DSL Near End
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				DSL Far End
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Forward Error Correction Seconds
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_fec_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_fec_far}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Errored Seconds
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_es_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_es_far}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Severely Errored Seconds
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_ses_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_ses_far}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Loss of Signal Seconds
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_loss_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_loss_far}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Unavailable Seconds
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_uas_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_uas_far}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Header Error Code Errors
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_hec_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_hec_far}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Non Pre-emtive CRC errors
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_crc_p_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_crc_p_far}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL Pre-emtive CRC errors
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_crcp_p_near}}
+			</div><div class="cell clearfix content nowrap col-xs-4">
+				{{dsl.dsl.errors_crcp_p_far}}
+			</div>
+		</div>
+	</div>
+</fieldset>
+<fieldset class="cbi-section">
+	<legend translate>DSL ATU-R Information header</legend>
+	<div class="l2-grid l2-grid-hover">
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-R Chipset
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.chipset}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-R Firmware Version
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.firmware_version}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-R API Version
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.api_version}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-R XTSE
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.xtse_s}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-R Annex
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.annex_s}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-R Line Mode
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.line_mode_s}}
+			</div>
+		</div>
+	</div>
+</fieldset>
+<fieldset class="cbi-section">
+	<legend translate>DSL ATU-C Information header</legend>
+	<div class="l2-grid l2-grid-hover">
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-C Vendor ID
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.atuc_vendor_id}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="cell clearfix content col-xs-4" translate>
+				DSL ATU-C System Vendor ID
+			</div><div class="cell clearfix content nowrap col-xs-8">
+				{{dsl.dsl.atuc_system_vendor_id}}
+			</div>
+		</div>
+</fieldset>
