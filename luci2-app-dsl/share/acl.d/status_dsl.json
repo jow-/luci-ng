@@ -1,0 +1,12 @@
+{
+	"status_dsl": {
+		"description": "Status information xdsl",
+		"read": {
+			"ubus": {
+				"status.dsl": [
+					"getDslStatus"
+				]
+			}
+		}
+	}
+}
