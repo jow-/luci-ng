@@ -621,8 +621,10 @@ main_backup(int argc, char **argv)
 		printf("Content-Disposition: attachment; "
 		       "filename=\"backup-%s-%s.tar.gz\"\r\n\r\n", hostname, datestr);
 
-		while ((len = read(fds[0], buf, sizeof(buf))) > 0)
+		while ((len = read(fds[0], buf, sizeof(buf))) > 0){
 			fwrite(buf, len, 1, stdout);
+			fflush(stdout);
+		}
 
 		waitpid(pid, NULL, 0);
 
