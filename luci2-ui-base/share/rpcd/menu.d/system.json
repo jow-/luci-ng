@@ -28,10 +28,10 @@
         "view": "system/software",
         "index": 40
     },
-    "system/upgrade": {
-        "title": "Backup / Upgrade",
-        "acls": [ "backup", "upgrade" ],
-        "view": "system/upgrade",
+    "system/backup": {
+        "title": "Backup",
+        "acls": [ "backup" ],
+        "view": "system/backup",
         "index": 50
     },
     "system/startup": {
