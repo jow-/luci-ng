@@ -7,6 +7,11 @@ L2.registerFactory('l2rpc', ['$q', '$http', function($q, $http) {
 
 		_date: new Date(),
 
+		getToken: function()
+		{
+			return _rpc._token;
+		},
+
 		_call: function(msgs, cb)
 		{
 			var q = '';
