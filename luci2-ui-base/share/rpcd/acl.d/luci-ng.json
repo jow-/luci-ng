@@ -205,6 +205,9 @@
 			}
 		},
 		"write": {
+			"luci-io": [
+				"upload"
+			],
 			"ubus": {
 				"luci2.system": [
 					"backup_clean",
