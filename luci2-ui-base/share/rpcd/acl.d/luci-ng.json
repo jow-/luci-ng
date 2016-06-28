@@ -64,10 +64,9 @@
 					"get_proto_handlers"
 				]
 			},
-			"uci" : [
-					"network"
-				]
-			}
+			"uci": [
+				"network"
+			]
 		},
 		"write": {
 			"ubus": {
