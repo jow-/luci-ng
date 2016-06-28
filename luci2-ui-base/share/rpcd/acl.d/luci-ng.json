@@ -43,7 +43,8 @@
 					"board"
 				],
 				"network.interface": [
-					"status"
+					"status",
+					"dump"
 				],
 				"luci2.network": [
 					"conntrack_count",
@@ -58,6 +59,13 @@
 					"syslog",
 					"dmesg",
 					"process_list"
+				],
+				"network": [
+					"get_proto_handlers"
+				]
+			},
+			"uci" : [
+					"network"
 				]
 			}
 		},
