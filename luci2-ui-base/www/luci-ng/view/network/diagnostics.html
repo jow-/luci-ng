@@ -1,0 +1,60 @@
+<h2 translate>Diagnostics</h2>
+<div class="row">
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">Ping</div>
+			<div class="panel-body" style="height: 200px">
+				<label class="control-label" translate>Address</label>
+				<input type="text" class="form-control" ng-model="ping.url" required>
+				<label class="control-label" translate>Protocol</label>
+				<select ng-model="ping.proto_select" ng-init="ping.proto_select = protos[0]" class="form-control">
+					<option ng-repeat="proto in protos" value="{{proto}}">{{proto}}</option>
+				</select>
+				<div class="btn-group" style="margin-top: 5px;">
+					<button type="button" class="btn btn-primary btn-success" ng-disabled="!ping.url.length" ng-click="ping(ping.proto_select, ping.url)">
+						<span classe="ng-scope">Ping</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">Traceroute</div>
+			<div class="panel-body" style="height: 200px">
+				<label class="control-label" translate>Address</label>
+				<input type="text" name="url" class="form-control" ng-model="traceroute.url" required>
+				<label class="control-label" translate>Protocol</label>
+				<select ng-model="traceroute.proto_select" ng-init="traceroute.proto_select = protos[0]" class="form-control">
+					<option ng-repeat="proto in protos" value="{{proto}}">{{proto}}</option>
+				</select>
+				<div class="btn-group" style="margin-top: 5px;">
+					<button type="button" class="btn btn-primary btn-success" ng-disabled="!traceroute.url.length" ng-click="traceroute(traceroute.proto_select, traceroute.url)">
+						<span classe="ng-scope">Traceroute</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">Nslookup</div>
+			<div class="panel-body" style="height: 200px">
+				<label class="control-label" translate>Address</label>
+				<input type="text" class="form-control" ng-model="nslookup.url" required>
+				<div class="btn-group" style="margin-top: 5px;">
+					<button type="button" class="btn btn-primary btn-success" ng-disabled="!nslookup.url.length" ng-click="nslookup(nslookup.url)">
+						<span classe="ng-scope">Nslookup</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row" ng-hide="!result.stdout.length && !result.stderr.length">
+	<label class="control-label" translate>Result</label>
+	<textarea class="form-control" readonly rows="12" wrap="off" ng-hide="!result.stdout.length" >{{result.stdout}}</textarea>
+	<textarea class="form-control" readonly wrap="off" ng-hide="!result.stderr.length" >{{result.stderr}}</textarea>
+</div>
+
