@@ -34,6 +34,12 @@
         "view": "system/backup",
         "index": 50
     },
+    "system/upgrade": {
+        "title": "Upgrade",
+        "acls": [ "upgrade" ],
+        "view": "system/upgrade",
+        "index": 55
+    },
     "system/startup": {
         "title": "Startup",
         "acls": [ "startup" ],
