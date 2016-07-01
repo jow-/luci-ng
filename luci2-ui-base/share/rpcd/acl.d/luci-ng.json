@@ -177,9 +177,8 @@
 		"description": "Firmware upgrade",
 		"read": {
 			"ubus": {
-				"luci2.system": [
-					"upgrade_test",
-					"reset_test"
+				"rpc-sys": [
+					"upgrade_test"
 				]
 			}
 		},
@@ -188,10 +187,10 @@
 				"upload"
 			],
 			"ubus": {
-				"luci2.system": [
+				"rpc-sys": [
 					"upgrade_start",
 					"upgrade_clean",
-					"reset_start",
+					"factory",
 					"reboot"
 				]
 			}
