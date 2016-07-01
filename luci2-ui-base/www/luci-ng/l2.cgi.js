@@ -28,6 +28,15 @@ L2.registerFactory('l2cgi', ['$q', '$http', 'l2rpc', function($q, $http, l2rpc) 
 			return _cgi._upload(fd);
 		},
 
+		uploadUpgrade: function(file) {
+			var fd =new FormData();
+			fd.append('sessionid', l2rpc.getToken());
+			fd.append('filename', '/tmp/firmware.bin');
+			fd.append('filemode', '0400');
+			fd.append('filedata', file);
+			return _cgi._upload(fd);
+		},
+
 		_download: function()
 		{
 			var fileName = "backup.tar.gz";
