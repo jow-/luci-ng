@@ -24,7 +24,7 @@ define Package/luci2-ui-base
   SECTION:=luci2
   CATEGORY:=LuCI2
   TITLE:=LuCI2 UI
-  DEPENDS:=+rpcd +rpcd-mod-iwinfo +uhttpd +uhttpd-mod-ubus +libubox +libubus \
+  DEPENDS:=+rpcd +rpcd-mod-iwinfo +rpcd-mod-rpcsys +uhttpd +uhttpd-mod-ubus +libubox +libubus \
 	+luci2-rpc-base +luci2-rpc-bwmon +luci2-io-helper
 endef
 
