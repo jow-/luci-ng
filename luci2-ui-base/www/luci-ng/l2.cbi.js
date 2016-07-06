@@ -566,6 +566,12 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 						sec.reset();
 
 					l2uci.load(self.uciPackages).then(self.read);
+				},
+
+				apply: function($event) {
+					$event.currentTarget.blur();
+
+					l2uci.apply(10);
 				}
 			});
 		}],
@@ -582,7 +588,7 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 					'</div>' +
 					'<div class="panel panel-default panel-body text-right">' +
 						'<div class="btn-group">' +
-							'<button type="button" class="btn btn-primary" translate>Save &amp; Apply</button>' +
+							'<button type="button" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>' +
 							'<button type="button" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>' +
 							'<button type="button" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>' +
 						'</div>' +
