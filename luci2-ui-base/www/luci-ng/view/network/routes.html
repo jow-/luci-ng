@@ -3,9 +3,9 @@
 <div cbi-map="network" waitfor="View.load()">
 	<div title="Static IPv4 Routes" cbi-section="@route" collapse addremove anonymous>
 		<div cbi-option="interface" title="{{'Interface' | translate}}" preview validate="require string">
-			<cbi-input />
+			<cbi-network-list />
 		</div>
-		<div cbi-option="target" title="{{'Target' | translate}}" description="{{'Host-IP or Network' | translate}}" preview validate="ip4addr">
+		<div cbi-option="target" title="{{'Target' | translate}}" description="{{'Host-IP or Network' | translate}}" preview validate="or(ip4addr, cidr4)">
 			<cbi-input />
 		</div>
 		<div cbi-option="netmask" title="{{'IPv4-Netmask' | translate}}" description="{{'If target is a network' | translate}}" preview validate="optional netmask4">
@@ -23,9 +23,9 @@
 	</div>
 	<div title="Static IPv6 Routes" cbi-section="@route6" collapse addremove anonymous>
 		<div cbi-option="interface" title="{{'Interface' | translate}}" preview validate="require string">
-			<cbi-input />
+			<cbi-network-list />
 		</div>
-		<div cbi-option="target" title="{{'Target' | translate}}" description="{{'IPv6-Address or Network (CIDR)' | translate}}" preview validate="or(ip6addr,cidr6)">
+		<div cbi-option="target" title="{{'Target' | translate}}" description="{{'IPv6-Address or Network (CIDR)' | translate}}" preview validate="or(ip6addr, cidr6)">
 			<cbi-input />
 		</div>
 		<div cbi-option="gateway" title="{{'IPv6-Gateway' | translate}}" preview validate="optional ip6addr">
