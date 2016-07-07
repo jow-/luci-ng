@@ -31,7 +31,7 @@
     },
     "network/routes": {
         "title": "Routes",
-        "acls": [ "network" ],
+        "acls": [ "routes" ],
         "view": "network/routes",
         "index": 70
     },
