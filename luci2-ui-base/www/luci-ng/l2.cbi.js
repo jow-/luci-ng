@@ -1550,3 +1550,156 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 		}
 	};
 }]);
+
+L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext, l2network) {
+	return {
+		restrict: 'AE',
+		scope: { },
+
+		require: ['cbiNetworkList', '^cbiOption', '^cbiSection', '^cbiMap'],
+		controllerAs: 'NetworkList',
+		controller: ['$scope', function($scope) {
+			var self = angular.extend(this, {
+				checked: { },
+				interfaces: [ ],
+
+				isUnspecified: function() {
+					return angular.isEmptyObject(self.checked);
+				},
+
+				isUsableInterface: function(ifc) {
+					return true;
+				},
+
+				init: function(iElem) {
+					self.caption = iElem.find('.caption');
+					self.cbiOwnerMap.waitfor(l2network.load());
+				},
+
+				finish: function() {
+					console.debug('Network loaded...');
+
+					l2network.loadDevicesCallback();
+					l2network.loadInterfacesCallback();
+
+					var ifcnames = angular.toArray(self.cbiOwnerOption.uciValue),
+					    selected = angular.toObject(ifcnames);
+
+					self.reload();
+
+					for (var i = 0, ifc; ifc = self.interfaces[i]; i++) {
+						if (selected[ifc.name()]) {
+							self.checked[ifc.name()] = true;
+							if (!self.allowMultiple)
+								break;
+						}
+					}
+
+					self.redraw();
+				},
+
+				reload: function() {
+					var interfaces = l2network.getInterfaces();
+					self.interfaces.length = 0;
+					for (var i = 0, ifc; ifc = interfaces[i]; i++)
+						if (self.isUsableInterface(ifc))
+							self.interfaces.push(ifc);
+				},
+
+				redraw: function() {
+					var s = '';
+
+					for (var i = 0, ifc; ifc = self.interfaces[i]; i++)
+					{
+						if (!self.checked[ifc.name()])
+							continue;
+
+						if (s)
+							s += ' <span class="sep">|</span> ';
+
+						s += '<span title="%h"><img src="%s"> %h</span>'.format(
+							ifc.name(),
+							ifc.icon(),
+							ifc.name()
+						);
+					}
+
+					if (!s)
+						s += '<em>%s</em>'.format(gettext('unspecified'));
+
+					s += ' <span class="caret"></span>';
+
+					self.caption.html(s);
+					self.cbiOwnerOption.formValue(angular.toArray(self.checked));
+				},
+
+				select: function($event) {
+					var $entry = angular.element($event.target).findParent('[value]'),
+						ifcName = $entry.attr('value');
+
+					if (self.allowMultiple) {
+						if (self.checked[ifcName])
+							delete self.checked[ifcName];
+						else
+							self.checked[ifcName] = true;
+					}
+					else {
+						for (var key in self.checked)
+							if (self.checked.hasOwnProperty(key))
+								delete self.checked[key];
+
+						if (ifcName.length)
+							self.checked[ifcName] = true;
+					}
+
+					if (!self.allowMultiple)
+						self.isOpen = false;
+
+					self.redraw();
+				},
+
+				toggled: function(opened) {
+					if (opened)
+						self.reload();
+				},
+
+				textValue: function() {
+					return angular.toArray(self.cbiOwnerOption.formValue()).join(', ');
+				}
+			});
+		}],
+
+		replace: true,
+		template: '' +
+			'<div dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
+				'<button class="btn btn-default dropdown-toggle" type="button" dropdown-toggle>' +
+					'<div class="caption"><em translate>Loading…</em></div>' +
+				'</button>' +
+				'<ul class="dropdown-menu">' +
+					'<li ng-repeat="ifc in NetworkList.interfaces" value="{{ifc.name()}}" ng-class="{selected: NetworkList.checked[ifc.name()]}">' +
+						'<a href="#" ng-click="NetworkList.select($event); $event.preventDefault()"><img ng-src="{{ifc.icon()}}"> {{ifc.name()}}</a>' +
+					'</li>' +
+					'<li ng-if="!NetworkList.allowMultiple" ng-class="{selected: NetworkList.isUnspecified()}" value="">' +
+						'<a href="#" ng-click="NetworkList.select($event); $event.preventDefault()"><em>unspecified</em></a>' +
+					'</li>' +
+				'</ul>' +
+			'</div>',
+
+		link: function($scope, iElem, iAttr, ctrls) {
+			var cbiNetworkListCtrl = ctrls[0],
+				cbiOptionCtrl = ctrls[1],
+				cbiSectionCtrl = ctrls[2],
+				cbiMapCtrl = ctrls[3];
+
+			cbiOptionCtrl.cbiWidget = angular.extend(cbiNetworkListCtrl, {
+				allowMultiple: iAttr.hasOwnProperty('multiple'),
+
+				cbiOwnerOption: cbiOptionCtrl,
+				cbiOwnerSection: cbiSectionCtrl,
+				cbiOwnerMap: cbiMapCtrl
+			});
+
+			cbiNetworkListCtrl.init(iElem);
+		}
+	};
+}]);
