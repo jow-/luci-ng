@@ -1,0 +1,41 @@
+<h2 translate>Routes</h2>
+<p translate>Routes specify over which interface and gateway a certain host or network can be reached.</p>
+<div cbi-map="network" waitfor="View.load()">
+	<div title="Static IPv4 Routes" cbi-section="@route" collapse addremove anonymous>
+		<div cbi-option="interface" title="{{'Interface' | translate}}" preview validate="require string">
+			<cbi-input />
+		</div>
+		<div cbi-option="target" title="{{'Target' | translate}}" description="{{'Host-IP or Network' | translate}}" preview validate="ip4addr">
+			<cbi-input />
+		</div>
+		<div cbi-option="netmask" title="{{'IPv4-Netmask' | translate}}" description="{{'If target is a network' | translate}}" preview validate="optional netmask4">
+			<cbi-input />
+		</div>
+		<div cbi-option="gateway" title="{{'IPv4-Gateway' | translate}}" preview validate="optional ip4addr">
+			<cbi-input />
+		</div>
+		<div cbi-option="metric" placeholder="0" title="{{'Metric' | translate}}" preview validate="optional range(0,4294967295)">
+			<cbi-input />
+		</div>
+		<div cbi-option="mtu" placeholder="1500" title="{{'MTU' | translate}}" preview validate="optional range(0,1500)">
+			<cbi-input />
+		</div>
+	</div>
+	<div title="Static IPv6 Routes" cbi-section="@route6" collapse addremove anonymous>
+		<div cbi-option="interface" title="{{'Interface' | translate}}" preview validate="require string">
+			<cbi-input />
+		</div>
+		<div cbi-option="target" title="{{'Target' | translate}}" description="{{'IPv6-Address or Network (CIDR)' | translate}}" preview validate="or(ip6addr,cidr6)">
+			<cbi-input />
+		</div>
+		<div cbi-option="gateway" title="{{'IPv6-Gateway' | translate}}" preview validate="optional ip6addr">
+			<cbi-input />
+		</div>
+		<div cbi-option="metric" placeholder="0" title="{{'Metric' | translate}}" preview validate="optional range(0,4294967295)">
+			<cbi-input />
+		</div>
+		<div cbi-option="mtu" placeholder="1500" title="{{'MTU' | translate}}" preview validate="optional range(0,1500)">
+			<cbi-input />
+		</div>
+	</div>
+</div>

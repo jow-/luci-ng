@@ -302,6 +302,20 @@
 		}
 	},
 
+	"routes": {
+		"description": "Set static routing",
+		"read": {
+			"uci": [
+				"network"
+			]
+		},
+		"write": {
+			"uci": [
+				"network"
+			]
+		}
+	},
+
 	"hostnames": {
 		"description": "Host entry management",
 		"read": {
