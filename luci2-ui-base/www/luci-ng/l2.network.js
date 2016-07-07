@@ -891,9 +891,22 @@ L2.registerFactory('l2network', ['l2class', 'l2use', 'l2rpc', 'l2uci', '$injecto
 				return (_network.get('proto') || 'none');
 			},
 
+			icon: function(up)
+			{
+				var l3dev = this.getDevice();
+
+				if (typeof(up) == 'undefined')
+					up = this.isUp();
+
+				if (l3dev)
+					return l3dev.icon(up);
+
+				return '/luci-ng/icons/ethernet%s.png'.format(up ? '' : '_disabled');
+			},
+
 			isUp: function()
 			{
-				return (_network.getStatus('up') === true);
+				return (this.getStatus('up') === true);
 			},
 
 			isVirtual: function()
