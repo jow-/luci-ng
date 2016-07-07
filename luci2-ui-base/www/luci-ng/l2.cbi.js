@@ -331,7 +331,7 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 					!isNaN(min) && !isNaN(max) && ((val >= min) && (val <= max)))
 					return true;
 
-				_val.message = gettext('Must be a number between %d and %d');
+				_val.message = gettext('Must be a number between %d and %d').format(min,max);
 				return false;
 			},
 
@@ -343,7 +343,7 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 					!isNaN(min) && !isNaN(val) && (val >= min))
 					return true;
 
-				_val.message = gettext('Must be a number greater or equal to %d');
+				_val.message = gettext('Must be a number greater or equal to %d').format(min);
 				return false;
 			},
 
@@ -355,7 +355,7 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 					!isNaN(max) && !isNaN(val) && (val <= max))
 					return true;
 
-				_val.message = gettext('Must be a number lower or equal to %d');
+				_val.message = gettext('Must be a number lower or equal to %d').format(max);
 				return false;
 			},
 
@@ -368,9 +368,9 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 					return true;
 
 				if (min != max)
-					_val.message = gettext('Must be between %d and %d characters');
+					_val.message = gettext('Must be between %d and %d characters').format(min,max);
 				else
-					_val.message = gettext('Must be %d characters');
+					_val.message = gettext('Must be %d characters').format(min);
 				return false;
 			},
 
@@ -381,7 +381,7 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 				if (!isNaN(min) && (val.length >= min))
 					return true;
 
-				_val.message = gettext('Must be at least %d characters');
+				_val.message = gettext('Must be at least %d characters').format(min);
 				return false;
 			},
 
@@ -392,7 +392,7 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 				if (!isNaN(max) && (val.length <= max))
 					return true;
 
-				_val.message = gettext('Must be at most %d characters');
+				_val.message = gettext('Must be at most %d characters').format(max);
 				return false;
 			},
 
