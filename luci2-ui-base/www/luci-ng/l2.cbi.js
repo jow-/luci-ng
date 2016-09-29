@@ -488,8 +488,6 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 	});
 }]);
 
-var CBI_SECTION_MATCH = /^(?:([a-zA-Z0-9_-]+)\.)?(?:@([a-zA-Z0-9_-]+)(?:\[(\d+)\])?|([a-zA-Z0-9_]+))$/;
-var CBI_OPTION_MATCH  = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
 
 L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout, $parse, l2uci) {
 	return {
@@ -506,17 +504,16 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 
 				inProgress: [ ],
 				cbiChildSections: [ ],
+				loadConfig: function(package, cb) {
+					console.debug('loadConfig: '+ package);
+					self.uciPackages[package]=true;
+					var res=l2uci.load(package);
+					if(res && cb) res.then(cb);
+				},
 
 				init: function(iElem) {
 					console.debug('Map init');
-					l2uci.load(self.uciPackages).then(self.read);
-				},
-
-				read: function() {
-					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
-						sec.read();
-
-					$timeout(self.wait, 0);
+					self.loadConfig(self.uciPackageName, self.wait);
 				},
 
 				wait: function() {
@@ -599,22 +596,6 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 
 		require: 'cbiMap',
 		compile: function(tElem, tAttr) {
-			var childSections = tElem[0].querySelectorAll('[cbi-section]'),
-			    childOptions = tElem[0].querySelectorAll('[cbi-option]'),
-			    uciPackages = { };
-
-			for (var i = 0, sec; sec = childSections[i]; i++)
-				if (CBI_SECTION_MATCH.test(sec.getAttribute('cbi-section')))
-					if (RegExp.$1 !== '')
-						uciPackages[RegExp.$1] = true;
-
-			for (var i = 0, opt; opt = childOptions[i]; i++)
-				if (CBI_OPTION_MATCH.test(opt.getAttribute('cbi-option')))
-					if (RegExp.$1 !== '')
-						uciPackages[RegExp.$1] = true;
-
-			uciPackages[tAttr.cbiMap] = true;
-
 			return {
 				pre: function($scope, iElem, iAttr, cbiMapCtrl) {
 					angular.extend(cbiMapCtrl, {
@@ -623,7 +604,7 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 
 						waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
-						uciPackages: angular.toArray(uciPackages),
+						uciPackages: {},
 						uciPackageName: iAttr.cbiMap
 					});
 
@@ -667,6 +648,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 
 				init: function(iElem) {
 					console.debug('Section init');
+					self.read();
 
 					if (self.waitFn)
 						self.cbiOwnerMap.waitfor(self.waitFn($scope));
@@ -904,6 +886,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 			var cbiSectionCtrl = ctrls[0],
 				cbiMapCtrl     = ctrls[1];
 
+			var CBI_SECTION_MATCH = /^(?:([a-zA-Z0-9_-]+)\.)?(?:@([a-zA-Z0-9_-]+)(?:\[(\d+)\])?|([a-zA-Z0-9_]+))$/;
 			if (!CBI_SECTION_MATCH.test(iAttr.cbiSection))
 				throw 'Invalid UCI selector';
 
@@ -937,7 +920,8 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				cbiOwnerMap:     cbiMapCtrl
 			}));
 
-			cbiSectionCtrl.init(iElem);
+			//make sure config is loaded an continue initialization
+			cbiMapCtrl.loadConfig(cbiSectionCtrl.uciPackageName, cbiSectionCtrl.init.bind(cbiSectionCtrl,iElem));
 		}
 	};
 }]);
@@ -1156,15 +1140,17 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 
 		require: ['cbiOption', '^cbiSection', '^cbiMap'],
 		compile: function(tElem, tAttr, linker) {
-			var isRequired = false,
-			    validationFn = null;
-
-			if (tAttr.validate && /^(?:(require|optional)\s+)?(.+)$/.test(tAttr.validate)) {
-				isRequired = (RegExp.$1 === '' || RegExp.$1 === 'require');
-				validationFn = l2validation.compile(RegExp.$2);
-			}
+			var CBI_OPTION_MATCH  = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
 
 			return function($scope, iElem, iAttr, ctrls) {
+				console.log("Option link");
+				var isRequired = false,
+					validationFn = null;
+
+				if (iAttr.validate && /^(?:(require|optional)\s+)?(.+)$/.test(iAttr.validate)) {
+					isRequired = (RegExp.$1 === '' || RegExp.$1 === 'require');
+					validationFn = l2validation.compile(RegExp.$2);
+				}
 				var cbiOptionCtrl = ctrls[0],
 					cbiSectionCtrl = ctrls[1],
 					cbiMapCtrl = ctrls[2];
@@ -1240,7 +1226,8 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					cbiOwnerSection: cbiSectionCtrl
 				}));
 
-				cbiOptionCtrl.init(iElem);
+				//continue init after config loaded
+				cbiMapCtrl.loadConfig(cbiOptionCtrl.uciPackageName,cbiOptionCtrl.init.bind(cbiOptionCtrl, iElem));
 			};
 		}
 	};
