@@ -1,0 +1,165 @@
+{
+	"title": "System Options",
+	"description": "Here you can configure the basic aspects of your device like its hostname or the timezone.",
+	"info": "this is a very long explanation",
+	"sections": {
+		"system": {
+			"description": "System Options",
+			"groups": {
+				"general": {
+					"options": {
+						"hostname": {
+							"type": "hostname",
+							"required": false,
+							"default": "lede",
+							"description": "The hostname for this system."
+						},
+						"timezone": {
+							"type": "string",
+							"required": false,
+							"default": "UTC",
+							"description": "The time zone that date and time should be rendered in by default."
+						},
+						"zonename": {
+							"type": "string",
+							"required": false,
+							"default": "UTC",
+							"description": "Only useful when using glibc and zoneinfo. The time zone that date and time should be rendered in by default.",
+							"info": "Suppose you want to use Brussels' timezone, set this value to Europe/Brussels. Possible values can be found by running (cd /usr/share/zoneinfo; find *).\nDepends: LIBC_USE_EGLIBC, PACKAGE_zoneinfo-*"
+						}
+
+					}
+				},
+				"logging": {
+					"options": {
+						"buffersize": {
+							"title": "Kernel log buffer size",
+							"type": "uintenger",
+							"required": false,
+							"default": "kernel specific",
+							"description": "Size of the kernel message buffer."
+						},
+						"conloglevel": {
+							"title": "Kernel log level",
+							"type": "uinteger",
+							"default": 7,
+							"values": {
+								"1": "Info",
+								"2": "Warning",
+								"3": "Debug"
+							},
+							"description": "Maximum log level for kernel messages to be logged to the console. Only messages with a level lower than this will be printed to the console.",
+							"info": "Higher level messages have lower log level number. Highest level messages are ones with log level 0. If you want more verbous messages in console put conloglevel to 8 if you want less messages lower conloglevel to 4 or even less."
+						},
+						"cronloglevel": {
+							"title": "Cron log level",
+							"type": "uinteger",
+							"default": 5,
+							"description": "The minimul level for cron messages to be logged to syslog. 0 will print all debug messages, 8 will log command executions, and 9 or higher will only log error messages."
+						},
+						"log_buffer_size": {
+							"title": "System log buffer size",
+							"type": "uinteger",
+							"default": 64,
+							"description": "Size of the system log buffer (in kiB)"
+						},
+						"log_file": {
+							"title": "Write system log to file",
+							"type": "string",
+							"default": "no log file",
+							"description": "File to write log messages to. The default is to not write a log in a file. The most often used location for a system log file is /var/log/messages."
+						},
+						"log_remote": {
+							"title": "Enable remote logging",
+							"type": "bool",
+							"default": 0
+						},
+						"log_ip": {
+							"title": "External system log server",
+							"type": "ipaddr",
+							"depends": {
+								"log_remote": 1
+							},
+							"description": "Messages will be logged to this server in addition to the local destination."
+						},
+						"log_port": {
+							"title": "External system port number",
+							"type": "port",
+							"default": 514,
+							"depends": {
+								"log_remote": 1
+							}
+						},
+						"log_proto": {
+							"title": "External System protocol",
+							"type": "string",
+							"required": false,
+							"default": "udp",
+							"values": ["tcp", "udp"],
+							"depends": {
+								"log_remote": 1
+							},
+							"description": "Sets the protocol to use for the connection."
+						},
+						"log_prefix": {
+							"title": "External system log prefix",
+							"type": "string",
+							"depends": {
+								"log_remote": 1
+							},
+							"description": "Adds a prefix to all log messages send over network."
+						},
+						"log_trailer_null": {
+							"title": "External system use null trailer over TCP",
+							"type": "bool",
+							"required": false,
+							"default": 0,
+							"depends": {
+								"log_remote": 1,
+								"log_proto": "tcp"
+							},
+							"description": "Use \\0 instead of \\n as trailer when using TCP."
+						}
+					}
+				}
+			}
+		},
+		"timeserver": {
+			"description": "Timeserver Options",
+			"options": {
+				"enable": {
+					"title": "Enable NTP service",
+					"type": "bool",
+					"default": 0,
+					
+					"description": "You can put busybox-ntpd in client mode only: by defining at least one host to server and puting enable_server 0 client & server mode: by putting enable_server to 1, (busybox-ntpd listens to UDP 123 by default), server mode only: by not defining any servers in the config and just put enable_server 1 (ntpd will answer with the time of the router)"
+				},
+				"enable_server": {
+					"title": "Enable local NTP server",
+					"type": "bool",
+					"default": 0,
+					"depends": {"enable":1}
+					
+				},
+				"server": {
+					"title": "NTP Servers to poll",
+					"type": ["host"],
+					"required": true,
+					"depends": {"enable":1},
+					"description": "Static list of servers to poll"
+				},
+				"use_dhcp": {
+					"title": "Get NTP servers from DHCP",
+					"type": "bool",
+					"depends": {"enable":1}
+				},
+				"dhcp_interface": {
+					"title": "Interfaces to listen to DHCP servers",
+					"type": ["string"],
+					"depends": {"enable":1, "use_dhcp":1}
+					
+				}
+			}
+		}
+	}
+}

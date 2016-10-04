@@ -1,0 +1,98 @@
+{
+	//Optional Header section
+	"title": "",				// Title of the config file. Defalut: config file name
+	"description": "",			// General description of the config file. Default: ""
+	"info": "",					// Additional info on the config. Default: ""
+	
+	//Optional configuration for luci2 auto uci pages
+	luci2: {
+		format: "tabs" || "list" || 'hybrid',
+		hideUndeclared: true || false, //autogenerate sections for those present in UCI config file not described in this template. Default: fase
+	},
+	
+	//Required section describing the config file
+	"sections": {
+
+		//Optional configuration for luci2 auto uci pages
+		"luci2": {},
+
+		
+		//one property for each type of section allowed in the config
+		"section_type1": {
+
+			//Optional Header section
+			"title": "",				// Title of the section. Defalut: section_type, if annonymus 'section_type #'
+			"description": "",			// General description of the section. Default: ""
+			"info": "",					// Additional info on the section. Default: ""
+
+			//Optional configuration for luci2 auto uci pages
+			"luci2": {
+				"format": "tabs" || "list" || 'hybrid',
+				"undeclared": true || false, //autogenerate group for options in UCI not described in this template
+				"addremove": true || false,
+				"anonymous": true || false,
+				"sortable": true || false,
+				},
+
+		
+		
+			//Required sections for describing valid options
+			//may be in the form of ungrouped 'options' or inside logical 'groups' of conceptually related options
+			//one (or the two) must be present
+			"options": {
+				
+				//one property for each option
+				"option1_name": {
+					
+					//Optional Header section
+					"title": "",				// Title of the option. Defalut: option_name
+					"description": "",			// General description of the option. Default: ""
+					"info": "",					// Additional info on the option. Default: ""
+					"parameter": "",			// (Optional) Info on the correspondig parameter in the underlying application
+	
+					//Required data description section
+					"type": "<type>" || ["<list type>"],// Expected type of the value. If it is a list type, it must be declared as 
+														// an array, with the first element defining the type. Default: "string"
+														// possible values: any of l2validation types plus 'flag'
+														// default: string
+					"required": true || false,			// value must be present
+					"validation": "expr",				// any additional validation to perform (besides type). It can be any l2validation function
+					"default": "",						// Default value
+					"values": [], 						// array of possible values to select
+														// if type is flag, first value is used for 'on' and second for 'off' rest is discarded. Bool defaults to 1/0
+					
+					"depends": {
+						"optionA_name": [values],		// Option name and possible values, for this option to be enabled
+						"optionB_name": [values],		// if more than one option is defined all must be met
+					}
+
+				},
+				"option2_name": {},
+			},
+
+			// list of options grouped toghether for easier understunging
+			"groups": {
+				
+				//one property for each group of options
+				"group1_name": {
+
+					//Optional Header section
+					"title": "",				// Title of the Group of options. Defalut: group_name
+					"description": "",			// General description of the group. Default: ""
+					"info": "",					// Additional info on the group. Default: ""
+					"parameter": "",			// (Optional) correspondig parameter in the underlying application
+
+					"depends": {				// If dependencies are set for the group, they are inherited by al options of the group
+						"optionA_name": [values],		// Option name and possible values, for this option to be enabled
+						"optionB_name": [values],		// if more than one option is defined all must be met
+					}
+
+					
+					options: {}, 				// same structure as for ungruped options
+					}
+				}
+			}
+		}
+	}
+}
+

@@ -1,0 +1,47 @@
+<div ng-if="isLoaded">
+	<h1>{{config.title}}</h1>
+	<h3>{{config.description}}</h2>
+	<div cbi-map="{{config.name}}" waitfor="View.load()">
+		<div ng-repeat="section in config.sections">
+			<div cbi-section="{{config.name}}.@{{section.name}}" title="{{section.description}}" ng-attr-addremove="{{section.luci2.addremove}}" ng-attr-anonymous="{{section.luci2.anonymous}}" ng-attr-collapse="{{section.luci2.collapse}}" ng-attr-sortable="{{section.luci2.sortable}}">
+
+				<div ng-repeat="option in section.options" cbi-option="{{option.name}}" title="{{option.name}}" description="{{option.description}}" depends={{option.depends}} validate="{{option.validate}}" ng-attr-list="{{opt.type.isList}}">
+					<cbi-select ng-if="option.type.elem=='cbiSelect'" />
+					<cbi-input ng-if="option.type.elem=='cbiInput'" />
+					<cbi-flag ng-if="option.type.elem=='cbiFlag'" />
+					<cbi-device-list ng-if="option.type.elem=='cbiDeviceList'" />
+					<cbi-network-list ng-if="option.type.elem=='cbiNetworkList'" />
+				</div>
+
+				<div ng-if="section.groups">
+					<tabset>
+							<tab ng-repeat="group in section.groups" heading="{{group.title}}">
+								<div ng-repeat="option in group.options" cbi-option="{{option.name}}" title="{{option.title}}" description="{{option.description}}" depends={{option.depends}} validate="{{option.validate}}" ng-attr-list="{{opt.type.isList}}">
+									<div ng-switch="option.type.elem">
+										<div ng-switch-when="cbiInput">
+											<cbi-input />
+										</div>
+										<div ng-switch-when="cbiSelect">
+											<cbi-select />
+										</div>
+										<div ng-switch-when="cbiFlag">
+											<cbi-flag />
+										</div>
+										<div ng-switch-when="cbiDeviceList">
+											<cbi-device-list />
+										</div>
+										<div ng-switch-when="cbiNetworkList">
+											<cbi-network-list />
+										</div>
+									</div>
+								</div>
+							</tab>
+					</tabset>
+				</div>
+
+
+			</div>
+		</div>
+
+	</div>
+</div>

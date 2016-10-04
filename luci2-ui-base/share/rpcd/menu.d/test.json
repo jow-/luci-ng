@@ -1,0 +1,12 @@
+{
+    "test": {
+        "title": "Auto UCI",
+        "index": 30
+    },
+    "test/system": {
+        "title": "System",
+        "acls": [ "system" ],
+        "view": "shared/uci_general",
+        "index": 10
+    },
+}
