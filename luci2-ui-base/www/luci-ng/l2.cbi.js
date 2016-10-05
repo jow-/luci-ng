@@ -688,13 +688,11 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					console.debug('Section finish end');
 				},
 
-				open: function($event) {
-					var $elem = angular.element($event.target),
-					    sid = $elem.findParent('[cbi-section-id]').attr('cbi-section-id');
+				open: function(uciSectionName) {
 
-					if (sid) {
+					if (uciSectionName) {
 						self.validate();
-						self.activeSectionName = sid;
+						self.activeSectionName = uciSectionName;
 					}
 				},
 
@@ -723,10 +721,8 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					$timeout(self.finish, 0, true, sid);
 				},
 
-				remove: function($event) {
-					var $elem = angular.element($event.target),
-						sid = $elem.findParent('[cbi-section-id]').attr('cbi-section-id'),
-						idx = self.uciSections.indexOf(sid);
+				remove: function(sid) {
+					var idx = self.uciSections.indexOf(sid);
 
 					if (sid) {
 						if (idx === self.uciSections.length - 1)
@@ -750,15 +746,16 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					}
 				},
 
-				sort: function($event) {
-					var $elem = angular.element($event.target),
-						selfSectionElem = $elem.findParent('[cbi-section-id]'),
-						nextSectionElem = $elem.hasClass('up')
-							? selfSectionElem.findPrev('[cbi-section-id]')
-							: selfSectionElem.findNext('[cbi-section-id]'),
-						sid1 = selfSectionElem.attr('cbi-section-id'),
-						sid2 = nextSectionElem.attr('cbi-section-id');
+				sort: function(sid1, dir) {
 
+					var idx=self.uciSections.indexOf(sid1);
+					if(idx < 0) return;
+					
+					var idx = idx + (dir > 0 ? 1 : -1);
+					if(idx < 0 || idx >= self.uciSections.length ) return;
+					
+					var sid2=self.uciSections[idx];
+					
 					if (sid1 && sid2) {
 						l2uci.swap(self.uciPackageName, sid1, sid2);
 						self.read();
@@ -847,7 +844,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 						'<li ng-if="!Section.uciSections.length" class="list-group-item text-muted">{{Section.placeholder}}</li>' +
 						'<li class="l2-section-item list-group-item form-horizontal animate-repeat" ng-repeat="uciSectionName in Section.uciSections" cbi-section-id="{{uciSectionName}}">' +
 							'<div ng-if="Section.isCollapse || Section.isSortable || Section.isAddRemove" class="l2-section-header">' +
-								'<div ng-if="Section.isCollapse && (Section.activeSectionName !== uciSectionName)" ng-click="Section.open($event)" class="l2-section-teaser well well-sm">' +
+								'<div ng-if="Section.isCollapse && (Section.activeSectionName !== uciSectionName)" ng-click="Section.open(uciSectionName)" class="l2-section-teaser well well-sm">' +
 									'<span ng-if="Section.fieldErrors[uciSectionName]" class="badge">{{Section.fieldErrors[uciSectionName]}}</span>' +
 									'<span ng-repeat="Option in Section.teaserFields(uciSectionName)" ng-init="textValue = Option.textValue()">' +
 										'<span ng-style="Option.isInvalid ? {color:\'#d9534f\'} : {}">' +
@@ -857,9 +854,9 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 									'</span>' +
 								'</div>' +
 								'<div ng-if="Section.isSortable || Section.isAddRemove" class="btn-group">' +
-									'<button ng-if="Section.isSortable && !$first" type="button" title="{{\'Move up\' | translate}}" ng-click="Section.sort($event)" class="btn btn-info up">↑</button>' +
-									'<button ng-if="Section.isSortable && !$last" type="button" title="{{\'Move down\' | translate}}" ng-click="Section.sort($event)" class="btn btn-info down">↓</button>' +
-									'<button ng-if="Section.isAddRemove" type="button" title="{{Section.removeTitle}}" ng-click="Section.remove($event)" class="btn btn-danger">{{Section.removeCaption}}</button>' +
+									'<button ng-if="Section.isSortable && !$first" type="button" title="{{\'Move up\' | translate}}" ng-click="Section.sort(uciSectionName, -1)" class="btn btn-info up">↑</button>' +
+									'<button ng-if="Section.isSortable && !$last" type="button" title="{{\'Move down\' | translate}}" ng-click="Section.sort(uciSectionName, 1)" class="btn btn-info down">↓</button>' +
+									'<button ng-if="Section.isAddRemove" type="button" title="{{Section.removeTitle}}" ng-click="Section.remove(uciSectionName)" class="btn btn-danger">{{Section.removeCaption}}</button>' +
 								'</div>' +
 							'</div>' +
 							'<div class="l2-section-panel panel-collapse" ng-class="{collapse: Section.isCollapse && (Section.activeSectionName !== uciSectionName)}">' +
@@ -972,11 +969,11 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					tabIndex = Array.prototype.indexOf.call(curPane.parentNode.children, curPane);
 
 					self.tabHead = angular.element(tabHeads[tabIndex]).addClass('fade in');
-					self.tabBadge = self.tabHead.find('.badge');
+					self.tabBadge = self.tabHead.findAll('.badge');
 
 					if (!self.tabBadge[0]) {
 						self.tabHead.children().append('&#160;<span class="badge"></span>');
-						self.tabBadge = self.tabHead.find('.badge');
+						self.tabBadge = self.tabHead.findAll('.badge');
 					}
 				},
 
@@ -1354,7 +1351,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 				},
 
 				init: function(iElem) {
-					self.caption = iElem.find('.caption');
+					self.caption = iElem.findAll('.caption');
 					self.cbiOwnerMap.waitfor(l2network.load()/*.then(self.finish)*/); //().then(self.load));
 				},
 
@@ -1559,7 +1556,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 				},
 
 				init: function(iElem) {
-					self.caption = iElem.find('.caption');
+					self.caption = iElem.findAll('.caption');
 					self.cbiOwnerMap.waitfor(l2network.load());
 				},
 

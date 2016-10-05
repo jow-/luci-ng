@@ -1,25 +1,11 @@
 (function() {
 	"use strict";
 
-	if (!angular.element.fn || !angular.element.fn.jquery)
+
+	if (!angular.element.findAll)
 	{
-		var element = angular.element;
 
-		angular.element = function(select)
-		{
-			if (!(this instanceof angular.element))
-				return new angular.element(select);
-
-			if (typeof(select) === 'string' && ! /^</.test(select.trim()))
-				select = document.querySelectorAll(select);
-
-			return angular.extend(this, element(select));
-		};
-
-		angular.element.prototype = element.prototype;
-		angular.element.prototype.constructor = element;
-
-		angular.element.prototype.find = function(select)
+		angular.element.prototype.findAll = function(select)
 		{
 			if (this.length)
 				return angular.element(this[0].querySelectorAll(select));
