@@ -21,9 +21,9 @@
 		</button>
 		<a class="navbar-brand" href="#" id="hostname">&nbsp;</a>
 	  </div>
-	  <div collapse="navCollapsed" class="collapse navbar-collapse" id="mainmenu">
+	  <div uib-collapse="navCollapsed" class="collapse navbar-collapse" id="mainmenu">
 		<ul role="menu" class="nav navbar-nav">
-		  <li ng-repeat="node in menu" ng-include="'menuTree'" dropdown></li>
+		  <li ng-repeat="node in menu" ng-include="'menuTree'" uib-dropdown></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right ng-cloak">
 		  <li>
@@ -114,12 +114,12 @@
 
   <script type="text/ng-template" id="menuTree">
 	<a ng-if="!node.childs" href="#/{{node.view}}">{{node.title}}</a>
-	<a ng-if="node.childs" href="#" dropdown-toggle>
+	<a ng-if="node.childs" href="#" uib-dropdown-toggle>
 	  {{node.title}}
 	  <b class="caret"></b>
 	</a>
 	<ul ng-if="node.childs" class="dropdown-menu navbar-inverse">
-	  <li ng-repeat="node in node.childs" ng-include="'menuTree'" dropdown></li>
+	  <li ng-repeat="node in node.childs" ng-include="'menuTree'" uib-dropdown></li>
 	</ul>
   </script>
 </body>

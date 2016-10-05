@@ -1497,8 +1497,8 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 
 		replace: true,
 		template: '' +
-			'<div dropdown is-open="DeviceList.isOpen" on-toggle="DeviceList.toggled(open)" auto-close="{{ DeviceList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
-				'<button class="btn btn-default dropdown-toggle" type="button" dropdown-toggle>' +
+			'<div uib-dropdown is-open="DeviceList.isOpen" on-toggle="DeviceList.toggled(open)" auto-close="{{ DeviceList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
+				'<button class="btn btn-default uib-dropdown-toggle" type="button" uib-dropdown-toggle>' +
 					'<div class="caption"><em translate>Loading…</em></div>' +
 				'</button>' +
 				'<ul class="dropdown-menu">' +
@@ -1658,8 +1658,8 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 
 		replace: true,
 		template: '' +
-			'<div dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
-				'<button class="btn btn-default dropdown-toggle" type="button" dropdown-toggle>' +
+			'<div uib-dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
+				'<button class="btn btn-default uib-dropdown-toggle" type="button" uib-dropdown-toggle>' +
 					'<div class="caption"><em translate>Loading…</em></div>' +
 				'</button>' +
 				'<ul class="dropdown-menu">' +

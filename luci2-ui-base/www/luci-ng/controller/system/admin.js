@@ -113,7 +113,7 @@ L2.registerFactory('l2pubkeys', [function() {
 	});
 }]);
 
-L2.registerController('SystemAdminController', ['$modal', 'l2rpc', 'l2spin', 'l2pubkeys', function($modal, l2rpc, l2spin, l2pubkeys) {
+L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 'l2pubkeys', function($modal, l2rpc, l2spin, l2pubkeys) {
 	var adminCtrl = this;
 
 	angular.extend(adminCtrl, {
@@ -189,7 +189,7 @@ L2.registerController('SystemAdminController', ['$modal', 'l2rpc', 'l2spin', 'l2
 
 		addPubkey: function() {
 			$modal.open({
-				controller: adminCtrl.addPubkeyCtrl,
+				controller: ['$scope', '$uibModalInstance', adminCtrl.addPubkeyCtrl],
 				controllerAs: 'Dialog',
 				templateUrl: 'system/admin/addkey.html'
 			});

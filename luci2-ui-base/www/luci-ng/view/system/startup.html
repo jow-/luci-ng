@@ -1,7 +1,7 @@
 <h2 translate>System Startup</h2>
 
-<tabset>
-	<tab heading="{{'Init Scripts' | translate}}">
+<uib-tabset>
+	<uib-tab heading="{{'Init Scripts' | translate}}">
 		<table class="table table-striped">
 			<tr class="cbi-section-table-titles">
 				<th translate translate-context="Init scripts">Start priority</th>
@@ -17,8 +17,8 @@
 					<button ng-if="!initScript.enabled" ng-click="View.callInitAction(initScript.name, 'enable')" type="button" class="btn btn-sm btn-danger" translate>Disabled</button>
 				</td>
 				<td style="width:1%">
-					<div class="btn-group" dropdown>
-						<button class="btn btn-primary btn-sm dropdown-toggle" dropdown-toggle translate>Action…</button>
+					<div class="btn-group" uib-dropdown>
+						<button class="btn btn-primary btn-sm uib-dropdown-toggle" uib-dropdown-toggle translate>Action…</button>
 						<ul class="dropdown-menu pull-right">
 							<li><a href="#" ng-click="View.callInitAction(initScript.name, 'start'); $event.preventDefault()">
 								<span translate translate-context="Init action">Start</span>
@@ -34,8 +34,8 @@
 				</td>
 			</tr>
 		</table>
-	</tab>
-	<tab heading="{{'Local Startup' | translate}}">
+	</uib-tab>
+	<uib-tab heading="{{'Local Startup' | translate}}">
 		<p translate>This is the content of /etc/rc.local. Insert your own commands here (in front of 'exit 0') to execute them at the end of the boot process.</p>
 
 		<textarea class="form-control" rows="20" ng-model="View.rclocal"></textarea><br>
@@ -48,5 +48,5 @@
 		<div class="panel panel-default panel-body text-right">
 			<button ng-click="View.changeRcLocal()" translate type="button" class="btn btn-primary">Apply</button>
 		</div>
-	</tab>
-</tabset>
+	</uib-tab>
+</uib-tabset>

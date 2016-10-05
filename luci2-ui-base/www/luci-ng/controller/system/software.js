@@ -1,4 +1,4 @@
-L2.registerController('SystemSoftwareController', ['$q', '$modal', 'l2rpc', 'l2spin', function($q, $modal, l2rpc, l2spin) {
+L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', 'l2spin', function($q, $modal, l2rpc, l2spin) {
 	var softwareCtrl = this;
 
 	angular.extend(softwareCtrl, {
@@ -263,7 +263,7 @@ L2.registerController('SystemSoftwareController', ['$q', '$modal', 'l2rpc', 'l2s
 
 		displayInfo: function(pkgName) {
 			$modal.open({
-				controller: ['$scope', '$modalInstance', 'pkgName', softwareCtrl.displayInfoCtrl],
+				controller: ['$scope', '$uibModalInstance', 'pkgName', softwareCtrl.displayInfoCtrl],
 				controllerAs: 'Dialog',
 				templateUrl: 'system/software/info.html',
 				resolve: {

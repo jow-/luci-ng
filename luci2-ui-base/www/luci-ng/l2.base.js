@@ -455,7 +455,7 @@
 				}
 			});
 		}])
-		.factory('l2auth', ['l2rpc', '$timeout', '$modal', '$cookie', '$rootScope', function(l2rpc, $timeout, $modal, $cookie, $rootScope) {
+		.factory('l2auth', ['l2rpc', '$timeout', '$uibModal', '$cookie', '$rootScope', function(l2rpc, $timeout, $modal, $cookie, $rootScope) {
 			var _auth = { };
 			return angular.extend(_auth, {
 				login: l2rpc.declare({
@@ -505,7 +505,7 @@
 					_auth._dialog = $modal.open({
 						backdrop: 'static',
 						templateUrl: 'loginForm',
-						controller: function($scope, $modalInstance) {
+						controller: ['$scope', '$uibModalInstance', function($scope, $modalInstance) {
 							$scope.login = function($event) {
 								if ($event.which !== 1 && $event.which !== 13)
 									return;
@@ -526,7 +526,7 @@
 									}
 								});
 							};
-						}
+						}]
 					});
 				},
 
@@ -562,7 +562,7 @@
 					_auth._dialog = $modal.open({
 						backdrop: 'static',
 						templateUrl: 'logoutForm',
-						controller: function($scope, $modalInstance) {
+						controller: ['$scope', '$uibModalInstance', function($scope, $modalInstance) {
 							$scope.cancel = function($event) {
 								_auth._dialog.close();
 							};
@@ -576,7 +576,7 @@
 									_auth.prompt();
 								});
 							};
-						}
+						}]
 					});
 				}
 			});
@@ -702,7 +702,7 @@
 				}
 			});
 		}])
-		.factory('l2spin', ['$modal', 'gettext', function($modal, gettext) {
+		.factory('l2spin', ['$uibModal', 'gettext', function($modal, gettext) {
 			var template = '<div class="modal-content l2-modal-loader">' +
 				'<div class="modal-body">' +
 					gettext('Loading data…') +
@@ -745,7 +745,7 @@
 					});
 				});
 			}])
-		.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$modalProvider', '$httpProvider', '$provide',
+		.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$uibModalProvider', '$httpProvider', '$provide',
 			function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $modalProvider, $httpProvider, $provide) {
 				angular.extend(angular, {
 					isEmptyObject: function(x)

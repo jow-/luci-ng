@@ -30,8 +30,8 @@
 		</div><div class="cell clearfix content col-xs-1">
 			{{process.vsize_percent}}%
 		</div><div class="cell clearfix content col-xs-1">
-			<div class="btn-group" dropdown>
-				<button class="btn btn-primary btn-sm dropdown-toggle" dropdown-toggle translate>Signal…</button>
+			<div class="btn-group" uib-dropdown>
+				<button class="btn btn-primary btn-sm uib-dropdown-toggle" uib-dropdown-toggle translate>Signal…</button>
 				<ul class="dropdown-menu pull-right">
 					<li><a href="#" ng-click="sendSignal(process.pid, 1); $event.preventDefault()">
 						<span translate translate-context="UNIX signal">Reload</span>
