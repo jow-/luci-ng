@@ -30,7 +30,7 @@
     },
     "system/backup": {
         "title": "Backup",
-        "acls": [ "backup" ],
+        "acls": [ "backup-action", "backup-conf" ],
         "view": "system/backup",
         "index": 50
     },

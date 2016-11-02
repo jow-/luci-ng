@@ -197,18 +197,12 @@
 		}
 	},
 
-	"backup": {
+	"backup-action": {
 		"description": "Backup and Restore",
 		"read": {
 			"luci-io": [
 				"backup"
-			],
-			"ubus": {
-				"luci2.system": [
-					"backup_config_get",
-					"backup_list"
-				]
-			}
+			]
 		},
 		"write": {
 			"luci-io": [
@@ -217,9 +211,27 @@
 			"ubus": {
 				"luci2.system": [
 					"backup_clean",
-					"backup_config_set",
 					"backup_restore",
 					"reboot"
+				]
+			}
+		}
+	},
+
+	"backup-conf": {
+		"description": "Backup configuration",
+		"read": {
+			"ubus": {
+				"luci2.system": [
+					"backup_config_get",
+					"backup_list"
+				]
+			}
+		},
+		"write": {
+			"ubus": {
+				"luci2.system": [
+					"backup_config_set"
 				]
 			}
 		}
