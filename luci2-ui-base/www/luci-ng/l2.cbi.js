@@ -489,7 +489,7 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 }]);
 
 
-L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout, $parse, l2uci) {
+L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', '$q', function($timeout, $parse, l2uci, $q) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -502,42 +502,17 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 
 				isLoading: true,
 
-				inProgress: [ ],
 				cbiChildSections: [ ],
 				loadConfig: function(package, cb) {
 					console.debug('loadConfig: '+ package);
 					self.uciPackages[package]=true;
-					var res=l2uci.load(package);
-					if(res && cb) res.then(cb);
-				},
-
-				init: function(iElem) {
-					console.debug('Map init');
-					self.loadConfig(self.uciPackageName, self.wait);
-				},
-
-				wait: function() {
-					if (self.waitFn)
-						self.waitfor(self.waitFn($scope));
-
-					$q.all(self.inProgress).then(self.finish);
+					return l2uci.load(package);
 				},
 
 				finish: function() {
 					console.debug('Map finish');
 
-					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
-						sec.finish();
-
 					self.isLoading = false;
-					self.inProgress.length = 0;
-
-					console.debug('Map finish end');
-				},
-
-				waitfor: function(d) {
-					if (angular.isObject(d) && angular.isFunction(d.then))
-						self.inProgress.push(d);
 				},
 
 				save: function($event) {
@@ -580,7 +555,7 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 					'<h2 ng-if="Map.title">{{Map.title}}</h2>' +
 					'<p ng-if="Map.description">{{Map.description}}</p>' +
 					'<p ng-if="Map.isLoading" class="text-muted" translate>Loading configuration data…</p>' +
-					'<div class="fade2" ng-class2="{in:!Map.isLoading}" ng-style="{opacity: Map.isLoading ? 0.3 : 1}">' +
+					'<div ng-if="!Map.isLoading" class="fade2" ng-class2="{in:!Map.isLoading}" ng-style="{opacity: Map.isLoading ? 0.3 : 1}">' +
 						tElem.html() +
 					'</div>' +
 					'<div class="panel panel-default panel-body text-right">' +
@@ -595,27 +570,27 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 		},
 
 		require: 'cbiMap',
-		compile: function(tElem, tAttr) {
-			return {
-				pre: function($scope, iElem, iAttr, cbiMapCtrl) {
+		link: function($scope, iElem, iAttr, cbiMapCtrl) {
 					angular.extend(cbiMapCtrl, {
 						title: iAttr.title,
 						description: iAttr.description,
-
-						waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
 						uciPackages: {},
 						uciPackageName: iAttr.cbiMap
 					});
 
-					cbiMapCtrl.init(iElem);
-				}
-			};
+					//compose waitPromise for this level: external waitfor param + wait for uci config
+					cbiMapCtrl.waitPromise= $q.all([$q.when($parse(iAttr.waitfor)),
+															 cbiMapCtrl.loadConfig(iAttr.cbiMap)])
+
+					//change initialization state at "finish" after promises return
+					//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+					cbiMapCtrl.waitPromise.then(cbiMapCtrl.finish);
 		}
 	};
 }]);
 
-L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validation', 'l2uci', function($timeout, $parse, gettext, l2validation, l2uci) {
+L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validation', 'l2uci', '$q',  function($timeout, $parse, gettext, l2validation, l2uci, $q) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -627,6 +602,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 
 				fieldCtrls: { },
 				fieldErrors: { },
+				isLoading: true,
 
 				read: function() {
 					self.uciSections.length = 0;
@@ -646,17 +622,6 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					}
 				},
 
-				init: function(iElem) {
-					console.debug('Section init');
-					self.read();
-
-					if (self.waitFn)
-						self.cbiOwnerMap.waitfor(self.waitFn($scope));
-
-					if (self.isAddRemove && !self.isAnonymous)
-						self.removeWatchFn = $scope.$watch('Section.addName', self.validateAddName);
-				},
-
 				filter: function(uciSection) {
 					if (!self.filterFn)
 						return true;
@@ -670,20 +635,14 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 
 				finish: function(uciSectionName) {
 					console.debug('Section finish');
+					self.read();
 
 					if (self.isCollapse &&
 					    self.uciSections.indexOf(self.activeSectionName) === -1)
 						self.activeSectionName = self.uciSections[0];
 
-					for (var sid in self.fieldCtrls) {
-						if (uciSectionName !== undefined && uciSectionName !== sid)
-							continue;
-
-						for (var opt in self.fieldCtrls[sid])
-							self.fieldCtrls[sid][opt].finish();
-					}
-
 					self.validate();
+					self.isLoading=false;
 
 					console.debug('Section finish end');
 				},
@@ -907,7 +866,6 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				removeFn:        iAttr.hasOwnProperty('onremove') ? $parse(iAttr.onremove) : null,
 
 				filterFn:        iAttr.hasOwnProperty('filter') ? $parse(iAttr.filter) : null,
-				waitFn:          iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
 				uciPackageName:  (RegExp.$1 !== '') ? RegExp.$1 : cbiMapCtrl.uciPackageName,
 				uciSectionType:  (RegExp.$2 !== '') ? RegExp.$2 : undefined,
@@ -917,13 +875,22 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				cbiOwnerMap:     cbiMapCtrl
 			}));
 
-			//make sure config is loaded an continue initialization
-			cbiMapCtrl.loadConfig(cbiSectionCtrl.uciPackageName, cbiSectionCtrl.init.bind(cbiSectionCtrl,iElem));
+			if (cbiSectionCtrl.isAddRemove && !cbiSectionCtrl.isAnonymous)
+				cbiSectionCtrl.removeWatchFn = $scope.$watch('Section.addName', 		cbiSectionCtrl.validateAddName);
+
+			//compose waitPromise for this level: external waitfor param + wait for uci config
+			//chained with parent waitPromise to ensure whole tree completion
+			cbiSectionCtrl.waitPromise= $q.all([cbiMapCtrl.waitPromise, $q.when($parse(iAttr.waitfor)),
+													 cbiMapCtrl.loadConfig(cbiSectionCtrl.uciPackageName)])
+
+			//change initialization state at "finish" after promises return
+			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+			cbiSectionCtrl.waitPromise.then(cbiSectionCtrl.finish);
 		}
 	};
 }]);
 
-L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function($parse, l2validation, gettext) {
+L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', '$q', function($parse, l2validation, gettext, $q) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -933,17 +900,12 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 			var self = angular.extend(this, {
 				rdepends: { },
 				isUnsatisified: false,
-
-				init: function(iElem) {
-					console.debug('Option init');
-
-					self.tabInit(iElem);
-
-					self.uciValue = l2uci.get(self.uciPackageName, self.uciSectionName, self.uciOptionName);
-					self.rawValue = self.uciValue;
-				},
+				isLoading: true,
 
 				finish: function() {
+					self.uciValue = l2uci.get(self.uciPackageName, self.uciSectionName, self.uciOptionName);
+					self.rawValue = self.uciValue;
+
 					for (var i = 0, dep; dep = self.dependencies[i]; i++) {
 						for (var optName in dep) {
 							var opt = self.cbiOwnerSection.getFieldByName(self.uciSectionName, optName);
@@ -953,9 +915,7 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 						}
 					}
 
-					if (self.cbiWidget && self.cbiWidget.finish)
-						self.cbiWidget.finish();
-
+					self.isLoading=false;
 					console.debug('Option finish');
 				},
 
@@ -1136,11 +1096,10 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 		},
 
 		require: ['cbiOption', '^cbiSection', '^cbiMap'],
-		compile: function(tElem, tAttr, linker) {
-			var CBI_OPTION_MATCH  = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
+		link: function($scope, iElem, iAttr, ctrls) {
+				console.debug('Option link');
+				var CBI_OPTION_MATCH  = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
 
-			return function($scope, iElem, iAttr, ctrls) {
-				console.log("Option link");
 				var isRequired = false,
 					validationFn = null;
 
@@ -1211,8 +1170,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					isRequired:      isRequired,
 					validationFn:    validationFn,
 
-					waitFn:          iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
-
 					dependencies:    dependencies,
 
 					uciPackageName:  uciPackage,
@@ -1223,9 +1180,16 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					cbiOwnerSection: cbiSectionCtrl
 				}));
 
-				//continue init after config loaded
-				cbiMapCtrl.loadConfig(cbiOptionCtrl.uciPackageName,cbiOptionCtrl.init.bind(cbiOptionCtrl, iElem));
-			};
+				cbiOptionCtrl.tabInit(iElem);
+
+				//compose waitPromise for this level: external waitfor param + wait for uci config
+				//chained with parent waitPromise to ensure whole tree completion
+				cbiOptionCtrl.waitPromise= $q.all([cbiSectionCtrl.waitPromise, $q.when($parse(iAttr.waitfor)),
+														 cbiMapCtrl.loadConfig(cbiOptionCtrl.uciPackageName)])
+
+				//change initialization state at "finish" after promises return
+				//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+				cbiOptionCtrl.waitPromise.then(cbiOptionCtrl.finish);
 		}
 	};
 }]);
@@ -1324,7 +1288,7 @@ L2.registerDirective('cbiSelect', ['$parse', function($parse) {
 	};
 }]);
 
-L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext, l2network) {
+L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', '$q', function(gettext, l2network, $q) {
 	return {
 		restrict: 'AE',
 		scope: { },
@@ -1335,6 +1299,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 			var self = angular.extend(this, {
 				checked: { },
 				devices: [ ],
+				waitNetwork: l2network.load(),
 
 				isUnspecified: function() {
 					return angular.isEmptyObject(self.checked);
@@ -1348,11 +1313,6 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 						return false;
 
 					return true;
-				},
-
-				init: function(iElem) {
-					self.caption = iElem.findAll('.caption');
-					self.cbiOwnerMap.waitfor(l2network.load()/*.then(self.finish)*/); //().then(self.load));
 				},
 
 				finish: function() {
@@ -1524,18 +1484,26 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 			cbiOptionCtrl.cbiWidget = angular.extend(cbiDeviceListCtrl, {
 				allowBridges: iAttr.hasOwnProperty('bridges'),
 				allowMultiple: iAttr.hasOwnProperty('multiple'),
+				caption: iElem.findAll('.caption'),
 
 				cbiOwnerOption: cbiOptionCtrl,
 				cbiOwnerSection: cbiSectionCtrl,
 				cbiOwnerMap: cbiMapCtrl
 			});
 
-			cbiDeviceListCtrl.init(iElem);
+			//compose waitPromise for this level: loading of network info
+			//chained with parent waitPromise to ensure whole tree completion
+			cbiDeviceListCtrl.waitPromise= $q.all([cbiOptionCtrl.waitPromise, 	
+																						 cbiDeviceListCtrl.waitNetwork])
+
+			//change initialization state at "finish" after promises return
+			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+			cbiDeviceListCtrl.waitPromise.then(cbiDeviceListCtrl.finish);
 		}
 	};
 }]);
 
-L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext, l2network) {
+L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', '$q', function(gettext, l2network, $q) {
 	return {
 		restrict: 'AE',
 		scope: { },
@@ -1546,6 +1514,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 			var self = angular.extend(this, {
 				checked: { },
 				interfaces: [ ],
+				waitNetwork: l2network.load(),
 
 				isUnspecified: function() {
 					return angular.isEmptyObject(self.checked);
@@ -1555,13 +1524,8 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 					return true;
 				},
 
-				init: function(iElem) {
-					self.caption = iElem.findAll('.caption');
-					self.cbiOwnerMap.waitfor(l2network.load());
-				},
-
 				finish: function() {
-					console.debug('Network loaded...');
+					console.debug('Network finish loaded...');
 
 					l2network.loadDevicesCallback();
 					l2network.loadInterfacesCallback();
@@ -1677,13 +1641,21 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 
 			cbiOptionCtrl.cbiWidget = angular.extend(cbiNetworkListCtrl, {
 				allowMultiple: iAttr.hasOwnProperty('multiple'),
+				caption: iElem.findAll('.caption'),
 
 				cbiOwnerOption: cbiOptionCtrl,
 				cbiOwnerSection: cbiSectionCtrl,
 				cbiOwnerMap: cbiMapCtrl
 			});
 
-			cbiNetworkListCtrl.init(iElem);
+			//compose waitPromise for this level: loading of network info
+			//chained with parent waitPromise to ensure whole tree completion
+			cbiNetworkListCtrl.waitPromise= $q.all([cbiOptionCtrl.waitPromise, 	
+																						 cbiNetworkListCtrl.waitNetwork])
+
+			//change initialization state at "finish" after promises return
+			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+			cbiNetworkListCtrl.waitPromise.then(cbiNetworkListCtrl.finish);
 		}
 	};
 }]);
