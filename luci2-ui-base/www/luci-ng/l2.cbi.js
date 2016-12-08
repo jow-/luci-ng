@@ -501,6 +501,7 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', '$q', function($t
 				set: l2uci.set,
 
 				isLoading: true,
+				lockCount:0,
 
 				cbiChildSections: [ ],
 				loadConfig: function(package, cb) {
@@ -509,35 +510,48 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', '$q', function($t
 					return l2uci.load(package);
 				},
 
+				read: function() {
+          for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
+            sec.read();
+				},
+
 				finish: function() {
 					console.debug('Map finish');
 
 					self.isLoading = false;
 				},
 
+				lock: function() {
+					self.lockCount++;
+				},
+
+				unlock: function() {
+					if(self.lockCount >= 1) self.lockCount--;
+				},
+
 				save: function($event) {
 					$event.currentTarget.blur();
 
-					self.isLoading = true;
+					self.lock();
 
 					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++) {
 						sec.save();
 						sec.reset();
 					}
 
-					l2uci.save().then(self.read);
+					l2uci.save().then(self.read).then(self.unlock);
 				},
 
 				reset: function($event) {
 					$event.currentTarget.blur();
 
-					self.isLoading = true;
+					self.lock();
 					l2uci.unload(self.uciPackages);
 
 					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
 						sec.reset();
 
-					l2uci.load(self.uciPackages).then(self.read);
+					l2uci.load(self.uciPackages).then(self.read).then(self.unlock);
 				},
 
 				apply: function($event) {
@@ -555,14 +569,14 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', '$q', function($t
 					'<h2 ng-if="Map.title">{{Map.title}}</h2>' +
 					'<p ng-if="Map.description">{{Map.description}}</p>' +
 					'<p ng-if="Map.isLoading" class="text-muted" translate>Loading configuration data…</p>' +
-					'<div ng-if="!Map.isLoading" class="fade2" ng-class2="{in:!Map.isLoading}" ng-style="{opacity: Map.isLoading ? 0.3 : 1}">' +
+					'<div ng-if="!Map.isLoading" class="fade2" ng-class2="{in:!Map.lockCount}" ng-style="{opacity: Map.lockCount ? 0.3 : 1}">' +
 						tElem.html() +
 					'</div>' +
 					'<div class="panel panel-default panel-body text-right">' +
 						'<div class="btn-group">' +
-							'<button type="button" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>' +
-							'<button type="button" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>' +
-							'<button type="button" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>' +
 						'</div>' +
 					'</div>' +
 				'</div>'
@@ -602,7 +616,6 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 
 				fieldCtrls: { },
 				fieldErrors: { },
-				isLoading: true,
 
 				read: function() {
 					self.uciSections.length = 0;
@@ -642,7 +655,6 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 						self.activeSectionName = self.uciSections[0];
 
 					self.validate();
-					self.isLoading=false;
 
 					console.debug('Section finish end');
 				},
@@ -843,6 +855,9 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				cbiMapCtrl     = ctrls[1];
 
 			var CBI_SECTION_MATCH = /^(?:([a-zA-Z0-9_-]+)\.)?(?:@([a-zA-Z0-9_-]+)(?:\[(\d+)\])?|([a-zA-Z0-9_]+))$/;
+
+			cbiMapCtrl.lock();
+
 			if (!CBI_SECTION_MATCH.test(iAttr.cbiSection))
 				throw 'Invalid UCI selector';
 
@@ -885,7 +900,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 
 			//change initialization state at "finish" after promises return
 			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
-			cbiSectionCtrl.waitPromise.then(cbiSectionCtrl.finish);
+			cbiSectionCtrl.waitPromise.then(cbiSectionCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);
@@ -900,7 +915,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', '$q', fu
 			var self = angular.extend(this, {
 				rdepends: { },
 				isUnsatisified: false,
-				isLoading: true,
 
 				finish: function() {
 					self.uciValue = l2uci.get(self.uciPackageName, self.uciSectionName, self.uciOptionName);
@@ -915,7 +929,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', '$q', fu
 						}
 					}
 
-					self.isLoading=false;
 					console.debug('Option finish');
 				},
 
@@ -1111,6 +1124,8 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', '$q', fu
 					cbiSectionCtrl = ctrls[1],
 					cbiMapCtrl = ctrls[2];
 
+				cbiMapCtrl.lock();
+
 				if (!CBI_OPTION_MATCH.test(iAttr.cbiOption))
 					throw 'Invalid UCI selector';
 
@@ -1189,7 +1204,7 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', '$q', fu
 
 				//change initialization state at "finish" after promises return
 				//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
-				cbiOptionCtrl.waitPromise.then(cbiOptionCtrl.finish);
+				cbiOptionCtrl.waitPromise.then(cbiOptionCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);
@@ -1481,6 +1496,8 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', '$q', function(ge
 				cbiSectionCtrl = ctrls[2],
 				cbiMapCtrl = ctrls[3];
 
+			cbiMapCtrl.lock();
+
 			cbiOptionCtrl.cbiWidget = angular.extend(cbiDeviceListCtrl, {
 				allowBridges: iAttr.hasOwnProperty('bridges'),
 				allowMultiple: iAttr.hasOwnProperty('multiple'),
@@ -1498,7 +1515,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', '$q', function(ge
 
 			//change initialization state at "finish" after promises return
 			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
-			cbiDeviceListCtrl.waitPromise.then(cbiDeviceListCtrl.finish);
+			cbiDeviceListCtrl.waitPromise.then(cbiDeviceListCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);
@@ -1639,6 +1656,8 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', '$q', function(g
 				cbiSectionCtrl = ctrls[2],
 				cbiMapCtrl = ctrls[3];
 
+			cbiMapCtrl.lock();
+
 			cbiOptionCtrl.cbiWidget = angular.extend(cbiNetworkListCtrl, {
 				allowMultiple: iAttr.hasOwnProperty('multiple'),
 				caption: iElem.findAll('.caption'),
@@ -1655,7 +1674,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', '$q', function(g
 
 			//change initialization state at "finish" after promises return
 			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
-			cbiNetworkListCtrl.waitPromise.then(cbiNetworkListCtrl.finish);
+			cbiNetworkListCtrl.waitPromise.then(cbiNetworkListCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);
