@@ -1,7 +1,7 @@
 <h2 translate>Backup</h2>
 
-<tabset>
-	<tab heading="{{'Action' | translate}}">
+<uib-tabset>
+	<uib-tab heading="{{'Action' | translate}}">
 		<label translate>Create backup:</label>
 		<p translate>The current configuration will be provided in a packed archive</p>
 		<div class="panel panel-default panel-body text-left">
@@ -11,14 +11,14 @@
 		<p translate>To restore a previously generated backup choose the archive and press "Import backup"</p>
 		<div class="panel panel-default panel-body text-left">
 			<label class="btn btn-primary" for="file">
-				<input id="file" type="file" style="display:none;" file-model="View.myFile"></input>
+				<input id="file" type="file" style="display:none;" file-model="View.myFile"> 
 				Browse
 			</label>
 			<button class="btn btn-success" ng-disabled="View.uploadFileSelected()" ng-click="View.uploadBackup()" translate>Import backup</button>
-			<input value="{{ View.getSelectedFileName() }}" disabled></input>
+			<input value="{{ View.getSelectedFileName() }}" disabled>
 		</div>
-	</tab>
-	<tab heading="{{'Configuration' | translate}}">
+	</uib-tab>
+	<uib-tab heading="{{'Configuration' | translate}}">
 		<p translate>This is a list of shell glob patterns for matching files and directories to include during sysupgrade. Modified files in /etc/config/ and certain other configurations are automatically preserved.</p>
 		<div class="panel panel-default panel-body text-left">
 			<button class="btn btn-success" translate ng-click="View.showBackupList()">Show detail</button>
@@ -31,8 +31,8 @@
 		<div class="panel panel-default panel-body text-right">
 			<button ng-click="View.changeBackupConfig()" translate type="button" class="btn btn-primary">Apply</button>
 		</div>
-	</tab>
-</tabset>
+	</uib-tab>
+</uib-tabset>
 
 <script type="text/ng-template" id="system/upgrade/list.html">
 	<div class="modal-header">

@@ -1,7 +1,7 @@
 <h2 translate>Administration</h2>
 
-<tabset>
-	<tab heading="{{'Router Password' | translate}}">
+<uib-tabset>
+	<uib-tab heading="{{'Router Password' | translate}}">
 		<p translate>Changes the administrator password for accessing the device</p>
 
 		<form class="form-horizontal">
@@ -29,8 +29,8 @@
 				<button class="btn btn-primary" type="button" translate ng-disabled="!View.password1.length || View.password1 !== View.password2" ng-click="View.changePassword()">Apply</button>
 			</div>
 		</form>
-	</tab>
-	<tab heading="{{'SSH Access' | translate}}">
+	</uib-tab>
+	<uib-tab heading="{{'SSH Access' | translate}}">
 		<p translate>Dropbear offers SSH network shell access and an integrated SCP server</p>
 
 		<div cbi-map="dropbear">
@@ -56,8 +56,8 @@
 				</div>
 			</div>
 		</div>
-	</tab>
-	<tab heading="{{'Authorized Keys' | translate}}">
+	</uib-tab>
+	<uib-tab heading="{{'Authorized Keys' | translate}}">
 		<p translate>Manage authorized keys for passwordless root logins</p>
 		<div class="input-group" ng-repeat="key in View.authorizedKeys">
 			<input class="form-control" type="text" readonly="readonly" value="{{'%dBit %s - %s'.format(key.bits, key.type, key.comment || '?')}}" ng-click="View.displayPubkey(key.index)">
@@ -65,10 +65,10 @@
 		</div>
 		<br>
 		<button class="btn btn-success" translate ng-click="View.addPubkey()">Add public key …</button>
-	</tab>
-</tabset>
+	</uib-tab>
+</uib-tabset>
 
-</div>
+
 
 <script type="text/ng-template" id="system/admin/addkey.html">
 	<div class="modal-header">

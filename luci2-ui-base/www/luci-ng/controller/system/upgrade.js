@@ -19,7 +19,7 @@ L2.registerDirective('fileModel', [ '$parse', 'fileService', function($parse, fi
 	};
 }]);
 
-L2.registerController('SystemUpgradeController',['$modal', 'l2cgi', 'l2rpc', 'l2spin', 'fileService', 'gettext', function($modal, l2cgi, l2rpc, l2spin, fileService, gettext) {
+L2.registerController('SystemUpgradeController',['$uibModal', 'l2cgi', 'l2rpc', 'l2spin', 'fileService', 'gettext', function($modal, l2cgi, l2rpc, l2spin, fileService, gettext) {
 	var upgradeCtrl = this;
 
 	angular.extend(upgradeCtrl, {
@@ -100,7 +100,7 @@ L2.registerController('SystemUpgradeController',['$modal', 'l2cgi', 'l2rpc', 'l2
 				l2spin.close();
 				if (data.code == 0) {
 					$modal.open({
-						controller: ['$scope', '$modalInstance', upgradeCtrl.displayUpgradeSuccessCtrl],
+						controller: ['$scope', '$uibModalInstance', upgradeCtrl.displayUpgradeSuccessCtrl],
 						controllerAs: 'success',
 						keyboard: false,
 						templateUrl: 'system/backup/success.html',
@@ -108,7 +108,7 @@ L2.registerController('SystemUpgradeController',['$modal', 'l2cgi', 'l2rpc', 'l2
 				}
 				else {
 					$modal.open({
-						controller: ['$scope', '$modalInstance', upgradeCtrl.displayUpgradeFailedCtrl],
+						controller: ['$scope', '$uibModalInstance', upgradeCtrl.displayUpgradeFailedCtrl],
 						controllerAs: 'failed',
 						keyboard: false,
 						templateUrl: 'system/backup/failed.html',

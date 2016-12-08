@@ -3,21 +3,21 @@
 
 <div cbi-map="wireless" title="Wifi" waitfor="View.load()">
 	<div cbi-section="@wifi-device" collapse addremove anonymous onadd="View.addWifiIface(uciSectionName)" onremove="View.removeWifiIface(uciSectionName)" title="Wireless Devices">
-		<tabset>
-			<tab heading="Foo">
+		<uib-tabset>
+			<uib-tab heading="Foo">
 				<div cbi-option="wireless.radio0.path" title="HW ID" widget="input">
 					<cbi-input />
 				</div>
 				<div cbi-option="type" title="Type" widget="input" preview validate="require string">
 					<cbi-input />
 				</div>
-			</tab>
-			<tab heading="Bar">
+			</uib-tab>
+			<uib-tab heading="Bar">
 				<div cbi-option="channel" validate="require or(uinteger,'auto')" depends="{ type: 'mac80211' }" title="Channel" preview>
 					<cbi-input />
 				</div>
-			</tab>
-		</tabset>
+			</uib-tab>
+		</uib-tabset>
 	</div>
 	<div cbi-section="network.@interface" filter="uciSectionName != 'loopback'" collapse addremove sortable onadd="View.addNetwork(uciSectionName)" title="Network Devices">
 		<div cbi-option="auto" title="Auto" preview>

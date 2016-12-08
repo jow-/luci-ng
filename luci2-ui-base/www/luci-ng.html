@@ -21,9 +21,9 @@
 		</button>
 		<a class="navbar-brand" href="#" id="hostname">&nbsp;</a>
 	  </div>
-	  <div collapse="navCollapsed" class="collapse navbar-collapse" id="mainmenu">
+	  <div uib-collapse="navCollapsed" class="collapse navbar-collapse" id="mainmenu">
 		<ul role="menu" class="nav navbar-nav">
-		  <li ng-repeat="node in menu" ng-include="'menuTree'" dropdown></li>
+		  <li ng-repeat="node in menu" ng-include="'menuTree'" uib-dropdown></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right ng-cloak">
 		  <li>
@@ -47,11 +47,11 @@
 	Loading...
   </div>
 
-  <script type="text/javascript" src="/luci-ng/angular.min.js"></script>
-  <script type="text/javascript" src="/luci-ng/angular-route.min.js"></script>
-  <script type="text/javascript" src="/luci-ng/angular-animate.min.js"></script>
-  <script type="text/javascript" src="/luci-ng/angular-gettext.min.js"></script>
-  <script type="text/javascript" src="/luci-ng/ui-bootstrap-tpls-0.13.3.min.js"></script>
+  <script type="text/javascript" src="/luci-ng/libs/angular.min.js"></script>
+  <script type="text/javascript" src="/luci-ng/libs/angular-route.min.js"></script>
+  <script type="text/javascript" src="/luci-ng/libs/angular-animate.min.js"></script>
+  <script type="text/javascript" src="/luci-ng/libs/angular-gettext.min.js"></script>
+  <script type="text/javascript" src="/luci-ng/libs/ui-bootstrap-tpls.min.js"></script>
   <!--<script type="text/javascript" src="/luci-ng/l2.min.js"></script>-->
   <script type="text/javascript" src="/luci-ng/l2.base.js"></script>
   <script type="text/javascript" src="/luci-ng/l2.use.js"></script>
@@ -114,12 +114,12 @@
 
   <script type="text/ng-template" id="menuTree">
 	<a ng-if="!node.childs" href="#/{{node.view}}">{{node.title}}</a>
-	<a ng-if="node.childs" href="#" dropdown-toggle>
+	<a ng-if="node.childs" href="#" uib-dropdown-toggle>
 	  {{node.title}}
 	  <b class="caret"></b>
 	</a>
 	<ul ng-if="node.childs" class="dropdown-menu navbar-inverse">
-	  <li ng-repeat="node in node.childs" ng-include="'menuTree'" dropdown></li>
+	  <li ng-repeat="node in node.childs" ng-include="'menuTree'" uib-dropdown></li>
 	</ul>
   </script>
 </body>

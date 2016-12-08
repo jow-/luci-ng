@@ -489,7 +489,7 @@ L2.registerFactory('l2validation', ['l2ip', 'gettext', function(l2ip, gettext) {
 }]);
 
 
-L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout, $parse, l2uci) {
+L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', '$q', function($timeout, $parse, l2uci, $q) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -501,68 +501,57 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 				set: l2uci.set,
 
 				isLoading: true,
+				lockCount:0,
 
-				inProgress: [ ],
 				cbiChildSections: [ ],
 				loadConfig: function(package, cb) {
 					console.debug('loadConfig: '+ package);
 					self.uciPackages[package]=true;
-					var res=l2uci.load(package);
-					if(res && cb) res.then(cb);
+					return l2uci.load(package);
 				},
 
-				init: function(iElem) {
-					console.debug('Map init');
-					self.loadConfig(self.uciPackageName, self.wait);
-				},
-
-				wait: function() {
-					if (self.waitFn)
-						self.waitfor(self.waitFn($scope));
-
-					$q.all(self.inProgress).then(self.finish);
+				read: function() {
+          for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
+            sec.read();
 				},
 
 				finish: function() {
 					console.debug('Map finish');
 
-					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
-						sec.finish();
-
 					self.isLoading = false;
-					self.inProgress.length = 0;
-
-					console.debug('Map finish end');
 				},
 
-				waitfor: function(d) {
-					if (angular.isObject(d) && angular.isFunction(d.then))
-						self.inProgress.push(d);
+				lock: function() {
+					self.lockCount++;
+				},
+
+				unlock: function() {
+					if(self.lockCount >= 1) self.lockCount--;
 				},
 
 				save: function($event) {
 					$event.currentTarget.blur();
 
-					self.isLoading = true;
+					self.lock();
 
 					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++) {
 						sec.save();
 						sec.reset();
 					}
 
-					l2uci.save().then(self.read);
+					l2uci.save().then(self.read).then(self.unlock);
 				},
 
 				reset: function($event) {
 					$event.currentTarget.blur();
 
-					self.isLoading = true;
+					self.lock();
 					l2uci.unload(self.uciPackages);
 
 					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
 						sec.reset();
 
-					l2uci.load(self.uciPackages).then(self.read);
+					l2uci.load(self.uciPackages).then(self.read).then(self.unlock);
 				},
 
 				apply: function($event) {
@@ -580,14 +569,14 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 					'<h2 ng-if="Map.title">{{Map.title}}</h2>' +
 					'<p ng-if="Map.description">{{Map.description}}</p>' +
 					'<p ng-if="Map.isLoading" class="text-muted" translate>Loading configuration data…</p>' +
-					'<div class="fade2" ng-class2="{in:!Map.isLoading}" ng-style="{opacity: Map.isLoading ? 0.3 : 1}">' +
+					'<div ng-if="!Map.isLoading" class="fade2" ng-class2="{in:!Map.lockCount}" ng-style="{opacity: Map.lockCount ? 0.3 : 1}">' +
 						tElem.html() +
 					'</div>' +
 					'<div class="panel panel-default panel-body text-right">' +
 						'<div class="btn-group">' +
-							'<button type="button" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>' +
-							'<button type="button" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>' +
-							'<button type="button" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>' +
 						'</div>' +
 					'</div>' +
 				'</div>'
@@ -595,27 +584,27 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 		},
 
 		require: 'cbiMap',
-		compile: function(tElem, tAttr) {
-			return {
-				pre: function($scope, iElem, iAttr, cbiMapCtrl) {
+		link: function($scope, iElem, iAttr, cbiMapCtrl) {
 					angular.extend(cbiMapCtrl, {
 						title: iAttr.title,
 						description: iAttr.description,
-
-						waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
 						uciPackages: {},
 						uciPackageName: iAttr.cbiMap
 					});
 
-					cbiMapCtrl.init(iElem);
-				}
-			};
+					//compose waitPromise for this level: external waitfor param + wait for uci config
+					cbiMapCtrl.waitPromise= $q.all([$q.when($parse(iAttr.waitfor)),
+															 cbiMapCtrl.loadConfig(iAttr.cbiMap)])
+
+					//change initialization state at "finish" after promises return
+					//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+					cbiMapCtrl.waitPromise.then(cbiMapCtrl.finish);
 		}
 	};
 }]);
 
-L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validation', 'l2uci', function($timeout, $parse, gettext, l2validation, l2uci) {
+L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validation', 'l2uci', '$q',  function($timeout, $parse, gettext, l2validation, l2uci, $q) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -646,17 +635,6 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					}
 				},
 
-				init: function(iElem) {
-					console.debug('Section init');
-					self.read();
-
-					if (self.waitFn)
-						self.cbiOwnerMap.waitfor(self.waitFn($scope));
-
-					if (self.isAddRemove && !self.isAnonymous)
-						self.removeWatchFn = $scope.$watch('Section.addName', self.validateAddName);
-				},
-
 				filter: function(uciSection) {
 					if (!self.filterFn)
 						return true;
@@ -670,31 +648,22 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 
 				finish: function(uciSectionName) {
 					console.debug('Section finish');
+					self.read();
 
 					if (self.isCollapse &&
 					    self.uciSections.indexOf(self.activeSectionName) === -1)
 						self.activeSectionName = self.uciSections[0];
-
-					for (var sid in self.fieldCtrls) {
-						if (uciSectionName !== undefined && uciSectionName !== sid)
-							continue;
-
-						for (var opt in self.fieldCtrls[sid])
-							self.fieldCtrls[sid][opt].finish();
-					}
 
 					self.validate();
 
 					console.debug('Section finish end');
 				},
 
-				open: function($event) {
-					var $elem = angular.element($event.target),
-					    sid = $elem.findParent('[cbi-section-id]').attr('cbi-section-id');
+				open: function(uciSectionName) {
 
-					if (sid) {
+					if (uciSectionName) {
 						self.validate();
-						self.activeSectionName = sid;
+						self.activeSectionName = uciSectionName;
 					}
 				},
 
@@ -723,10 +692,8 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					$timeout(self.finish, 0, true, sid);
 				},
 
-				remove: function($event) {
-					var $elem = angular.element($event.target),
-						sid = $elem.findParent('[cbi-section-id]').attr('cbi-section-id'),
-						idx = self.uciSections.indexOf(sid);
+				remove: function(sid) {
+					var idx = self.uciSections.indexOf(sid);
 
 					if (sid) {
 						if (idx === self.uciSections.length - 1)
@@ -750,15 +717,16 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					}
 				},
 
-				sort: function($event) {
-					var $elem = angular.element($event.target),
-						selfSectionElem = $elem.findParent('[cbi-section-id]'),
-						nextSectionElem = $elem.hasClass('up')
-							? selfSectionElem.findPrev('[cbi-section-id]')
-							: selfSectionElem.findNext('[cbi-section-id]'),
-						sid1 = selfSectionElem.attr('cbi-section-id'),
-						sid2 = nextSectionElem.attr('cbi-section-id');
+				sort: function(sid1, dir) {
 
+					var idx=self.uciSections.indexOf(sid1);
+					if(idx < 0) return;
+					
+					var idx = idx + (dir > 0 ? 1 : -1);
+					if(idx < 0 || idx >= self.uciSections.length ) return;
+					
+					var sid2=self.uciSections[idx];
+					
 					if (sid1 && sid2) {
 						l2uci.swap(self.uciPackageName, sid1, sid2);
 						self.read();
@@ -847,7 +815,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 						'<li ng-if="!Section.uciSections.length" class="list-group-item text-muted">{{Section.placeholder}}</li>' +
 						'<li class="l2-section-item list-group-item form-horizontal animate-repeat" ng-repeat="uciSectionName in Section.uciSections" cbi-section-id="{{uciSectionName}}">' +
 							'<div ng-if="Section.isCollapse || Section.isSortable || Section.isAddRemove" class="l2-section-header">' +
-								'<div ng-if="Section.isCollapse && (Section.activeSectionName !== uciSectionName)" ng-click="Section.open($event)" class="l2-section-teaser well well-sm">' +
+								'<div ng-if="Section.isCollapse && (Section.activeSectionName !== uciSectionName)" ng-click="Section.open(uciSectionName)" class="l2-section-teaser well well-sm">' +
 									'<span ng-if="Section.fieldErrors[uciSectionName]" class="badge">{{Section.fieldErrors[uciSectionName]}}</span>' +
 									'<span ng-repeat="Option in Section.teaserFields(uciSectionName)" ng-init="textValue = Option.textValue()">' +
 										'<span ng-style="Option.isInvalid ? {color:\'#d9534f\'} : {}">' +
@@ -857,9 +825,9 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 									'</span>' +
 								'</div>' +
 								'<div ng-if="Section.isSortable || Section.isAddRemove" class="btn-group">' +
-									'<button ng-if="Section.isSortable && !$first" type="button" title="{{\'Move up\' | translate}}" ng-click="Section.sort($event)" class="btn btn-info up">↑</button>' +
-									'<button ng-if="Section.isSortable && !$last" type="button" title="{{\'Move down\' | translate}}" ng-click="Section.sort($event)" class="btn btn-info down">↓</button>' +
-									'<button ng-if="Section.isAddRemove" type="button" title="{{Section.removeTitle}}" ng-click="Section.remove($event)" class="btn btn-danger">{{Section.removeCaption}}</button>' +
+									'<button ng-if="Section.isSortable && !$first" type="button" title="{{\'Move up\' | translate}}" ng-click="Section.sort(uciSectionName, -1)" class="btn btn-info up">↑</button>' +
+									'<button ng-if="Section.isSortable && !$last" type="button" title="{{\'Move down\' | translate}}" ng-click="Section.sort(uciSectionName, 1)" class="btn btn-info down">↓</button>' +
+									'<button ng-if="Section.isAddRemove" type="button" title="{{Section.removeTitle}}" ng-click="Section.remove(uciSectionName)" class="btn btn-danger">{{Section.removeCaption}}</button>' +
 								'</div>' +
 							'</div>' +
 							'<div class="l2-section-panel panel-collapse" ng-class="{collapse: Section.isCollapse && (Section.activeSectionName !== uciSectionName)}">' +
@@ -887,6 +855,9 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				cbiMapCtrl     = ctrls[1];
 
 			var CBI_SECTION_MATCH = /^(?:([a-zA-Z0-9_-]+)\.)?(?:@([a-zA-Z0-9_-]+)(?:\[(\d+)\])?|([a-zA-Z0-9_]+))$/;
+
+			cbiMapCtrl.lock();
+
 			if (!CBI_SECTION_MATCH.test(iAttr.cbiSection))
 				throw 'Invalid UCI selector';
 
@@ -910,7 +881,6 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				removeFn:        iAttr.hasOwnProperty('onremove') ? $parse(iAttr.onremove) : null,
 
 				filterFn:        iAttr.hasOwnProperty('filter') ? $parse(iAttr.filter) : null,
-				waitFn:          iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
 				uciPackageName:  (RegExp.$1 !== '') ? RegExp.$1 : cbiMapCtrl.uciPackageName,
 				uciSectionType:  (RegExp.$2 !== '') ? RegExp.$2 : undefined,
@@ -920,13 +890,22 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				cbiOwnerMap:     cbiMapCtrl
 			}));
 
-			//make sure config is loaded an continue initialization
-			cbiMapCtrl.loadConfig(cbiSectionCtrl.uciPackageName, cbiSectionCtrl.init.bind(cbiSectionCtrl,iElem));
+			if (cbiSectionCtrl.isAddRemove && !cbiSectionCtrl.isAnonymous)
+				cbiSectionCtrl.removeWatchFn = $scope.$watch('Section.addName', 		cbiSectionCtrl.validateAddName);
+
+			//compose waitPromise for this level: external waitfor param + wait for uci config
+			//chained with parent waitPromise to ensure whole tree completion
+			cbiSectionCtrl.waitPromise= $q.all([cbiMapCtrl.waitPromise, $q.when($parse(iAttr.waitfor)),
+													 cbiMapCtrl.loadConfig(cbiSectionCtrl.uciPackageName)])
+
+			//change initialization state at "finish" after promises return
+			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+			cbiSectionCtrl.waitPromise.then(cbiSectionCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);
 
-L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function($parse, l2validation, gettext) {
+L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', '$q', function($parse, l2validation, gettext, $q) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -937,16 +916,10 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 				rdepends: { },
 				isUnsatisified: false,
 
-				init: function(iElem) {
-					console.debug('Option init');
-
-					self.tabInit(iElem);
-
+				finish: function() {
 					self.uciValue = l2uci.get(self.uciPackageName, self.uciSectionName, self.uciOptionName);
 					self.rawValue = self.uciValue;
-				},
 
-				finish: function() {
 					for (var i = 0, dep; dep = self.dependencies[i]; i++) {
 						for (var optName in dep) {
 							var opt = self.cbiOwnerSection.getFieldByName(self.uciSectionName, optName);
@@ -955,9 +928,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 							}
 						}
 					}
-
-					if (self.cbiWidget && self.cbiWidget.finish)
-						self.cbiWidget.finish();
 
 					console.debug('Option finish');
 				},
@@ -972,11 +942,11 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					tabIndex = Array.prototype.indexOf.call(curPane.parentNode.children, curPane);
 
 					self.tabHead = angular.element(tabHeads[tabIndex]).addClass('fade in');
-					self.tabBadge = self.tabHead.find('.badge');
+					self.tabBadge = self.tabHead.findAll('.badge');
 
 					if (!self.tabBadge[0]) {
 						self.tabHead.children().append('&#160;<span class="badge"></span>');
-						self.tabBadge = self.tabHead.find('.badge');
+						self.tabBadge = self.tabHead.findAll('.badge');
 					}
 				},
 
@@ -1139,11 +1109,10 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 		},
 
 		require: ['cbiOption', '^cbiSection', '^cbiMap'],
-		compile: function(tElem, tAttr, linker) {
-			var CBI_OPTION_MATCH  = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
+		link: function($scope, iElem, iAttr, ctrls) {
+				console.debug('Option link');
+				var CBI_OPTION_MATCH  = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
 
-			return function($scope, iElem, iAttr, ctrls) {
-				console.log("Option link");
 				var isRequired = false,
 					validationFn = null;
 
@@ -1154,6 +1123,8 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 				var cbiOptionCtrl = ctrls[0],
 					cbiSectionCtrl = ctrls[1],
 					cbiMapCtrl = ctrls[2];
+
+				cbiMapCtrl.lock();
 
 				if (!CBI_OPTION_MATCH.test(iAttr.cbiOption))
 					throw 'Invalid UCI selector';
@@ -1214,8 +1185,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					isRequired:      isRequired,
 					validationFn:    validationFn,
 
-					waitFn:          iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
-
 					dependencies:    dependencies,
 
 					uciPackageName:  uciPackage,
@@ -1226,9 +1195,16 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					cbiOwnerSection: cbiSectionCtrl
 				}));
 
-				//continue init after config loaded
-				cbiMapCtrl.loadConfig(cbiOptionCtrl.uciPackageName,cbiOptionCtrl.init.bind(cbiOptionCtrl, iElem));
-			};
+				cbiOptionCtrl.tabInit(iElem);
+
+				//compose waitPromise for this level: external waitfor param + wait for uci config
+				//chained with parent waitPromise to ensure whole tree completion
+				cbiOptionCtrl.waitPromise= $q.all([cbiSectionCtrl.waitPromise, $q.when($parse(iAttr.waitfor)),
+														 cbiMapCtrl.loadConfig(cbiOptionCtrl.uciPackageName)])
+
+				//change initialization state at "finish" after promises return
+				//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+				cbiOptionCtrl.waitPromise.then(cbiOptionCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);
@@ -1327,7 +1303,7 @@ L2.registerDirective('cbiSelect', ['$parse', function($parse) {
 	};
 }]);
 
-L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext, l2network) {
+L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', '$q', function(gettext, l2network, $q) {
 	return {
 		restrict: 'AE',
 		scope: { },
@@ -1338,6 +1314,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 			var self = angular.extend(this, {
 				checked: { },
 				devices: [ ],
+				waitNetwork: l2network.load(),
 
 				isUnspecified: function() {
 					return angular.isEmptyObject(self.checked);
@@ -1351,11 +1328,6 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 						return false;
 
 					return true;
-				},
-
-				init: function(iElem) {
-					self.caption = iElem.find('.caption');
-					self.cbiOwnerMap.waitfor(l2network.load()/*.then(self.finish)*/); //().then(self.load));
 				},
 
 				finish: function() {
@@ -1497,8 +1469,8 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 
 		replace: true,
 		template: '' +
-			'<div dropdown is-open="DeviceList.isOpen" on-toggle="DeviceList.toggled(open)" auto-close="{{ DeviceList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
-				'<button class="btn btn-default dropdown-toggle" type="button" dropdown-toggle>' +
+			'<div uib-dropdown is-open="DeviceList.isOpen" on-toggle="DeviceList.toggled(open)" auto-close="{{ DeviceList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
+				'<button class="btn btn-default uib-dropdown-toggle" type="button" uib-dropdown-toggle>' +
 					'<div class="caption"><em translate>Loading…</em></div>' +
 				'</button>' +
 				'<ul class="dropdown-menu">' +
@@ -1524,21 +1496,31 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 				cbiSectionCtrl = ctrls[2],
 				cbiMapCtrl = ctrls[3];
 
+			cbiMapCtrl.lock();
+
 			cbiOptionCtrl.cbiWidget = angular.extend(cbiDeviceListCtrl, {
 				allowBridges: iAttr.hasOwnProperty('bridges'),
 				allowMultiple: iAttr.hasOwnProperty('multiple'),
+				caption: iElem.findAll('.caption'),
 
 				cbiOwnerOption: cbiOptionCtrl,
 				cbiOwnerSection: cbiSectionCtrl,
 				cbiOwnerMap: cbiMapCtrl
 			});
 
-			cbiDeviceListCtrl.init(iElem);
+			//compose waitPromise for this level: loading of network info
+			//chained with parent waitPromise to ensure whole tree completion
+			cbiDeviceListCtrl.waitPromise= $q.all([cbiOptionCtrl.waitPromise, 	
+																						 cbiDeviceListCtrl.waitNetwork])
+
+			//change initialization state at "finish" after promises return
+			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+			cbiDeviceListCtrl.waitPromise.then(cbiDeviceListCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);
 
-L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext, l2network) {
+L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', '$q', function(gettext, l2network, $q) {
 	return {
 		restrict: 'AE',
 		scope: { },
@@ -1549,6 +1531,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 			var self = angular.extend(this, {
 				checked: { },
 				interfaces: [ ],
+				waitNetwork: l2network.load(),
 
 				isUnspecified: function() {
 					return angular.isEmptyObject(self.checked);
@@ -1558,13 +1541,8 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 					return true;
 				},
 
-				init: function(iElem) {
-					self.caption = iElem.find('.caption');
-					self.cbiOwnerMap.waitfor(l2network.load());
-				},
-
 				finish: function() {
-					console.debug('Network loaded...');
+					console.debug('Network finish loaded...');
 
 					l2network.loadDevicesCallback();
 					l2network.loadInterfacesCallback();
@@ -1658,8 +1636,8 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 
 		replace: true,
 		template: '' +
-			'<div dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
-				'<button class="btn btn-default dropdown-toggle" type="button" dropdown-toggle>' +
+			'<div uib-dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
+				'<button class="btn btn-default uib-dropdown-toggle" type="button" uib-dropdown-toggle>' +
 					'<div class="caption"><em translate>Loading…</em></div>' +
 				'</button>' +
 				'<ul class="dropdown-menu">' +
@@ -1678,15 +1656,25 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 				cbiSectionCtrl = ctrls[2],
 				cbiMapCtrl = ctrls[3];
 
+			cbiMapCtrl.lock();
+
 			cbiOptionCtrl.cbiWidget = angular.extend(cbiNetworkListCtrl, {
 				allowMultiple: iAttr.hasOwnProperty('multiple'),
+				caption: iElem.findAll('.caption'),
 
 				cbiOwnerOption: cbiOptionCtrl,
 				cbiOwnerSection: cbiSectionCtrl,
 				cbiOwnerMap: cbiMapCtrl
 			});
 
-			cbiNetworkListCtrl.init(iElem);
+			//compose waitPromise for this level: loading of network info
+			//chained with parent waitPromise to ensure whole tree completion
+			cbiNetworkListCtrl.waitPromise= $q.all([cbiOptionCtrl.waitPromise, 	
+																						 cbiNetworkListCtrl.waitNetwork])
+
+			//change initialization state at "finish" after promises return
+			//this will trigger the compilation of the inner content of cbiMap (wrapped in ng-if)
+			cbiNetworkListCtrl.waitPromise.then(cbiNetworkListCtrl.finish).then(cbiMapCtrl.unlock);
 		}
 	};
 }]);

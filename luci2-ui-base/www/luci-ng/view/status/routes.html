@@ -1,8 +1,8 @@
 <h2 translate>Routes</h2>
 <p translate>The following rules are currently active on this system.</p>
 
-<tabset justified="true">
-	<tab heading="{{'Active IPv4-Routes' | translate}}">
+<uib-tabset justified="true">
+	<uib-tab heading="{{'Active IPv4-Routes' | translate}}">
 		<div class="l2-grid l2-grid-hover">
 			<div class="row">
 				<div class="cell clearfix caption col-xs-4" translate>
@@ -28,9 +28,9 @@
 				</div>
 			</div>
 		</div>
-	</tab>
+	</uib-tab>
 
-	<tab heading="{{'Active IPv6-Routes' | translate}}">
+	<uib-tab heading="{{'Active IPv6-Routes' | translate}}">
 		<div class="l2-grid l2-grid-hover">
 			<div class="row">
 				<div class="cell clearfix caption col-xs-3" translate>
@@ -60,9 +60,9 @@
 				</div>
 			</div>
 		</div>
-	</tab>
+	</uib-tab>
 
-	<tab heading="{{'ARP' | translate}}">
+	<uib-tab heading="{{'ARP' | translate}}">
 		<div class="l2-grid l2-grid-hover">
 			<div class="row">
 				<div class="cell clearfix caption col-xs-4" translate>
@@ -74,11 +74,11 @@
 				</div>
 			</div>
 
-			<div class="row" ng-repeat="(macaddr, ipaddrs) in arptable | orderBy:'ipaddrs[0].id'">
+			<div class="row" ng-repeat="(macaddr, ipaddrs) in arptable">
 				<div class="cell clearfix content col-xs-4">
 					<span style="border-bottom: 1px dotted #ccc; cursor: pointer" popover-template="'vendorTooltip'" popover-trigger="mouseenter">{{macaddr.toUpperCase()}}</span>
 				</div><div class="cell clearfix content nowrap col-xs-8">
-					<div class="row" ng-repeat="entry in ipaddrs | orderBy:'id'">
+					<div class="row" ng-repeat="entry in ipaddrs">
 						<div class="cell clearfix content nowrap col-xs-6">
 							{{entry.ipaddr}}
 						</div><div class="cell clearfix content nowrap col-xs-6">
@@ -88,8 +88,8 @@
 				</div>
 			</div>
 		</div>
-	</tab>
-</tabset>
+	</uib-tab>
+</uib-tabset>
 
 <script type="text/ng-template" id="vendorTooltip">
 	<small ng-init="vendor=getVendor(macaddr)">{{vendor.vendor}}</small>

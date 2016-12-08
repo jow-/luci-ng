@@ -1,25 +1,11 @@
 (function() {
 	"use strict";
 
-	if (!angular.element.fn || !angular.element.fn.jquery)
+
+	if (!angular.element.findAll)
 	{
-		var element = angular.element;
 
-		angular.element = function(select)
-		{
-			if (!(this instanceof angular.element))
-				return new angular.element(select);
-
-			if (typeof(select) === 'string' && ! /^</.test(select.trim()))
-				select = document.querySelectorAll(select);
-
-			return angular.extend(this, element(select));
-		};
-
-		angular.element.prototype = element.prototype;
-		angular.element.prototype.constructor = element;
-
-		angular.element.prototype.find = function(select)
+		angular.element.prototype.findAll = function(select)
 		{
 			if (this.length)
 				return angular.element(this[0].querySelectorAll(select));
@@ -455,7 +441,7 @@
 				}
 			});
 		}])
-		.factory('l2auth', ['l2rpc', '$timeout', '$modal', '$cookie', '$rootScope', function(l2rpc, $timeout, $modal, $cookie, $rootScope) {
+		.factory('l2auth', ['l2rpc', '$timeout', '$uibModal', '$cookie', '$rootScope', function(l2rpc, $timeout, $modal, $cookie, $rootScope) {
 			var _auth = { };
 			return angular.extend(_auth, {
 				login: l2rpc.declare({
@@ -505,7 +491,7 @@
 					_auth._dialog = $modal.open({
 						backdrop: 'static',
 						templateUrl: 'loginForm',
-						controller: function($scope, $modalInstance) {
+						controller: ['$scope', '$uibModalInstance', function($scope, $modalInstance) {
 							$scope.login = function($event) {
 								if ($event.which !== 1 && $event.which !== 13)
 									return;
@@ -526,7 +512,7 @@
 									}
 								});
 							};
-						}
+						}]
 					});
 				},
 
@@ -562,7 +548,7 @@
 					_auth._dialog = $modal.open({
 						backdrop: 'static',
 						templateUrl: 'logoutForm',
-						controller: function($scope, $modalInstance) {
+						controller: ['$scope', '$uibModalInstance', function($scope, $modalInstance) {
 							$scope.cancel = function($event) {
 								_auth._dialog.close();
 							};
@@ -576,7 +562,7 @@
 									_auth.prompt();
 								});
 							};
-						}
+						}]
 					});
 				}
 			});
@@ -702,7 +688,7 @@
 				}
 			});
 		}])
-		.factory('l2spin', ['$modal', 'gettext', function($modal, gettext) {
+		.factory('l2spin', ['$uibModal', 'gettext', function($modal, gettext) {
 			var template = '<div class="modal-content l2-modal-loader">' +
 				'<div class="modal-body">' +
 					gettext('Loading data…') +
@@ -745,7 +731,7 @@
 					});
 				});
 			}])
-		.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$modalProvider', '$httpProvider', '$provide',
+		.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$uibModalProvider', '$httpProvider', '$provide',
 			function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $modalProvider, $httpProvider, $provide) {
 				angular.extend(angular, {
 					isEmptyObject: function(x)

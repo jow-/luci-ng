@@ -54,8 +54,8 @@
 						<span class="nowrap"><strong>Encryption: </strong>{{ifaceStatus.encryptionName}}</span>
 					</span>
 				</div><div class="cell clearfix content col-xs-9 col-sm-9 col-md-3 col-lg-3">
-					<div class="btn-group pull-right" dropdown>
-						<button class="btn btn-sm btn-primary" ng-click="renderWirelessMap(ifaceStatus.radio, ifaceStatus.section).show()">Configure</button><button class="btn btn-default btn-sm dropdown-toggle" dropdown-toggle>Action…</button>
+					<div class="btn-group pull-right" uib-dropdown>
+						<button class="btn btn-sm btn-primary" ng-click="renderWirelessMap(ifaceStatus.radio, ifaceStatus.section).show()">Configure</button><button class="btn btn-default btn-sm uib-dropdown-toggle" uib-dropdown-toggle>Action…</button>
 						<ul class="dropdown-menu pull-right">
 							<li ng-switch on="ifaceStatus.up === true">
 								<a ng-switch-when="true" href="#" ng-click="enableDisableNetwork(false, ifaceStatus.radio, ifaceStatus.section); $event.preventDefault()">Shutdown network</a>
