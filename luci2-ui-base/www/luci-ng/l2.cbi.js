@@ -750,12 +750,12 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 
 					var idx=self.uciSections.indexOf(sid1);
 					if(idx < 0) return;
-					
+
 					var idx = idx + (dir > 0 ? 1 : -1);
 					if(idx < 0 || idx >= self.uciSections.length ) return;
-					
+
 					var sid2=self.uciSections[idx];
-					
+
 					if (sid1 && sid2) {
 						l2uci.swap(self.uciPackageName, sid1, sid2);
 						self.read();
@@ -1107,8 +1107,15 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					return true;
 				},
 
+				isAngularScope: function(value) {
+					return (typeof(value) === 'object' &&
+					        value.constructor === $scope.constructor);
+				},
+
 				formValue: function(newValue) {
-					if (arguments.length && !angular.equals(newValue, self.rawValue)) {
+					if (arguments.length &&
+					    !self.isAngularScope(newValue) &&
+					    !angular.equals(newValue, self.rawValue)) {
 						self.rawValue = newValue;
 						self.validate();
 					}
