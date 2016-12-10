@@ -508,7 +508,12 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 					self.lock();
 
 					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
-					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.finish);
+					$q.all([w, self.load(self.uciPackageName)]).then(self.finish);
+				},
+
+				load: function(uciPackageName) {
+					self.uciPackages[uciPackageName] = true;
+					return l2uci.load(uciPackageName);
 				},
 
 				lock: function() {
@@ -545,16 +550,22 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 					l2uci.save().then(self.read);
 				},
 
+				resetSections: function() {
+					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
+						sec.reset();
+
+					self.unlock();
+				},
+
 				reset: function($event) {
 					$event.currentTarget.blur();
 
 					self.lock();
-					l2uci.unload(self.uciPackages);
 
-					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
-						sec.reset();
+					var uciPackageNames = angular.toArray(self.uciPackages);
 
-					l2uci.load(self.uciPackages).then(self.read);
+					l2uci.unload(uciPackageNames);
+					l2uci.load(uciPackageNames).then(self.resetSections);
 				},
 
 				apply: function($event) {
@@ -572,14 +583,14 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 					'<h2 ng-if="Map.title">{{Map.title}}</h2>' +
 					'<p ng-if="Map.description">{{Map.description}}</p>' +
 					'<p ng-if="Map.lockCount" class="text-muted" translate>Loading configuration data…</p>' +
-					'<div class="fade2" ng-class2="{in:!Map.lockCount}" ng-style="{opacity: Map.lockCount ? 0.3 : 1}">' +
+					'<div class="fade" ng-class="{in:!Map.lockCount}" ng-style="{opacity: Map.lockCount ? 0.3 : 1}">' +
 						tElem.html() +
 					'</div>' +
 					'<div class="panel panel-default panel-body text-right">' +
 						'<div class="btn-group">' +
-							'<button type="button" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>' +
-							'<button type="button" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>' +
-							'<button type="button" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>' +
+							'<button type="button" ng-disabled="Map.lockCount" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>' +
 						'</div>' +
 					'</div>' +
 				'</div>'
@@ -644,7 +655,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					self.cbiOwnerMap.lock();
 
 					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
-					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.read);
+					$q.all([w, self.cbiOwnerMap.load(self.uciPackageName)]).then(self.read);
 
 					if (self.isAddRemove && !self.isAnonymous)
 						self.removeWatchFn = $scope.$watch('Section.addName', self.validateAddName);
@@ -756,12 +767,8 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				},
 
 				reset: function() {
-					self.fieldCtrls = { };
-					self.fieldErrors = { };
-					self.uciSections = [ ];
-
-					if (self.removeWatchFn)
-						self.removeWatchFn();
+					self.uciSections.length = 0;
+					$timeout(self.init, 0, true);
 				},
 
 				save: function() {
@@ -924,7 +931,7 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					self.cbiOwnerMap.lock();
 
 					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
-					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.finish);
+					$q.all([w, self.cbiOwnerMap.load(self.uciPackageName)]).then(self.finish);
 				},
 
 				finish: function() {
