@@ -500,24 +500,42 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 				get: l2uci.get,
 				set: l2uci.set,
 
-				isLoading: true,
+				lockCount: 0,
 
 				cbiChildSections: [ ],
 
 				init: function(iElem) {
+					self.lock();
+
 					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
 					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.finish);
 				},
 
+				lock: function() {
+					self.lockCount++;
+				},
+
+				unlock: function() {
+					if (self.lockCount > 0)
+						self.lockCount--;
+
+					if (self.lockCount == 0)
+						self.validate();
+				},
+
+				validate: function() {
+					for (var i = 0; i < self.cbiChildSections.length; i++)
+						self.cbiChildSections[i].validate();
+				},
 
 				finish: function() {
-					self.isLoading = false;
+					self.unlock();
 				},
 
 				save: function($event) {
 					$event.currentTarget.blur();
 
-					self.isLoading = true;
+					self.lock();
 
 					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++) {
 						sec.save();
@@ -530,7 +548,7 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 				reset: function($event) {
 					$event.currentTarget.blur();
 
-					self.isLoading = true;
+					self.lock();
 					l2uci.unload(self.uciPackages);
 
 					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
@@ -553,8 +571,8 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 				'<div class="cbi-map">' +
 					'<h2 ng-if="Map.title">{{Map.title}}</h2>' +
 					'<p ng-if="Map.description">{{Map.description}}</p>' +
-					'<p ng-if="Map.isLoading" class="text-muted" translate>Loading configuration data…</p>' +
-					'<div class="fade2" ng-class2="{in:!Map.isLoading}" ng-style="{opacity: Map.isLoading ? 0.3 : 1}">' +
+					'<p ng-if="Map.lockCount" class="text-muted" translate>Loading configuration data…</p>' +
+					'<div class="fade2" ng-class2="{in:!Map.lockCount}" ng-style="{opacity: Map.lockCount ? 0.3 : 1}">' +
 						tElem.html() +
 					'</div>' +
 					'<div class="panel panel-default panel-body text-right">' +
@@ -623,6 +641,8 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				},
 
 				init: function(iElem) {
+					self.cbiOwnerMap.lock();
+
 					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
 					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.read);
 
@@ -646,7 +666,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 					    self.uciSections.indexOf(self.activeSectionName) === -1)
 						self.activeSectionName = self.uciSections[0];
 
-					self.validate();
+					self.cbiOwnerMap.unlock();
 				},
 
 				open: function(uciSectionName) {
@@ -901,6 +921,7 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 
 				init: function(iElem) {
 					self.tabInit(iElem);
+					self.cbiOwnerMap.lock();
 
 					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
 					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.finish);
@@ -918,6 +939,8 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 							}
 						}
 					}
+
+					self.cbiOwnerMap.unlock();
 				},
 
 				tabInit: function(iElem) {
@@ -1316,12 +1339,14 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 				},
 
 				init: function(iElem) {
+					self.cbiOwnerMap.lock();
 					self.caption = iElem.findAll('.caption');
 					l2network.load().then(self.finish);
 				},
 
 				finish: function() {
 					$scope.$watch(self.cbiOwnerOption.formValue, self.update);
+					self.cbiOwnerMap.unlock();
 				},
 
 				update: function(newValue) {
@@ -1533,12 +1558,14 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 				},
 
 				init: function(iElem) {
+					self.cbiOwnerMap.lock();
 					self.caption = iElem.findAll('.caption');
 					l2network.load().then(self.finish);
 				},
 
 				finish: function() {
 					$scope.$watch(self.cbiOwnerOption.formValue, self.update);
+					self.cbiOwnerMap.unlock();
 				},
 
 				update: function(newValue) {
