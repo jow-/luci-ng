@@ -1359,16 +1359,18 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 
 				init: function(iElem) {
 					self.caption = iElem.findAll('.caption');
-					self.cbiOwnerMap.waitfor(l2network.load()/*.then(self.finish)*/); //().then(self.load));
+					l2network.load().then(self.finish);
 				},
 
 				finish: function() {
-					console.debug('Network loaded...');
+					$scope.$watch(self.cbiOwnerOption.formValue, self.update);
+				},
 
+				update: function(newValue) {
 					l2network.loadDevicesCallback();
 					l2network.loadInterfacesCallback();
 
-					var devnames = angular.toArray(self.cbiOwnerOption.uciValue),
+					var devnames = angular.toArray(newValue),
 					    network = l2network.getInterface(self.cbiOwnerOption.uciSectionName);
 
 					self.reload();
@@ -1439,7 +1441,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 
 					$event.target.blur();
 
-					self.redraw();
+					self.save();
 				},
 
 				keydown: function($event) {
@@ -1466,7 +1468,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 
 					$event.target.value = '';
 
-					self.redraw();
+					self.save();
 				},
 
 				blur: function($event) {
@@ -1564,16 +1566,18 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 
 				init: function(iElem) {
 					self.caption = iElem.findAll('.caption');
-					self.cbiOwnerMap.waitfor(l2network.load());
+					l2network.load().then(self.finish);
 				},
 
 				finish: function() {
-					console.debug('Network loaded...');
+					$scope.$watch(self.cbiOwnerOption.formValue, self.update);
+				},
 
+				update: function(newValue) {
 					l2network.loadDevicesCallback();
 					l2network.loadInterfacesCallback();
 
-					var ifcnames = angular.toArray(self.cbiOwnerOption.uciValue),
+					var ifcnames = angular.toArray(newValue),
 					    selected = angular.toObject(ifcnames);
 
 					self.reload();
@@ -1621,7 +1625,6 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 					s += ' <span class="caret"></span>';
 
 					self.caption.html(s);
-					self.cbiOwnerOption.formValue(angular.toArray(self.checked));
 				},
 
 				select: function($event) {
@@ -1646,7 +1649,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 					if (!self.allowMultiple)
 						self.isOpen = false;
 
-					self.redraw();
+					self.cbiOwnerOption.formValue(angular.toArray(self.checked));
 				},
 
 				toggled: function(opened) {
