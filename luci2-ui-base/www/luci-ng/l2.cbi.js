@@ -1447,10 +1447,17 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 
 					l2network.loadDevicesCallback();
 					l2network.loadInterfacesCallback();
-					l2network.getInterface(self.cbiOwnerOption.uciSectionName)
-						.setDevices(devnames);
 
-					self.redraw();
+					if (self.parentInterface) {
+						var ifc = l2network.getInterface(self.parentInterface);
+						if (ifc)
+							ifc.setDevices(devnames);
+
+						self.redraw();
+					}
+					else {
+						self.cbiOwnerOption.formValue(devnames);
+					}
 
 					return true;
 				},
@@ -1493,6 +1500,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 			cbiOptionCtrl.cbiWidget = angular.extend(cbiDeviceListCtrl, {
 				allowBridges: iAttr.hasOwnProperty('bridges'),
 				allowMultiple: iAttr.hasOwnProperty('multiple'),
+				parentInterface: iAttr.parentInterface,
 
 				cbiOwnerOption: cbiOptionCtrl,
 				cbiOwnerSection: cbiSectionCtrl,

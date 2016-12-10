@@ -31,10 +31,10 @@
 			<cbi-flag on="bridge" off="" />
 		</div>
 		<div cbi-option="ifname" name="ifname1" title="Interface" depends="{type:undefined, proto:View.isNonVirtualProtocol}" preview>
-			<cbi-device-list />
+			<cbi-device-list parent-interface="{{uciSectionName}}" />
 		</div>
 		<div cbi-option="ifname" name="ifname2" title="Interfaces" depends="{type:'bridge', proto:View.isNonVirtualProtocol}" preview>
-			<cbi-device-list multiple />
+			<cbi-device-list multiple parent-interface="{{uciSectionName}}" />
 		</div>
 
 		<div cbi-option="ipaddr" title="IP address" validate="require ip4addr" depends="{ proto: 'static' }" preview>
