@@ -502,42 +502,16 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 
 				isLoading: true,
 
-				inProgress: [ ],
 				cbiChildSections: [ ],
-				loadConfig: function(package, cb) {
-					console.debug('loadConfig: '+ package);
-					self.uciPackages[package]=true;
-					var res=l2uci.load(package);
-					if(res && cb) res.then(cb);
-				},
 
 				init: function(iElem) {
-					console.debug('Map init');
-					self.loadConfig(self.uciPackageName, self.wait);
+					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
+					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.finish);
 				},
 
-				wait: function() {
-					if (self.waitFn)
-						self.waitfor(self.waitFn($scope));
-
-					$q.all(self.inProgress).then(self.finish);
-				},
 
 				finish: function() {
-					console.debug('Map finish');
-
-					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
-						sec.finish();
-
 					self.isLoading = false;
-					self.inProgress.length = 0;
-
-					console.debug('Map finish end');
-				},
-
-				waitfor: function(d) {
-					if (angular.isObject(d) && angular.isFunction(d.then))
-						self.inProgress.push(d);
 				},
 
 				save: function($event) {
@@ -621,7 +595,7 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 		scope: true,
 
 		controllerAs: 'Section',
-		controller: ['$scope', 'l2uci', function($scope, l2uci) {
+		controller: ['$scope', '$q', 'l2uci', function($scope, $q, l2uci) {
 			var self = angular.extend(this, {
 				uciSections: [ ],
 
@@ -644,14 +618,13 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 								if (self.filter(s))
 									self.uciSections.push(s['.name']);
 					}
+
+					self.finish();
 				},
 
 				init: function(iElem) {
-					console.debug('Section init');
-					self.read();
-
-					if (self.waitFn)
-						self.cbiOwnerMap.waitfor(self.waitFn($scope));
+					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
+					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.read);
 
 					if (self.isAddRemove && !self.isAnonymous)
 						self.removeWatchFn = $scope.$watch('Section.addName', self.validateAddName);
@@ -669,23 +642,11 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				},
 
 				finish: function(uciSectionName) {
-					console.debug('Section finish');
-
 					if (self.isCollapse &&
 					    self.uciSections.indexOf(self.activeSectionName) === -1)
 						self.activeSectionName = self.uciSections[0];
 
-					for (var sid in self.fieldCtrls) {
-						if (uciSectionName !== undefined && uciSectionName !== sid)
-							continue;
-
-						for (var opt in self.fieldCtrls[sid])
-							self.fieldCtrls[sid][opt].finish();
-					}
-
 					self.validate();
-
-					console.debug('Section finish end');
 				},
 
 				open: function(uciSectionName) {
@@ -887,6 +848,11 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 			if (!CBI_SECTION_MATCH.test(iAttr.cbiSection))
 				throw 'Invalid UCI selector';
 
+			var uciPackageName = (RegExp.$1 !== '') ? RegExp.$1 : cbiMapCtrl.uciPackageName,
+			    uciSectionType = (RegExp.$2 !== '') ? RegExp.$2 : undefined,
+			    uciSectionIndex = (RegExp.$3 !== '') ? parseInt(RegExp.$3, 10) : undefined,
+			    uciSectionName = (RegExp.$4 !== '') ? RegExp.$4 : undefined;
+
 			cbiMapCtrl.cbiChildSections.push(angular.extend(cbiSectionCtrl, {
 				title:           iAttr.title,
 				placeholder:     iAttr.placeholder || gettext('There are no entries defined yet.'),
@@ -909,16 +875,15 @@ L2.registerDirective('cbiSection', ['$timeout', '$parse', 'gettext', 'l2validati
 				filterFn:        iAttr.hasOwnProperty('filter') ? $parse(iAttr.filter) : null,
 				waitFn:          iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
-				uciPackageName:  (RegExp.$1 !== '') ? RegExp.$1 : cbiMapCtrl.uciPackageName,
-				uciSectionType:  (RegExp.$2 !== '') ? RegExp.$2 : undefined,
-				uciSectionIndex: (RegExp.$3 !== '') ? parseInt(RegExp.$3, 10) : undefined,
-				uciSectionName:  (RegExp.$4 !== '') ? RegExp.$4 : undefined,
+				uciPackageName:  uciPackageName,
+				uciSectionType:  uciSectionType,
+				uciSectionIndex: uciSectionIndex,
+				uciSectionName:  uciSectionName,
 
 				cbiOwnerMap:     cbiMapCtrl
 			}));
 
-			//make sure config is loaded an continue initialization
-			cbiMapCtrl.loadConfig(cbiSectionCtrl.uciPackageName, cbiSectionCtrl.init.bind(cbiSectionCtrl,iElem));
+			cbiSectionCtrl.init(iElem);
 		}
 	};
 }]);
@@ -929,21 +894,22 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 		scope: true,
 
 		controllerAs: 'Option',
-		controller: ['$scope', 'l2uci', function($scope, l2uci) {
+		controller: ['$scope', '$q', 'l2uci', function($scope, $q, l2uci) {
 			var self = angular.extend(this, {
 				rdepends: { },
 				isUnsatisified: false,
 
 				init: function(iElem) {
-					console.debug('Option init');
-
 					self.tabInit(iElem);
 
-					self.uciValue = l2uci.get(self.uciPackageName, self.uciSectionName, self.uciOptionName);
-					self.rawValue = self.uciValue;
+					var w = $q.when(self.waitFn ? self.waitFn($scope) : null);
+					$q.all([w, l2uci.load(self.uciPackageName)]).then(self.finish);
 				},
 
 				finish: function() {
+					self.uciValue = l2uci.get(self.uciPackageName, self.uciSectionName, self.uciOptionName);
+					self.rawValue = self.uciValue;
+
 					for (var i = 0, dep; dep = self.dependencies[i]; i++) {
 						for (var optName in dep) {
 							var opt = self.cbiOwnerSection.getFieldByName(self.uciSectionName, optName);
@@ -952,11 +918,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 							}
 						}
 					}
-
-					if (self.cbiWidget && self.cbiWidget.finish)
-						self.cbiWidget.finish();
-
-					console.debug('Option finish');
 				},
 
 				tabInit: function(iElem) {
@@ -1147,7 +1108,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 			var CBI_OPTION_MATCH  = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
 
 			return function($scope, iElem, iAttr, ctrls) {
-				console.log("Option link");
 				var isRequired = false,
 					validationFn = null;
 
@@ -1187,7 +1147,6 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 							}
 						}
 						else if (angular.isObject(deps)) {
-							console.debug(deps);
 							dependencies.push(deps);
 						}
 						else if (angular.isString(deps)) {
@@ -1230,8 +1189,7 @@ L2.registerDirective('cbiOption', ['$parse', 'l2validation', 'gettext', function
 					cbiOwnerSection: cbiSectionCtrl
 				}));
 
-				//continue init after config loaded
-				cbiMapCtrl.loadConfig(cbiOptionCtrl.uciPackageName,cbiOptionCtrl.init.bind(cbiOptionCtrl, iElem));
+				cbiOptionCtrl.init(iElem);
 			};
 		}
 	};
@@ -1491,6 +1449,8 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 					l2network.loadInterfacesCallback();
 					l2network.getInterface(self.cbiOwnerOption.uciSectionName)
 						.setDevices(devnames);
+
+					self.redraw();
 
 					return true;
 				},
