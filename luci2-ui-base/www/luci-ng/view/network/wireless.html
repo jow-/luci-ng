@@ -46,20 +46,26 @@
 						</span>
 					</span>
 					<!-- / signal badge -->
+
 					<span class="block-right">
-						<span class="nowrap"><strong>Mode: </strong>{{ifaceStatus.mode}} | </span>
-						<span class="nowrap" ng-if="ifaceStatus.bitrate"><strong>Bitrate: </strong>~ {{ifaceStatus.bitrate / 1000 | number:1}} Mbit/s | </span>
-						<span class="nowrap"><strong>SSID: </strong>{{ifaceStatus.ssid}} | </span>
-						<span class="nowrap" ng-if="ifaceStatus.bssid"><strong>BSSID: </strong>{{ifaceStatus.bssid}} | </span>
-						<span class="nowrap"><strong>Encryption: </strong>{{ifaceStatus.encryptionName}}</span>
+						<em ng-if="ifaceStatus.isStarting" translate>Radio interface is starting…</em>
+						<em ng-if="ifaceStatus.isStopping" translate>Radio interface is shutting down…</em>
+
+						<span ng-if="!ifaceStatus.isStarting && !ifaceStatus.isStopping">
+							<span class="nowrap"><strong>Mode: </strong>{{ifaceStatus.mode}} | </span>
+							<span class="nowrap" ng-if="ifaceStatus.bitrate"><strong>Bitrate: </strong>~ {{ifaceStatus.bitrate / 1000 | number:1}} Mbit/s | </span>
+							<span class="nowrap"><strong>SSID: </strong>{{ifaceStatus.ssid}} | </span>
+							<span class="nowrap" ng-if="ifaceStatus.bssid"><strong>BSSID: </strong>{{ifaceStatus.bssid}} | </span>
+							<span class="nowrap"><strong>Encryption: </strong>{{ifaceStatus.encryptionName}}</span>
+						</span>
 					</span>
 				</div><div class="cell clearfix content col-xs-9 col-sm-9 col-md-3 col-lg-3">
 					<div class="btn-group pull-right" uib-dropdown>
 						<button class="btn btn-sm btn-primary" ng-click="View.renderWirelessMap(ifaceStatus.radio, ifaceStatus.section).show()">Configure</button><button class="btn btn-default btn-sm uib-dropdown-toggle" uib-dropdown-toggle>Action…</button>
 						<ul class="dropdown-menu pull-right">
 							<li ng-switch on="ifaceStatus.up === true">
-								<a ng-switch-when="true" href="#" ng-click="View.enableDisableNetwork(false, ifaceStatus.radio, ifaceStatus.section); $event.preventDefault()">Shutdown network</a>
-								<a ng-switch-when="false" href="#" ng-click="View.View.enableDisableNetwork(true, ifaceStatus.radio, ifaceStatus.section); $event.preventDefault()">Enable network</a>
+								<a ng-switch-when="true" href="#" ng-click="View.enableDisableNetwork(false, ifaceStatus); $event.preventDefault()">Shutdown network</a>
+								<a ng-switch-when="false" href="#" ng-click="View.enableDisableNetwork(true, ifaceStatus); $event.preventDefault()">Enable network</a>
 							</li>
 							<li><a href="#" ng-click="View.deleteSSID(ifaceStatus.section); $event.preventDefault()">Delete network</a></li>
 						</ul>

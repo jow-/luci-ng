@@ -36,31 +36,28 @@ L2.registerController('NetworkWirelessController',
 			method: 'reload'
 		}),
 
-		enableDisableNetwork: function(enable, radioSection, ifaceSection)
+		enableDisableNetwork: function(enable, ifaceStatus)
 		{
-			var self = this;
-
-			L.ui.loading(true);
-
-			l2rpc.batch();
-			l2uci.callDelete('wireless', radioSection, [ 'disabled' ]);
+			l2spin.open();
 
 			if (enable)
-				l2uci.callDelete('wireless', ifaceSection, [ 'disabled' ]);
+				ifaceStatus.isStarting = true;
 			else
-				l2uci.callSet('wireless', ifaceSection, { disabled: 1 });
+				ifaceStatus.isStopping = true;
+
+			l2rpc.batch();
+			l2uci.callDelete('wireless', ifaceStatus.radio, [ 'disabled' ]);
+
+			if (enable)
+				l2uci.callDelete('wireless', ifaceStatus.section, [ 'disabled' ]);
+			else
+				l2uci.callSet('wireless', ifaceStatus.section, { disabled: 1 });
 
 			l2uci.callCommit('wireless');
-			self.callNetworkReload();
 
-			return l2rpc.flush().then(function() {
-				$('#radiostate-%s'.format(radioSection))
-					.html('<em>%s</em>'.format(
-						enable ? gettext('Radio interface is starting…')
-							   : gettext('Radio interface is shutting down…')));
+			networkWirelessCtrl.callNetworkReload();
 
-				L.ui.loading(false);
-			});
+			return l2rpc.flush().then(l2spin.close);
 		},
 
 		uciParseMode: function(v) {
