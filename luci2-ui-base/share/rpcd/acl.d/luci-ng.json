@@ -19,7 +19,8 @@
 				],
 				"session": [
 					"access",
-					"destroy"
+					"destroy",
+					"get"
 				],
 				"uci": [
 					"*"
