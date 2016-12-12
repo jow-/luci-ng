@@ -11,7 +11,7 @@
 		<p translate>To restore a previously generated backup choose the archive and press "Import backup"</p>
 		<div class="panel panel-default panel-body text-left">
 			<label class="btn btn-primary" for="file">
-				<input id="file" type="file" style="display:none;" file-model="View.myFile"> 
+				<input id="file" type="file" style="display:none;" file-model="View.myFile">
 				Browse
 			</label>
 			<button class="btn btn-success" ng-disabled="View.uploadFileSelected()" ng-click="View.uploadBackup()" translate>Import backup</button>
@@ -39,7 +39,7 @@
 		<h4 translate>Saved files</h4>
 	</div>
 	<div class="modal-body">
-		<p ng-repeat="file in listconfig">{{file}}</p>
+		<pre>{{listconfig.join("\n")}}</pre>
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-success" translate ng-click="Dialog.confirm()">Ok</button>

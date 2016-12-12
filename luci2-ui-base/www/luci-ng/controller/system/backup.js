@@ -19,7 +19,7 @@ L2.registerDirective('fileModel', [ '$parse', 'fileService', function($parse, fi
 	};
 }]);
 
-L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', 'l2spin', 'fileService', 'gettext', function($modal, l2cgi, l2rpc, l2spin, fileService, gettext) {
+L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', 'l2spin', 'fileService', 'gettext', function($uibModal, l2cgi, l2rpc, l2spin, fileService, gettext) {
 	var upgradeCtrl = this;
 
 	angular.extend(upgradeCtrl, {
@@ -94,7 +94,7 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 			});
 		},
 
-		showBackupListCtrl: function($scope, $modalInstance) {
+		showBackupListCtrl: function($scope, $uibModalInstance) {
 			var dialog = this;
 			l2spin.open();
 			upgradeCtrl.listBackup().then(function(files) {
@@ -103,30 +103,30 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 			});
 			return angular.extend(dialog, {
 				confirm: function() {
-					$modalInstance.dismiss();
+					$uibModalInstance.dismiss();
 				}
 			});
 		},
 
 		showBackupList: function() {
-			$modal.open({
+			$uibModal.open({
 				controller: upgradeCtrl.showBackupListCtrl,
 				controllerAs: 'Dialog',
 				templateUrl: 'system/upgrade/list.html'
 			});
 		},
 
-		displayBackupConfirmCtrl: function ($scope, $modalInstance) {
+		displayBackupConfirmCtrl: function ($scope, $uibModalInstance) {
 			var dialog = this;
 			$scope.data = upgradeCtrl.data;
 			return angular.extend(dialog, {
 				upgradeCtrl: upgradeCtrl,
 				backup: function() {
-					$modalInstance.dismiss();
+					$uibModalInstance.dismiss();
 					upgradeCtrl.restoreBackup();
 				},
 				cancel: function() {
-					$modalInstance.dismiss();
+					$uibModalInstance.dismiss();
 					upgradeCtrl.cleanBackup();
 				}
 			});
@@ -138,7 +138,7 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 			l2cgi.uploadBackup(file).then(function(data) {
 				upgradeCtrl.data=data
 				l2spin.close();
-				var modalInstance = $modal.open({
+				var modalInstance = $uibModal.open({
 					controller: ['$scope', '$uibModalInstance', upgradeCtrl.displayBackupConfirmCtrl],
 					controllerAs: 'Confirm',
 					templateUrl: 'system/backup/success.html',
