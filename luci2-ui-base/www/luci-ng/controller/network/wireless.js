@@ -172,27 +172,40 @@ L2.registerController('NetworkWirelessController',
 			});
 		},
 
-		deleteSSID: function(sid) {
-			L.ui.dialog(
-				gettext('Remove wireless network'),
-				$('<p />')
-					.text(gettext('Really remove the wireless network "%s" ?').format(l2uci.get('wireless', sid, 'ssid') || '?'))
-					.add($('<p />')
-						.addClass('alert alert-danger')
-						.text(gettext('The deletion cannot be undone!'))),
-				{
-					style: 'confirm',
-					confirm: function() {
-						L.ui.dialog(false);
-						L.ui.loading(true);
-						l2uci.remove('wireless', sid);
-						l2uci.save();
+		deleteSSIDCtrl: function($scope, $uibModalInstance, ifaceStatus) {
+			var self = angular.extend(this, {
+				ifaceStatus: ifaceStatus,
 
-						var v = L.views.NetworkWireless;
-						v.updateStatus();
-					}
+				dismiss: function() {
+					$uibModalInstance.dismiss();
+				},
+
+				confirm: function() {
+					l2spin.open();
+
+					ifaceStatus.isStopping = true;
+
+					l2rpc.batch();
+					l2uci.callDelete('wireless', ifaceStatus.section);
+					l2uci.callCommit('wireless');
+					networkWirelessCtrl.callNetworkReload();
+					l2rpc.flush().then(l2spin.close);
+
+					l2uci.unload('wireless');
+					self.dismiss();
 				}
-			)
+			});
+
+			return self;
+		},
+
+		deleteSSID: function(ifaceStatus) {
+			$uibModal.open({
+				controller: networkWirelessCtrl.deleteSSIDCtrl,
+				controllerAs: 'Dialog',
+				templateUrl: 'network/wireless/delete.html',
+				resolve: { ifaceStatus: function() { return ifaceStatus } }
+			});
 		},
 
 		getWirelessStatus: function()

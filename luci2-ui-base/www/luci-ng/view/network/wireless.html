@@ -67,7 +67,7 @@
 								<a ng-switch-when="true" href="#" ng-click="View.enableDisableNetwork(false, ifaceStatus); $event.preventDefault()">Shutdown network</a>
 								<a ng-switch-when="false" href="#" ng-click="View.enableDisableNetwork(true, ifaceStatus); $event.preventDefault()">Enable network</a>
 							</li>
-							<li><a href="#" ng-click="View.deleteSSID(ifaceStatus.section); $event.preventDefault()">Delete network</a></li>
+							<li><a href="#" ng-click="View.deleteSSID(ifaceStatus); $event.preventDefault()">Delete network</a></li>
 						</ul>
 					</div>
 				</div>
@@ -125,5 +125,23 @@
 	<div class="modal-footer">
 		<button class="btn btn-info" translate-context="Wireless network action" translate ng-click="Dialog.scan()" ng-disabled="Dialog.isScanning">Update scan results</button>
 		<button class="btn btn-default" translate ng-click="Dialog.dismiss()">Close</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="network/wireless/delete.html">
+	<div class="modal-header">
+		<h4 translate>Deleting Wireless Network</h4>
+	</div>
+	<div class="modal-body">
+		<p translate>
+			Really remove the wireless network "{{Dialog.ifaceStatus.ssid.length ? Dialog.ifaceStatus.ssid : Dialog.ifaceStatus.bssid}}"?
+		</p>
+		<div class="alert alert-danger" translate>
+			The deletion cannot be undone!
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-default" translate ng-click="Dialog.dismiss()">Cancel</button>
+		<button class="btn btn-danger" translate-context="Wireless network action" translate ng-click="Dialog.confirm()">Delete</button>
 	</div>
 </script>
