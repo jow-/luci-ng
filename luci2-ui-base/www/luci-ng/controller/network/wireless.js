@@ -1,11 +1,11 @@
 L2.registerController('NetworkWirelessController',
-['$scope', 'l2uci', 'l2rpc', 'l2wireless', '$timeout', 'l2spin', 'gettext', function($scope, l2uci, l2rpc, l2wireless, $timeout, l2spin, gettext) {
+['$scope', 'l2uci', 'l2rpc', 'l2wireless', '$timeout', 'l2spin', 'gettext', '$uibModal', function($scope, l2uci, l2rpc, l2wireless, $timeout, l2spin, gettext, $uibModal) {
 
 	//l2uci.load('wireless').then(function() {
 	//	angular.element('[ng-view]').html(angular.toJson(l2uci.get('wireless', 'radio0'), true));
 	//});
 
-	angular.extend($scope, {
+	var networkWirelessCtrl = angular.extend(this, {
 
 		getNetworkWirelessStatus: l2rpc.declare({
 			object: 'network.wireless',
@@ -120,84 +120,44 @@ L2.registerController('NetworkWirelessController',
 			return e;
 		},
 
+		scanWirelessCtrl: function($scope, $uibModalInstance, currentRadioDevice) {
+			var self = angular.extend(this, {
+				isScanning: true,
+				scanResults: [],
+
+				updateResults: function(results) {
+					self.isScanning = false;
+					self.scanResults.length = 0;
+					Array.prototype.push.apply(self.scanResults, results);
+				},
+
+				scan: function() {
+					self.isScanning = true;
+					networkWirelessCtrl.getWirelessScanResults(currentRadioDevice)
+						.then(self.updateResults);
+				},
+
+				dismiss: function() {
+					$uibModalInstance.dismiss();
+				},
+
+				connect: function(networkDetails) {
+					console.debug([currentRadioDevice, networkDetails]);
+					self.dismiss();
+				}
+			});
+
+			self.scan();
+
+			return self;
+		},
+
 		scanWireless: function(radio) {
-			L.ui.dialog(
-				gettext('Scanning wireless networks'),
-				gettext('Waiting for scan results …'),
-				{ style: 'wait' }
-			);
-
-			this.getWirelessScanResults(radio).then(function(results) {
-				var resTable = new L.ui.grid({
-					condensed: true,
-					columns: [ {
-						caption:  gettext('Signal'),
-						width:    2,
-						width_sm: 3,
-						format:  function(v, n) {
-							var res = results[n];
-							var ico = 'signal-none';
-							var qlt = (5 / res.quality_max) * res.quality;
-
-							if (qlt < 1)
-								ico = 'signal-0';
-							else if (qlt < 2)
-								ico = 'signal-0-25';
-							else if (qlt < 3)
-								ico = 'signal-25-50';
-							else if (qlt < 4)
-								ico = 'signal-50-75';
-							else
-								ico = 'signal-75-100';
-
-							return $('<span />')
-								.addClass('badge')
-								.append(L.ui.icon(ico))
-								.append(' %d dB'.format(res.signal));
-						}
-					}, {
-						caption:  L.trc('Wireless channel abbreviation', 'Ch.'),
-						width:    1,
-						width_sm: 0,
-						key:      'channel',
-						format:   '%d'
-					}, {
-						caption: gettext('SSID'),
-						width:   4,
-						nowrap:  true,
-						key:     'ssid',
-						format:  function(v) {
-							return (typeof(v) === 'string' && v !== '')
-								? '%h'.format(v)
-								: '<em>%s</em>'.format(gettext('Hidden network'));
-						}
-					}, {
-						caption: gettext('Encryption'),
-						width:   3,
-						nowrap:  true,
-						key:     'encryption',
-						format:  function(v) {
-							return l2wireless.formatEncryption(v, true);
-						}
-					}, {
-						width:   2,
-						align:   'right',
-						format:  function(v) {
-							return $('<button />')
-								.attr('disabled', false)
-								.addClass('btn btn-xs btn-success')
-								.text(L.trc('Radio device action', 'Connect…'));
-						}
-					} ]
-				});
-
-				resTable.rows(results);
-
-				L.ui.dialog(
-					gettext('Wireless scan results'),
-					resTable.render(),
-					{ style: 'close' }
-				);
+			$uibModal.open({
+				controller: networkWirelessCtrl.scanWirelessCtrl,
+				controllerAs: 'Dialog',
+				templateUrl: 'network/wireless/scan.html',
+				resolve: { currentRadioDevice: function() { return radio } }
 			});
 		},
 
@@ -258,11 +218,11 @@ L2.registerController('NetworkWirelessController',
 			//self.wifiStatus = self.wifiStatus || (self.wifiStatus = { });
 			var stat = { };
 
-			return $scope.getEAPSupportStatus().then(function(eapSupport) {
-				$scope.eapSupport = eapSupport;
+			return networkWirelessCtrl.getEAPSupportStatus().then(function(eapSupport) {
+				networkWirelessCtrl.eapSupport = eapSupport;
 				return l2uci.load('wireless');
 			}).then(function() {
-				return $scope.getNetworkWirelessStatus();
+				return networkWirelessCtrl.getNetworkWirelessStatus();
 			}).then(function(uciStat) {
 				angular.extend(stat, uciStat);
 
@@ -271,7 +231,7 @@ L2.registerController('NetworkWirelessController',
 				for (var radioName in uciStat)
 				{
 					l2wireless.getPhyName(radioName);
-					$scope.getWirelessFreqList(radioName);
+					networkWirelessCtrl.getWirelessFreqList(radioName);
 					radioNames.push(radioName);
 				}
 
@@ -384,26 +344,26 @@ L2.registerController('NetworkWirelessController',
 						uciIface.ssid = uciIface.config.ssid;
 
 					if (!uciIface.mode)
-						uciIface.mode = $scope.uciParseMode(uciIface.config.mode);
+						uciIface.mode = networkWirelessCtrl.uciParseMode(uciIface.config.mode);
 
 					if (!uciIface.encryption)
 						uciIface.encryption =
-							$scope.uciParseEncryption(uciIface.config.encryption);
+							networkWirelessCtrl.uciParseEncryption(uciIface.config.encryption);
 
 					uciIface.encryptionName =
 						l2wireless.formatEncryption(uciIface.encryption);
 				}
 
-				$scope.wifiStatus = stat;
-				$scope.$timeout = $timeout($scope.getWirelessStatus, 5000);
+				networkWirelessCtrl.wifiStatus = stat;
+				networkWirelessCtrl.$timeout = $timeout(networkWirelessCtrl.getWirelessStatus, 5000);
 			});
 		}
 	});
 
 	l2spin.open();
-	$scope.getWirelessStatus().then(l2spin.close);
+	networkWirelessCtrl.getWirelessStatus().then(l2spin.close);
 
 	$scope.$on('$destroy', function() {
-		$timeout.cancel($scope.$timeout);
+		$timeout.cancel(networkWirelessCtrl.$timeout);
 	});
 }]);

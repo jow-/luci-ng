@@ -363,6 +363,11 @@
 			]
 		},
 		"write": {
+			"ubus": {
+				"iwinfo": [
+					"scan"
+				]
+			},
 			"uci": [
 				"network",
 				"wireless"
