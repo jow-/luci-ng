@@ -294,12 +294,11 @@
 					var $http = $injector.get('$http');
 					var retry = response.config._retry || 0;
 
-					if (response.status === 0 && retry++ < 3) {
+					if (response.status <= 0 && retry++ < 3) {
 						response.config._retry = retry;
 						return $timeout(function() {
-							console.debug('http retry: ' + retry + '/3');
 							return $http(response.config);
-						}, 5000);
+						}, 2500);
 					}
 
 					return $q.reject(response);
