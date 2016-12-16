@@ -440,6 +440,42 @@
 				}
 			});
 		}])
+		.factory('l2reboot', ['l2rpc', 'l2auth', '$timeout', '$uibModal', function(l2rpc, l2auth, $timeout, $modal) {
+			var _reboot = { };
+			return angular.extend(_reboot, {
+				reboot: l2rpc.declare({
+					object: 'luci2.system',
+					method: 'reboot'
+				}),
+
+				check: function() {
+					return l2auth.access('ubus', 'luci2.system', 'reboot').then(function(access) {
+						if (!access) {
+							return false;
+						} else {
+							return true;
+						}
+					});
+				},
+
+				prompt: function() {
+					_reboot.dialog = $modal.open({
+						backdrop: 'static',
+						templateUrl: 'rebootForm',
+						controller:  ['$scope', '$uibModalInstance', function($scope, $modalInstance) {
+							$scope.reboot = function($event) {
+								$modalInstance.dismiss();
+								_reboot.reboot();
+								l2auth.logout();
+							};
+							$scope.cancel = function($event) {
+								$modalInstance.dismiss();
+							};
+						}]
+					});
+				}
+			});
+		}])
 		.factory('l2auth', ['l2rpc', '$timeout', '$uibModal', '$cookie', '$rootScope', function(l2rpc, $timeout, $modal, $cookie, $rootScope) {
 			var _auth = { };
 			return angular.extend(_auth, {
@@ -717,8 +753,9 @@
 			});
 		}])
 		.controller('HeaderController',
-			['l2spin', 'l2menu', 'l2auth', '$scope', function(l2spin, l2menu, l2auth, $scope) {
+			['l2spin', 'l2menu', 'l2auth', 'l2reboot', '$scope', function(l2spin, l2menu, l2auth, l2reboot, $scope) {
 				$scope.logout = l2auth.destroy;
+				$scope.reboot = l2reboot.prompt;
 
 				$scope.$on('session.setup', function(event, session) {
 					l2spin.open();
@@ -727,6 +764,9 @@
 					l2menu.update().then(function(menu) {
 						$scope.menu = menu;
 						l2spin.close();
+					});
+					l2reboot.check().then(function(result) {
+						$scope.reboot_check = result;
 					});
 				});
 			}])
