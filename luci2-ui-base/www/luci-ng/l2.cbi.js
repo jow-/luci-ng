@@ -1330,6 +1330,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 			var self = angular.extend(this, {
 				checked: { },
 				devices: [ ],
+				isLoading: true,
 
 				isUnspecified: function() {
 					return angular.isEmptyObject(self.checked);
@@ -1345,14 +1346,15 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 					return true;
 				},
 
-				init: function(iElem) {
+				init: function() {
 					self.cbiOwnerMap.lock();
-					self.caption = iElem.findAll('.caption');
 					l2network.load().then(self.finish);
 				},
 
 				finish: function() {
 					$scope.$watch(self.cbiOwnerOption.formValue, self.update);
+					self.isLoading=false;
+					self.reload();
 					self.cbiOwnerMap.unlock();
 				},
 
@@ -1372,8 +1374,6 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 								break;
 						}
 					}
-
-					self.redraw();
 				},
 
 				reload: function() {
@@ -1384,35 +1384,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 							self.devices.push(dev);
 				},
 
-				redraw: function() {
-					var s = '';
-
-					for (var i = 0, dev; dev = self.devices[i]; i++)
-					{
-						if (!self.checked[dev.name()])
-							continue;
-
-						if (s)
-							s += ' <span class="sep">|</span> ';
-
-						s += '<span title="%h (%h)"><img src="%s"> %h</span>'.format(
-							dev.description(), dev.name() || '?',
-							dev.icon(),
-							dev.name()
-						);
-					}
-
-					if (!s)
-						s += '<em>%s</em>'.format(gettext('unspecified'));
-
-					s += ' <span class="caret"></span>';
-
-					self.caption.html(s);
-				},
-
-				select: function($event) {
-					var $entry = angular.element($event.target).findParent('[value]'),
-						devName = $entry.attr('value');
+				select: function(devName) {
 
 					if (self.allowMultiple) {
 						if (self.checked[devName])
@@ -1496,7 +1468,12 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 
 				textValue: function() {
 					return angular.toArray(self.cbiOwnerOption.formValue()).join(', ');
+				},
+
+				isChecked: function(dev) { 
+					return self.checked[dev.name()];
 				}
+
 			});
 		}],
 
@@ -1504,14 +1481,22 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 		template: '' +
 			'<div uib-dropdown is-open="DeviceList.isOpen" on-toggle="DeviceList.toggled(open)" auto-close="{{ DeviceList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
 				'<button class="btn btn-default uib-dropdown-toggle" type="button" uib-dropdown-toggle>' +
-					'<div class="caption"><em translate>Loading…</em></div>' +
+					'<div class="caption">' +
+						'<em ng-if="DeviceList.isLoading" translate>Loading…</em>' +
+						'<span ng-if="!DeviceList.isLoading" ng-repeat="dev in DeviceList.devices | filter : DeviceList.isChecked as selected">' +
+							'<span title="dev.name()"><img ng-src="{{dev.icon()}}">{{dev.name()}}</span>' +
+							'<span ng-if="!$last" class="sep">|</span>' +
+						'</span>' +
+		 				'<em ng-if="!DeviceList.isLoading && !selected.length">unspecified</em>' +
+	 					'<span class="caret"></span>' +
+					'</div>' +
 				'</button>' +
 				'<ul class="dropdown-menu">' +
 					'<li ng-repeat="dev in DeviceList.devices" value="{{dev.name()}}" ng-class="{selected: DeviceList.checked[dev.name()]}">' +
-						'<a href="#" ng-click="DeviceList.select($event); $event.preventDefault()"><img ng-src="{{dev.icon()}}"> {{dev.name()}}</a>' +
+						'<a href="#" ng-click="DeviceList.select(dev.name()); $event.preventDefault()"><img ng-src="{{dev.icon()}}"> {{dev.name()}}</a>' +
 					'</li>' +
 					'<li ng-if="!DeviceList.allowMultiple" ng-class="{selected: DeviceList.isUnspecified()}" value="">' +
-						'<a href="#" ng-click="DeviceList.select($event); $event.preventDefault()"><em>unspecified</em></a>' +
+						'<a href="#" ng-click="DeviceList.select(\'\'); $event.preventDefault()"><em>unspecified</em></a>' +
 					'</li>'  +
 					'<li class="divider"></li>' +
 					'<li><form class="form-inline">' +
@@ -1539,7 +1524,7 @@ L2.registerDirective('cbiDeviceList', ['gettext', 'l2network', function(gettext,
 				cbiOwnerMap: cbiMapCtrl
 			});
 
-			cbiDeviceListCtrl.init(iElem);
+			cbiDeviceListCtrl.init();
 		}
 	};
 }]);
@@ -1555,6 +1540,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 			var self = angular.extend(this, {
 				checked: { },
 				interfaces: [ ],
+				isLoading: true,
 
 				isUnspecified: function() {
 					return angular.isEmptyObject(self.checked);
@@ -1564,14 +1550,15 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 					return true;
 				},
 
-				init: function(iElem) {
+				init: function() {
 					self.cbiOwnerMap.lock();
-					self.caption = iElem.findAll('.caption');
 					l2network.load().then(self.finish);
 				},
 
 				finish: function() {
 					$scope.$watch(self.cbiOwnerOption.formValue, self.update);
+					self.isLoading=false;
+					self.reload();
 					self.cbiOwnerMap.unlock();
 				},
 
@@ -1587,12 +1574,12 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 					for (var i = 0, ifc; ifc = self.interfaces[i]; i++) {
 						if (selected[ifc.name()]) {
 							self.checked[ifc.name()] = true;
+							
 							if (!self.allowMultiple)
 								break;
 						}
 					}
 
-					self.redraw();
 				},
 
 				reload: function() {
@@ -1603,35 +1590,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 							self.interfaces.push(ifc);
 				},
 
-				redraw: function() {
-					var s = '';
-
-					for (var i = 0, ifc; ifc = self.interfaces[i]; i++)
-					{
-						if (!self.checked[ifc.name()])
-							continue;
-
-						if (s)
-							s += ' <span class="sep">|</span> ';
-
-						s += '<span title="%h"><img src="%s"> %h</span>'.format(
-							ifc.name(),
-							ifc.icon(),
-							ifc.name()
-						);
-					}
-
-					if (!s)
-						s += '<em>%s</em>'.format(gettext('unspecified'));
-
-					s += ' <span class="caret"></span>';
-
-					self.caption.html(s);
-				},
-
-				select: function($event) {
-					var $entry = angular.element($event.target).findParent('[value]'),
-						ifcName = $entry.attr('value');
+				select: function(ifcName) {
 
 					if (self.allowMultiple) {
 						if (self.checked[ifcName])
@@ -1661,6 +1620,10 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 
 				textValue: function() {
 					return angular.toArray(self.cbiOwnerOption.formValue()).join(', ');
+				},
+				
+				isChecked: function(dev) { 
+					return self.checked[dev.name()];
 				}
 			});
 		}],
@@ -1669,14 +1632,22 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 		template: '' +
 			'<div uib-dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? \'outsideClick\' : \'always\' }}">' +
 				'<button class="btn btn-default uib-dropdown-toggle" type="button" uib-dropdown-toggle>' +
-					'<div class="caption"><em translate>Loading…</em></div>' +
+					'<div class="caption">' +
+						'<em ng-if="NetworkList.isLoading" translate>Loading…</em>' +
+						'<span ng-if="!NetworkList.isLoading" ng-repeat="ifc in NetworkList.interfaces | filter : NetworkList.isChecked as selected">' +
+							'<span title="ifc.name()"><img ng-src="{{ifc.icon()}}">{{ifc.name()}}</span>' +
+							'<span ng-if="!$last" class="sep">|</span>' +
+						'</span>' +
+		 				'<em ng-if="!NetworkList.isLoading && !selected.length">unspecified</em>' +
+	 					'<span class="caret"></span>' +
+					'</div>' +
 				'</button>' +
 				'<ul class="dropdown-menu">' +
 					'<li ng-repeat="ifc in NetworkList.interfaces" value="{{ifc.name()}}" ng-class="{selected: NetworkList.checked[ifc.name()]}">' +
-						'<a href="#" ng-click="NetworkList.select($event); $event.preventDefault()"><img ng-src="{{ifc.icon()}}"> {{ifc.name()}}</a>' +
+						'<a href="#" ng-click="NetworkList.select(ifc.name()); $event.preventDefault()"><img ng-src="{{ifc.icon()}}"> {{ifc.name()}}</a>' +
 					'</li>' +
 					'<li ng-if="!NetworkList.allowMultiple" ng-class="{selected: NetworkList.isUnspecified()}" value="">' +
-						'<a href="#" ng-click="NetworkList.select($event); $event.preventDefault()"><em>unspecified</em></a>' +
+						'<a href="#" ng-click="NetworkList.select(\'\'); $event.preventDefault()"><em>unspecified</em></a>' +
 					'</li>' +
 				'</ul>' +
 			'</div>',
@@ -1695,7 +1666,7 @@ L2.registerDirective('cbiNetworkList', ['gettext', 'l2network', function(gettext
 				cbiOwnerMap: cbiMapCtrl
 			});
 
-			cbiNetworkListCtrl.init(iElem);
+			cbiNetworkListCtrl.init();
 		}
 	};
 }]);
