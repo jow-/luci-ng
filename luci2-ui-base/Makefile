@@ -15,9 +15,20 @@ PKG_LICENSE_FILES:=
 
 PKG_BUILD_PARALLEL:=1
 
+PKG_BUILD_DEPENDS:=node/host
+
 include $(INCLUDE_DIR)/package.mk
 
+define Build/Prepare
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)
+	find ./src -maxdepth 1 -type f -exec cp -f {} $(PKG_BUILD_DIR) \;
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)/www/
+	$(CP) ./www/* $(PKG_BUILD_DIR)/www
+	$(MAKE) -C $(PKG_BUILD_DIR) prepare
+endef
+
 define Build/Compile
+	$(MAKE) -C $(PKG_BUILD_DIR)
 endef
 
 define Package/luci2-ui-base
@@ -34,7 +45,7 @@ endef
 
 define Package/luci2-ui-base/install
 	$(INSTALL_DIR) $(1)/www
-	$(CP) ./www/* $(1)/www/
+	$(CP) $(PKG_BUILD_DIR)/dist/* $(1)/www/
 	$(INSTALL_DIR) $(1)/usr/share
 	$(CP) ./share/* $(1)/usr/share/
 endef

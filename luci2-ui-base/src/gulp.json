@@ -1,0 +1,9 @@
+{
+	"paths": {
+		"src": "www",
+		"dist": "dist",
+		"tmp": ".tmp",
+		"app": "luci-ng"
+	},
+	"ngModule": "LuCI2"
+}

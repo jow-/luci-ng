@@ -1,0 +1,29 @@
+{
+	"globals": {
+		"angular": true,
+		"L2": true
+
+	},
+	"root": true,
+	"env": {
+		"browser": true
+	},
+	"extends": ["eslint:recommended", "angular"],
+	"rules": {
+		"no-undef": 2,
+		"no-unused-vars": 2,
+
+
+		"semi": ["error", "always"],
+		"strict": [1, "global"],
+		"quotes": [1, "single"],
+		"key-spacing": 0,
+		"no-trailing-spaces": 1,
+		"no-multi-spaces": "error",
+		"eol-last": 1,
+		"indent": ["error", "tab"],
+
+		"no-console": 0
+
+	}
+}
