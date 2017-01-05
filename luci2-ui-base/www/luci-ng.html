@@ -26,6 +26,11 @@
 		  <li ng-repeat="node in menu" ng-include="'menuTree'" uib-dropdown></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right ng-cloak">
+		  <li ng-if="reboot_check">
+			<a href="#/reboot" ng-click="reboot()">
+				<span class="label label-danger">Reboot System</span>
+			</a>
+		  </li>
 		  <li>
 			<a href="#/logout" ng-click="logout()">
 			  <span class="label label-default"></span>
@@ -111,6 +116,23 @@
 	  </div>
 	</div>
   </script>
+
+<script type="text/ng-template" id="rebootForm">
+	<div class="modal-content">
+		<div class="modal-header modal-title">
+			<h4>Confirm Reboot</h4>
+		</div>
+		<div class="modal-body">
+			<p>
+				Do you really want to reboot?
+			</p>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" ng-click="cancel($event)">Cancel</button>
+			<button type="button" class="btn btn-primary" ng-click="reboot($event)">Reboot</button>
+		</div>
+	</div>
+</script>
 
   <script type="text/ng-template" id="menuTree">
 	<a ng-if="!node.childs" href="#/{{node.view}}">{{node.title}}</a>

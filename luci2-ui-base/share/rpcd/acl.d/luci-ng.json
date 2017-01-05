@@ -387,5 +387,16 @@
 				"firewall"
 			]
 		}
+	},
+
+	"reboot": {
+		"description": "Reboot system",
+		"write": {
+			"ubus": {
+				"luci2.system": [
+					"reboot"
+				]
+			}
+		}
 	}
 }
