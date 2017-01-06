@@ -23,7 +23,7 @@ define Build/Prepare
 	$(INSTALL_DIR) $(PKG_BUILD_DIR)
 	find ./src -maxdepth 1 -type f -exec cp -f {} $(PKG_BUILD_DIR) \;
 	$(INSTALL_DIR) $(PKG_BUILD_DIR)/www/
-	$(CP) ./www/* $(PKG_BUILD_DIR)/www
+	$(CP) ./src/www/* $(PKG_BUILD_DIR)/www
 	$(MAKE) -C $(PKG_BUILD_DIR) prepare
 endef
 
