@@ -3,7 +3,13 @@
 		"src": "www",
 		"dist": "dist",
 		"tmp": ".tmp",
-		"app": "luci-ng"
+		"app": "luci-ng",
+		"mainHtml": "luci-ng.html"
 	},
-	"ngModule": "LuCI2"
+	"ngModule": "LuCI2",
+
+	"wiredep": {
+		"directory": "bower_components"
+	}
+
 }
