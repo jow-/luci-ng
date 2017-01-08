@@ -8,6 +8,8 @@
 	},
 	"ngModule": "LuCI2",
 
+	"proxy": "http://lede.lan/ubus",
+
 	"wiredep": {
 		"directory": "bower_components"
 	}

@@ -1,4 +1,5 @@
 .tmp/
+.maps/
 dist/
 node_modules/
 bower_components/

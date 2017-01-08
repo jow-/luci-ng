@@ -26,4 +26,9 @@ build: prepare
 	$(GULP) build
 
 clean: 
-	 $(GULP) clean
+	$(GULP) clean
+	 
+distclean: clean
+	rm -rf bower_components
+	rm -rf node_modules
+	
