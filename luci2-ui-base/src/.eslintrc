@@ -8,22 +8,43 @@
 	"env": {
 		"browser": true
 	},
-	"extends": ["eslint:recommended", "angular"],
+	"extends": ["eslint:recommended", "google", "angular"],
+
+	"plugins": ["json"],
 	"rules": {
-		"no-undef": 2,
-		"no-unused-vars": 2,
+		/* google overrides */
+		"require-jsdoc": 0,
+		"max-len": [2, {
+			"code": 100,
+			"tabWidth": 2,
+			"ignoreUrls": true
+		}],
+		"one-var": 0,
+		"guard-for-in": 0,
+		"brace-style": [2, "1tbs", {"allowSingleLine": true }],
 
+		/* disable Google ES6 */
+		"no-var": 0,
+		"prefer-rest-params": 0,
+		"prefer-spread": 0,
 
-		"semi": ["error", "always"],
-		"strict": [1, "global"],
-		"quotes": [1, "single"],
-		"key-spacing": 0,
-		"no-trailing-spaces": 1,
-		"no-multi-spaces": "error",
-		"eol-last": 1,
-		"indent": ["error", "tab"],
+		/* custom */
+		"indent": [1, "tab", {
+			"SwitchCase": 1,
+			"VariableDeclarator": 1,
+			"FunctionDeclaration": {
+				"parameters": 1,
+				"body": 1
+			},
+			"FunctionExpression": {
+				"parameters": 1,
+				"body": 1
+			},
+			"ArrayExpression": 1,
+			"ObjectExpression": 1
+			}],
 
-		"no-console": 0
-
+		/* Angular overrides */
+		"angular/definedundefined": 0
 	}
 }
