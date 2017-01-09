@@ -1,0 +1,15 @@
+<div class="cbi-map">+
+	<h2 ng-if="Map.title">{{Map.title}}</h2>
+	<p ng-if="Map.description">{{Map.description}}</p>
+	<p ng-if="Map.lockCount" class="text-muted" translate>Loading configuration data…</p>
+	<div class="fade" ng-class="{in:!Map.lockCount}" ng-style="{opacity: Map.lockCount ? 0.3 : 1}">
+		<ng-transclude></ng-transclude>
+	</div>
+	<div class="panel panel-default panel-body text-right">
+		<div class="btn-group">
+			<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event);Map.apply($event)" class="btn btn-primary" translate>Save &amp; Apply</button>
+			<button type="button" ng-disabled="Map.lockCount" ng-click="Map.save($event)" class="btn btn-default" translate>Save</button>
+			<button type="button" ng-disabled="Map.lockCount" ng-click="Map.reset($event)" class="btn btn-default" translate>Reset</button>
+		</div>
+	</div>
+</div>
