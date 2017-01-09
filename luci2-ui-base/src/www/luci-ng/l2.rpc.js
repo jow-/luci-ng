@@ -1,4 +1,4 @@
-L2.registerFactory('l2rpc', ['$q', '$http', function($q, $http) {
+angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 	var _rpc = { };
 	return angular.extend(_rpc, {
 		_id: 1,
@@ -216,4 +216,4 @@ L2.registerFactory('l2rpc', ['$q', '$http', function($q, $http) {
 				_rpc._token = '00000000000000000000000000000000';
 		}
 	});
-}]);
+});

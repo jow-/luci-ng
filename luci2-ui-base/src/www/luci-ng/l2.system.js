@@ -1,4 +1,4 @@
-L2.registerFactory('l2system', ['l2rpc', function(l2rpc) {
+angular.module('LuCI2').factory('l2system', function(l2rpc) {
 	var _system = { };
 	return angular.extend(_system, {
 		getSystemInfo: l2rpc.declare({
@@ -82,4 +82,4 @@ L2.registerFactory('l2system', ['l2rpc', function(l2rpc) {
 			method: 'reboot'
 		})
 	});
-}]);
+});

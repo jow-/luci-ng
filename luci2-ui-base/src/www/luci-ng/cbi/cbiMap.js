@@ -1,6 +1,6 @@
 'use strict';
 
-L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout, $parse, l2uci) {
+angular.module('LuCI2').directive('cbiMap', function($timeout, $parse, l2uci) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -106,5 +106,5 @@ L2.registerDirective('cbiMap', ['$timeout', '$parse', 'l2uci', function($timeout
 			cbiMapCtrl.init(iElem);
 		},
 	};
-}]);
+});
 

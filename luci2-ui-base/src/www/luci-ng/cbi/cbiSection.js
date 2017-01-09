@@ -1,7 +1,6 @@
 'use strict';
 
-L2.registerDirective('cbiSection', function($timeout, $parse, gettext, l2validation) {
-	'ngInject';
+angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gettext, l2validation) {
 	return {
 		restrict: 'A',
 		scope: true,
@@ -9,7 +8,6 @@ L2.registerDirective('cbiSection', function($timeout, $parse, gettext, l2validat
 
 		controllerAs: 'Section',
 		controller: function($scope, $q, l2uci) {
-			'ngInject';
 			var self = angular.extend(this, {
 				uciSections: [],
 
@@ -125,10 +123,10 @@ L2.registerDirective('cbiSection', function($timeout, $parse, gettext, l2validat
 
 				sort: function(sid1, dir) {
 					var idx=self.uciSections.indexOf(sid1);
-					if(idx < 0) return;
+					if (idx < 0) return;
 
 					idx = idx + (dir > 0 ? 1 : -1);
-					if(idx < 0 || idx >= self.uciSections.length ) return;
+					if (idx < 0 || idx >= self.uciSections.length ) return;
 
 					var sid2=self.uciSections[idx];
 

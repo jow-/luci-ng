@@ -1,4 +1,4 @@
-L2.registerFactory('l2ip', [function() {
+angular.module('LuCI2').factory('l2ip', function() {
 	var _ip = { };
 	return angular.extend(_ip, {
 		parseIPv4: function(str)
@@ -187,9 +187,10 @@ L2.registerFactory('l2ip', [function() {
 			return false;
 		}
 	});
-}]);
+});
 
-L2.registerFactory('l2network', ['l2class', 'l2use', 'l2rpc', 'l2uci', '$injector', '$q', 'gettext', function(l2class, l2use, l2rpc, l2uci, $injector, $q, gettext) {
+angular.module('LuCI2').factory('l2network',
+																function(l2class, l2use, l2rpc, l2uci, $injector, $q, gettext) {
 	var _network = { };
 
 	angular.extend(_network, {
@@ -1621,4 +1622,4 @@ L2.registerFactory('l2network', ['l2class', 'l2use', 'l2rpc', 'l2uci', '$injecto
 	});
 
 	return _network;
-}]);
+});

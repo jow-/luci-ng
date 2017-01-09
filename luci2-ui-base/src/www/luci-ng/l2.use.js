@@ -1,4 +1,4 @@
-L2.registerFactory('l2use', ['$q', 'l2spin', function($q, l2spin) {
+angular.module('LuCI2').factory('l2use', function($q, l2spin) {
 	var _use = {
 		_head: document.getElementsByTagName('head')[0],
 		_registry: { },
@@ -65,4 +65,4 @@ L2.registerFactory('l2use', ['$q', 'l2spin', function($q, l2spin) {
 	}
 
 	return _use;
-}]);
+});

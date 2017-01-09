@@ -1,6 +1,6 @@
 'use strict';
 
-L2.registerDirective('cbiOption', function($parse, l2validation, gettext) {
+angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, gettext) {
 	'ngInject';
 	return {
 		restrict: 'A',
@@ -9,7 +9,6 @@ L2.registerDirective('cbiOption', function($parse, l2validation, gettext) {
 
 		controllerAs: 'Option',
 		controller: function($scope, $q, l2uci) {
-			'ngInject';
 			var self = angular.extend(this, {
 				rdepends: { },
 				isUnsatisified: false,
@@ -144,7 +143,7 @@ L2.registerDirective('cbiOption', function($parse, l2validation, gettext) {
 				validate: function() {
 					var value = self.rawValue;
 
-					if ((angular.isUnefined(value) || value.length === 0) && self.isRequired)
+					if ((angular.isUndefined(value) || value.length === 0) && self.isRequired)
 						self.errorMsg = gettext('Field must not be empty');
 					else if (angular.isDefined(value) && value.length > 0 && self.validationFn)
 						self.errorMsg = l2validation.test(self.validationFn, value);
@@ -208,89 +207,86 @@ L2.registerDirective('cbiOption', function($parse, l2validation, gettext) {
 		templateUrl: 'luci-ng/cbi/cbiOption.tmpl.html',
 
 		require: ['cbiOption', '^cbiSection', '^cbiMap'],
-		compile: function(tElem, tAttr, linker) {
+		link: function($scope, iElem, iAttr, ctrls) {
 			var CBI_OPTION_MATCH = /^(?:([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]+)\.)?([a-zA-Z0-9_]+)$/;
+			var isRequired = false,
+				validationFn = null;
 
-			return function($scope, iElem, iAttr, ctrls) {
-				var isRequired = false,
-					validationFn = null;
+			if (iAttr.validate && /^(?:(require|optional)\s+)?(.+)$/.test(iAttr.validate)) {
+				isRequired = (RegExp.$1 === '' || RegExp.$1 === 'require');
+				validationFn = l2validation.compile(RegExp.$2);
+			}
+			var cbiOptionCtrl = ctrls[0],
+				cbiSectionCtrl = ctrls[1],
+				cbiMapCtrl = ctrls[2];
 
-				if (iAttr.validate && /^(?:(require|optional)\s+)?(.+)$/.test(iAttr.validate)) {
-					isRequired = (RegExp.$1 === '' || RegExp.$1 === 'require');
-					validationFn = l2validation.compile(RegExp.$2);
-				}
-				var cbiOptionCtrl = ctrls[0],
-					cbiSectionCtrl = ctrls[1],
-					cbiMapCtrl = ctrls[2];
+			if (!CBI_OPTION_MATCH.test(iAttr.cbiOption))
+				throw new Error('Invalid UCI selector');
 
-				if (!CBI_OPTION_MATCH.test(iAttr.cbiOption))
-					throw new Error('Invalid UCI selector');
+			var uciPackage = (RegExp.$1 !== '') ? RegExp.$1 : cbiSectionCtrl.uciPackageName,
+				uciSection = (RegExp.$2 !== '') ? RegExp.$2 : $scope.uciSectionName,
+				uciOption = RegExp.$3,
+				dependencies = [],
+				name = iAttr.hasOwnProperty('name') ? iAttr.name : uciOption,
+				id = '%s.%s.%s'.format(uciPackage, uciSection, name);
 
-				var uciPackage = (RegExp.$1 !== '') ? RegExp.$1 : cbiSectionCtrl.uciPackageName,
-					uciSection = (RegExp.$2 !== '') ? RegExp.$2 : $scope.uciSectionName,
-					uciOption = RegExp.$3,
-					dependencies = [],
-					name = iAttr.hasOwnProperty('name') ? iAttr.name : uciOption,
-					id = '%s.%s.%s'.format(uciPackage, uciSection, name);
+			if (iAttr.hasOwnProperty('depends')) {
+				var deps;
 
-				if (iAttr.hasOwnProperty('depends')) {
-					var deps;
+				if (/^\s*[\{\['"]/.test(iAttr.depends)) {
+					deps = $parse(iAttr.depends)($scope);
 
-					if (/^\s*[\{\['"]/.test(iAttr.depends)) {
-						deps = $parse(iAttr.depends)($scope);
-
-						if (angular.isArray(deps)) {
-							for (var i = 0, dep; dep = deps[i]; i++) {
-								if (angular.isObject(dep)) {
-									dependencies.push(dep);
-								}								else if (angular.isString(dep)) {
-									var d = { }; d[dep] = true;
-									dependencies.push(dep);
-								}
-							}
-						}						else if (angular.isObject(deps)) {
-							dependencies.push(deps);
-						}						else if (angular.isString(deps)) {
-							var d = { }; d[deps] = true;
-							dependencies.push(d);
-						}
-					}					else {
-						deps = angular.toArray(iAttr.depends);
-
+					if (angular.isArray(deps)) {
 						for (var i = 0, dep; dep = deps[i]; i++) {
-							var d = { }; d[dep] = true;
-							dependencies.push(d);
+							if (angular.isObject(dep)) {
+								dependencies.push(dep);
+							}								else if (angular.isString(dep)) {
+								var d = { }; d[dep] = true;
+								dependencies.push(dep);
+							}
 						}
+					} else if (angular.isObject(deps)) {
+						dependencies.push(deps);
+					}	else if (angular.isString(deps)) {
+						var d = { }; d[deps] = true;
+						dependencies.push(d);
+					}
+				}	else {
+					deps = angular.toArray(iAttr.depends);
+
+					for (var i = 0, dep; dep = deps[i]; i++) {
+						var d = { }; d[dep] = true;
+						dependencies.push(d);
 					}
 				}
+			}
 
-				cbiSectionCtrl.addOption(angular.extend(cbiOptionCtrl, {
-					id: id,
-					name: name,
+			cbiSectionCtrl.addOption(angular.extend(cbiOptionCtrl, {
+				id: id,
+				name: name,
 
-					title: iAttr.title || RegExp.$3,
-					placeholder: iAttr.placeholder,
-					description: iAttr.description,
+				title: iAttr.title || RegExp.$3,
+				placeholder: iAttr.placeholder,
+				description: iAttr.description,
 
-					isList: iAttr.hasOwnProperty('list'),
-					isPreview: iAttr.hasOwnProperty('preview'),
-					isRequired: isRequired,
-					validationFn: validationFn,
+				isList: iAttr.hasOwnProperty('list'),
+				isPreview: iAttr.hasOwnProperty('preview'),
+				isRequired: isRequired,
+				validationFn: validationFn,
 
-					waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
+				waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
-					dependencies: dependencies,
+				dependencies: dependencies,
 
-					uciPackageName: uciPackage,
-					uciSectionName: uciSection,
-					uciOptionName: uciOption,
+				uciPackageName: uciPackage,
+				uciSectionName: uciSection,
+				uciOptionName: uciOption,
 
-					cbiOwnerMap: cbiMapCtrl,
-					cbiOwnerSection: cbiSectionCtrl,
-				}));
+				cbiOwnerMap: cbiMapCtrl,
+				cbiOwnerSection: cbiSectionCtrl,
+			}));
 
-				cbiOptionCtrl.init(iElem);
-			};
+			cbiOptionCtrl.init(iElem);
 		},
 	};
 });

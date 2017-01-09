@@ -1,4 +1,4 @@
-L2.registerFactory('l2oui', ['$http', function($http) {
+angular.module('LuCI2').factory('l2oui', function($http) {
 	var _oui = { };
 	return angular.extend(_oui, {
 		_load: function(res) {
@@ -55,4 +55,4 @@ L2.registerFactory('l2oui', ['$http', function($http) {
 			});
 		}
 	});
-}]);
+});

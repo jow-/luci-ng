@@ -1,5 +1,5 @@
 (function() {
-	"use strict";
+	'use strict';
 
 
 	if (!angular.element.findAll)
@@ -128,8 +128,8 @@
 						var param = arguments[numSubstitutions++];
 
 						var pad = '';
-						if (pPad && pPad.substr(0,1) == "'")
-							pad = leftpart.substr(1,1);
+						if (pPad && pPad.substr(0, 1) == "'")
+							pad = leftpart.substr(1, 1);
 						else if (pPad)
 							pad = pPad;
 
@@ -264,15 +264,7 @@
 		'ui.bootstrap'
 	]);
 
-	angular.extend(L2, {
-		registerController: L2.controller,
-		registerDirective: L2.directive,
-		registerFilter: L2.filter,
-		registerFactory: L2.factory,
-		registerService: L2.service
-	});
-
-	window.L2
+	angular.module('LuCI2')
 		.filter('format', function() {
 			return function(input, template, ifnull) {
 				if (input === null || input === undefined) {
@@ -288,7 +280,7 @@
 				return input;
 			};
 		})
-		.factory('l2httpRetry',['$q', '$timeout', '$injector', function($q, $timeout, $injector) {
+		.factory('l2httpRetry', function($q, $timeout, $injector) {
 			return {
 				'responseError': function(response) {
 					var $http = $injector.get('$http');
@@ -304,8 +296,8 @@
 					return $q.reject(response);
 				}
 			};
-		}])
-		.factory('l2class', [function() {
+		})
+		.factory('l2class', function() {
 			var _class = function() { };
 			return angular.extend(_class, {
 				extend: function(properties)
@@ -353,8 +345,8 @@
 					return Subclass;
 				}
 			});
-		}])
-		.factory('$cookie', [function() {
+		})
+		.factory('$cookie', function() {
 			var _cookie = { };
 			return angular.extend(_cookie, {
 				get: function (name) {
@@ -439,8 +431,8 @@
 					return keys;
 				}
 			});
-		}])
-		.factory('l2auth', ['l2rpc', '$timeout', '$uibModal', '$cookie', '$rootScope', function(l2rpc, $timeout, $modal, $cookie, $rootScope) {
+		})
+		.factory('l2auth', function(l2rpc, $timeout, $uibModal, $cookie, $rootScope) {
 			var _auth = { };
 			return angular.extend(_auth, {
 				login: l2rpc.declare({
@@ -487,10 +479,10 @@
 				},
 
 				prompt: function() {
-					_auth._dialog = $modal.open({
+					_auth._dialog = $uibModal.open({
 						backdrop: 'static',
 						templateUrl: 'loginForm',
-						controller: ['$scope', '$uibModalInstance', function($scope, $modalInstance) {
+						controller: function($scope, $uibModalInstance) {
 							$scope.login = function($event) {
 								if ($event.which !== 1 && $event.which !== 13)
 									return;
@@ -501,7 +493,7 @@
 								_auth.login($scope.username, $scope.password).then(function(session) {
 									if (angular.isObject(session.data) && session.data.username) {
 										$scope.error = false;
-										$cookie.set('l2-session', session.ubus_rpc_session, Infinity, '/')
+										$cookie.set('l2-session', session.ubus_rpc_session, Infinity, '/');
 										l2rpc.token(session.ubus_rpc_session);
 										_auth.heartbeat();
 										_auth._dialog.close();
@@ -511,7 +503,7 @@
 									}
 								});
 							};
-						}]
+						}
 					});
 				},
 
@@ -544,10 +536,10 @@
 				},
 
 				destroy: function() {
-					_auth._dialog = $modal.open({
+					_auth._dialog = $uibModal.open({
 						backdrop: 'static',
 						templateUrl: 'logoutForm',
-						controller: ['$scope', '$uibModalInstance', function($scope, $modalInstance) {
+						controller: function($scope, $uibModalInstance) {
 							$scope.cancel = function($event) {
 								_auth._dialog.close();
 							};
@@ -561,12 +553,12 @@
 									_auth.prompt();
 								});
 							};
-						}]
+						}
 					});
 				}
 			});
-		}])
-		.factory('l2menu', ['l2rpc', '$route', function(l2rpc, $route) {
+		})
+		.factory('l2menu', function(l2rpc, $route) {
 			var _menu = { };
 			return angular.extend(_menu, {
 				load: l2rpc.declare({
@@ -686,8 +678,8 @@
 					return _menu.load().then(_menu.populate);
 				}
 			});
-		}])
-		.factory('l2spin', ['$uibModal', 'gettext', function($modal, gettext) {
+		})
+		.factory('l2spin', function($uibModal, gettext) {
 			var template = '<div class="modal-content l2-modal-loader">' +
 				'<div class="modal-body">' +
 					gettext('Loading data…') +
@@ -700,7 +692,7 @@
 					if (_loading.$modal)
 						return;
 
-					_loading.$modal = $modal.open({
+					_loading.$modal = $uibModal.open({
 						backdrop: 'static',
 						template: template,
 						windowClass: 'no-animation-modal'
@@ -715,23 +707,22 @@
 					delete _loading.$modal;
 				}
 			});
-		}])
-		.controller('HeaderController',
-			['l2spin', 'l2menu', 'l2auth', '$scope', function(l2spin, l2menu, l2auth, $scope) {
-				$scope.logout = l2auth.destroy;
+		})
+		.controller('HeaderController', function(l2spin, l2menu, l2auth, $scope) {
+			$scope.logout = l2auth.destroy;
 
-				$scope.$on('session.setup', function(event, session) {
-					l2spin.open();
-					$scope.user = session.data ? session.data.username : undefined;
-					$scope.token = session.ubus_rpc_session;
-					l2menu.update().then(function(menu) {
-						$scope.menu = menu;
-						l2spin.close();
-					});
+			$scope.$on('session.setup', function(event, session) {
+				l2spin.open();
+				$scope.user = session.data ? session.data.username : undefined;
+				$scope.token = session.ubus_rpc_session;
+				l2menu.update().then(function(menu) {
+					$scope.menu = menu;
+					l2spin.close();
 				});
-			}])
-		.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$uibModalProvider', '$httpProvider', '$provide',
-			function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $modalProvider, $httpProvider, $provide) {
+			});
+		})
+		.config(function($routeProvider, $controllerProvider, $compileProvider, $filterProvider,
+										$uibModalProvider, $httpProvider, $provide) {
 				angular.extend(angular, {
 					isEmptyObject: function(x)
 					{
@@ -890,9 +881,8 @@
 				});
 
 				$httpProvider.interceptors.push('l2httpRetry');
-			}])
-		.run(['$q', '$injector', 'l2auth', 'gettextCatalog',
-			function($q, $injector, l2auth, gettextCatalog) {
+			})
+		.run(function($q, $injector, l2auth, gettextCatalog) {
 				angular.deferrable = function(x) {
 					var deferred = $q.defer(); deferred.resolve(x);
 					return deferred.promise;
@@ -904,9 +894,9 @@
 				});
 
 				gettextCatalog.setCurrentLanguage('de');
-				//gettextCatalog.debug = true;
+				// gettextCatalog.debug = true;
 
 				l2auth.init();
-			}])
+			})
 		;
 })();

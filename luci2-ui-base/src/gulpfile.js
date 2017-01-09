@@ -46,8 +46,13 @@ function inject() {
 
 	const opts = {
 		ignorePath: [conf.paths.src, conf.paths.tmp],
-		addRootSlash: false,
+		addRootSlash: false
 	};
+
+	gulp.src([path.join(conf.paths.src, conf.paths.app, '*.js'),
+		path.join(conf.paths.src, conf.paths.app, 'cbi/**/*.js')], {base: conf.paths.src})
+		.pipe($.ngAnnotate({remove: true, add: true, single_quotes: true}))
+		.pipe(gulp.dest(conf.paths.tmp));
 
 	return gulp.src(path.join(conf.paths.src, conf.paths.mainHtml))
 		.pipe($.inject(css, opts))
@@ -71,11 +76,11 @@ function serveDev() {
 			baseDir: [conf.paths.tmp, conf.paths.src],
 			index: conf.paths.mainHtml,
 			routes: {
-				'/bower_components': 'bower_components',
+				'/bower_components': 'bower_components'
 			},
-			middleware: conf.proxy ? proxy('http://lede.lan/ubus') : undefined,
+			middleware: conf.proxy ? proxy('http://lede.lan/ubus') : undefined
 		},
-		open: false,
+		open: false
 	});
 }
 
@@ -84,9 +89,13 @@ function serveDist() {
 		server: {
 			baseDir: [conf.paths.dist],
 			index: conf.paths.mainHtml,
-			middleware: conf.proxy ? proxy('http://lede.lan/ubus') : undefined,
+			routes: {
+				'/.maps': '.maps',
+				'/bower_components': 'bower_components'
+			},
+			middleware: conf.proxy ? proxy('http://lede.lan/ubus') : undefined
 		},
-		open: false,
+		open: false
 	});
 }
 
@@ -118,7 +127,7 @@ function partials() {
     .pipe($.htmlmin({collapseWhitespace: true}))
     .pipe($.angularTemplatecache('templateCache.js', {
 	module: conf.ngModule,
-	root: conf.paths.app,
+	root: conf.paths.app
 }))
     .pipe(gulp.dest(conf.paths.tmp));
 }
@@ -128,7 +137,7 @@ function build() {
 	const opts = {
 		starttag: '<!-- inject:partials -->',
 		ignorePath: conf.paths.tmp,
-		addRootSlash: false,
+		addRootSlash: false
 	};
 
 	const htmlFilter = $.filter(path.join(conf.paths.tmp, '**/*.html'), {restore: true});
@@ -141,13 +150,15 @@ function build() {
 		.pipe($.useref({}, lazypipe().pipe($.sourcemaps.init, {loadMaps: true})))
 
 		.pipe(jsFilter)
-		// .pipe($.ngAnnotate({remove: true, add: true, single_quotes: true})))
-    .pipe($.uglify({preserveComments: 'license'}))
+		.pipe($.if('**/luci-ng.js', // don't annotate libs
+			$.ngAnnotate({remove: true, add: true, single_quotes: true})))
+    .pipe($.uglify({preserveComments: 'license'})) // but minify everything
 		.pipe(jsFilter.restore)
 
     .pipe(cssFilter)
-		.pipe($.if(path.join(conf.paths.src, '**/*'), $.autoprefixer())) // only for proyect css
-    .pipe($.cssnano())
+		.pipe($.if('**/luci-ng.css', // don't prefix libs css
+			$.autoprefixer()))
+    .pipe($.cssnano()) // but minify everything
     .pipe(cssFilter.restore)
 
 		.pipe(htmlFilter)

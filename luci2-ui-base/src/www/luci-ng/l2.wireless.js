@@ -1,4 +1,4 @@
-L2.registerFilter('wifiSignalRange', function() {
+angular.module('LuCI2').filter('wifiSignalRange', function() {
 	return function(obj) {
 		if (!angular.isObject(obj) ||
 		    !angular.isNumber(obj.signal) ||
@@ -19,11 +19,11 @@ L2.registerFilter('wifiSignalRange', function() {
 	}
 });
 
-L2.registerFilter('wifiEncryption', ['l2wireless', function(l2wireless) {
+angular.module('LuCI2').filter('wifiEncryption', function(l2wireless) {
 	return l2wireless.formatEncryption;
-}]);
+});
 
-L2.registerFactory('l2wireless', ['l2rpc', 'l2uci', 'gettext', function(l2rpc, l2uci, gettext) {
+angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 	var _wireless = { };
 	return angular.extend(_wireless, {
 
@@ -386,4 +386,4 @@ L2.registerFactory('l2wireless', ['l2rpc', 'l2uci', 'gettext', function(l2rpc, l
 			return gettext('Unknown');
 		}
 	});
-}]);
+});

@@ -1,4 +1,4 @@
-L2.registerFactory('l2cgi', ['$q', '$http', 'l2rpc', function($q, $http, l2rpc) {
+angular.module('LuCI2').factory('l2cgi', function($q, $http, l2rpc) {
 	var _cgi = { };
 	return angular.extend(_cgi, {
 
@@ -67,4 +67,4 @@ L2.registerFactory('l2cgi', ['$q', '$http', 'l2rpc', function($q, $http, l2rpc) 
 					});
 		}
 	});
-}]);
+});

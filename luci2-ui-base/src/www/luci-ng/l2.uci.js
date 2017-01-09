@@ -1,4 +1,4 @@
-L2.registerFactory('l2uci', ['l2rpc', '$q', function(l2rpc, $q) {
+angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 	var _uci = { };
 	return angular.extend(_uci, {
 		_state: {
@@ -534,4 +534,4 @@ L2.registerFactory('l2uci', ['l2rpc', '$q', function(l2rpc, $q) {
 			return true;
 		}
 	});
-}]);
+});
