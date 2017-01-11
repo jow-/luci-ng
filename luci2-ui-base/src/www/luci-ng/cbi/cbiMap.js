@@ -84,7 +84,7 @@ angular.module('LuCI2').directive('cbiMap', function($timeout, $parse, l2uci) {
 					$event.currentTarget.blur();
 
 					l2uci.apply(10);
-				},
+				}
 			});
 		},
 
@@ -100,11 +100,11 @@ angular.module('LuCI2').directive('cbiMap', function($timeout, $parse, l2uci) {
 				waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
 				uciPackages: {},
-				uciPackageName: iAttr.cbiMap,
+				uciPackageName: iAttr.cbiMap
 			});
 
 			cbiMapCtrl.init(iElem);
-		},
+		}
 	};
 });
 

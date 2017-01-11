@@ -1,9 +1,8 @@
-L2.registerController('NetworkWirelessController',
-['$scope', 'l2uci', 'l2rpc', 'l2wireless', '$timeout', 'l2spin', 'gettext', '$uibModal', function($scope, l2uci, l2rpc, l2wireless, $timeout, l2spin, gettext, $uibModal) {
-
-	//l2uci.load('wireless').then(function() {
+L2.registerController('NetworkWirelessController', function($scope, l2uci,
+	                  l2rpc, l2wireless, $timeout, l2spin, gettext, $uibModal, l2system) {
+	// l2uci.load('wireless').then(function() {
 	//	angular.element('[ng-view]').html(angular.toJson(l2uci.get('wireless', 'radio0'), true));
-	//});
+	// });
 
 	var networkWirelessCtrl = angular.extend(this, {
 
@@ -15,15 +14,15 @@ L2.registerController('NetworkWirelessController',
 		getWirelessScanResults: l2rpc.declare({
 			object: 'iwinfo',
 			method: 'scan',
-			params: [ 'device' ],
-			expect: { results: [ ] }
+			params: ['device'],
+			expect: { results: [] }
 		}),
 
 		getWirelessFreqList: l2rpc.declare({
 			object: 'iwinfo',
 			method: 'freqlist',
-			params: [ 'device' ],
-			expect: { results: [ ] }
+			params: ['device'],
+			expect: { results: [] }
 		}),
 
 		getEAPSupportStatus: l2rpc.declare({
@@ -36,8 +35,7 @@ L2.registerController('NetworkWirelessController',
 			method: 'reload'
 		}),
 
-		enableDisableNetwork: function(enable, ifaceStatus)
-		{
+		enableDisableNetwork: function(enable, ifaceStatus)		{
 			l2spin.open();
 
 			if (enable)
@@ -46,10 +44,10 @@ L2.registerController('NetworkWirelessController',
 				ifaceStatus.isStopping = true;
 
 			l2rpc.batch();
-			l2uci.callDelete('wireless', ifaceStatus.radio, [ 'disabled' ]);
+			l2uci.callDelete('wireless', ifaceStatus.radio, ['disabled']);
 
 			if (enable)
-				l2uci.callDelete('wireless', ifaceStatus.section, [ 'disabled' ]);
+				l2uci.callDelete('wireless', ifaceStatus.section, ['disabled']);
 			else
 				l2uci.callSet('wireless', ifaceStatus.section, { disabled: 1 });
 
@@ -61,55 +59,52 @@ L2.registerController('NetworkWirelessController',
 		},
 
 		uciParseMode: function(v) {
-			switch (v)
-			{
-			case 'ap':		return 'Master';
-			case 'adhoc':	return 'Ad-Hoc';
-			case 'mesh':    return 'Mesh Point';
-			case 'sta':     return 'Client';
-			case 'monitor': return 'Monitor';
-			default:		return gettext('Unknown');
+			switch (v)			{
+				case 'ap':		return 'Master';
+				case 'adhoc':	return 'Ad-Hoc';
+				case 'mesh':    return 'Mesh Point';
+				case 'sta':     return 'Client';
+				case 'monitor': return 'Monitor';
+				default:		return gettext('Unknown');
 			}
 		},
 
 		uciParseEncryption: function(v, k) {
 			var e = { };
 
-			if (v.match(/wep/))
-			{
+			if (v.match(/wep/))			{
 				if (v.match(/shared/))
-					e.wep = [ 'shared' ];
+					e.wep = ['shared'];
 				else if (v.match(/mixed/))
-					e.wep = [ 'open', 'shared' ];
+					e.wep = ['open', 'shared'];
 				else
-					e.wep = [ 'open' ];
+					e.wep = ['open'];
 
 				e.enabled = true;
-				e.ciphers = [ (k && k.length == 13) ? 'WEP-104' : 'WEP-40' ];
+				e.ciphers = [(k && k.length == 13) ? 'WEP-104' : 'WEP-40'];
 
 				return e;
 			}
 
 			if (v.match(/^wpa2|psk2/))
-				e.wpa = [ 2 ];
+				e.wpa = [2];
 			else if (v.match(/^wpa|psk/))
-				e.wpa = [ 1 ];
+				e.wpa = [1];
 			else if (v.match(/mixed/))
-				e.wpa = [ 1, 2 ];
+				e.wpa = [1, 2];
 
-			if (e.wpa)
-			{
+			if (e.wpa)			{
 				if (v.match(/tkip\+aes|tkip\+ccmp|aes\+tkip|ccmp\+tkip/))
-					e.ciphers = [ 'ccmp', 'tkip' ];
+					e.ciphers = ['ccmp', 'tkip'];
 				else if (v.match(/tkip/))
-					e.ciphers = [ 'tkip' ];
+					e.ciphers = ['tkip'];
 				else
-					e.ciphers = [ 'ccmp' ];
+					e.ciphers = ['ccmp'];
 
 				if (v.match(/^wpa|8021x/))
-					e.authentication = [ '802.1x' ];
+					e.authentication = ['802.1x'];
 				else
-					e.authentication = [ 'psk' ];
+					e.authentication = ['psk'];
 
 				e.enabled = true;
 			}
@@ -154,21 +149,25 @@ L2.registerController('NetworkWirelessController',
 				controller: networkWirelessCtrl.scanWirelessCtrl,
 				controllerAs: 'Dialog',
 				templateUrl: 'network/wireless/scan.html',
-				resolve: { currentRadioDevice: function() { return radio } }
+				resolve: {
+					currentRadioDevice: function() {
+						return radio;
+					}
+				}
 			});
 		},
 
 		addSSID: function(radio) {
-			L.ui.loading(true);
-			L.system.getBoardInfo().then(function(info) {
+				// L.ui.loading(true);
+			l2system.getBoardInfo().then(function(info) {
 				var sid = l2uci.add('wireless', 'wifi-iface');
 				l2uci.set('wireless', sid, 'device', radio);
 				l2uci.set('wireless', sid, 'mode', 'ap');
 				l2uci.set('wireless', sid, 'ssid', info.hostname || 'Wireless Network');
 				l2uci.set('wireless', sid, 'encryption', 'none');
-				return L.views.NetworkWireless.renderWirelessMap(radio, sid).show();
+				// return L.views.NetworkWireless.renderWirelessMap(radio, sid).show();
 			}).then(function() {
-				L.ui.loading(false);
+					// L.ui.loading(false);
 			});
 		},
 
@@ -204,16 +203,19 @@ L2.registerController('NetworkWirelessController',
 				controller: networkWirelessCtrl.deleteSSIDCtrl,
 				controllerAs: 'Dialog',
 				templateUrl: 'network/wireless/delete.html',
-				resolve: { ifaceStatus: function() { return ifaceStatus } }
+				resolve: {
+					ifaceStatus: function() {
+						return ifaceStatus;
+					}
+				}
 			});
 		},
 
-		getWirelessStatus: function()
-		{
+		getWirelessStatus: function()		{
 			var phyMap = { },
 				freqMap = { },
-				radioNames = [ ],
-				networkRefs = [ ];
+				radioNames = [],
+				networkRefs = [];
 
 			var phy_attrs = [
 				'country', 'channel', 'frequency', 'frequency_offset',
@@ -225,7 +227,7 @@ L2.registerController('NetworkWirelessController',
 				'signal', 'noise', 'bitrate', 'encryption'
 			];
 
-			//self.wifiStatus = self.wifiStatus || (self.wifiStatus = { });
+			// self.wifiStatus = self.wifiStatus || (self.wifiStatus = { });
 			var stat = { };
 
 			return networkWirelessCtrl.getEAPSupportStatus().then(function(eapSupport) {
@@ -238,8 +240,7 @@ L2.registerController('NetworkWirelessController',
 
 				l2rpc.batch();
 
-				for (var radioName in uciStat)
-				{
+				for (var radioName in uciStat)				{
 					l2wireless.getPhyName(radioName);
 					networkWirelessCtrl.getWirelessFreqList(radioName);
 					radioNames.push(radioName);
@@ -247,22 +248,20 @@ L2.registerController('NetworkWirelessController',
 
 				return l2rpc.flush();
 			}).then(function(iwResults) {
-				for (var i = 0; i < iwResults.length; i += 2)
-				{
+				var i, n;
+				for (i = 0; i < iwResults.length; i += 2)				{
 					phyMap[radioNames[i/2]] = iwResults[i];
 					freqMap[radioNames[i/2]] = iwResults[i+1];
 				}
 
 				l2rpc.batch();
 
-				for (var radioName in stat)
-				{
+				for (var radioName in stat)				{
 					var uciRadio = stat[radioName];
 					var uciIfaces = l2uci.sections('wireless', 'wifi-iface');
-					var cfgIfaces = [ ];
+					var cfgIfaces = [];
 
-					for (var i = 0, n = 0; i < uciIfaces.length; i++)
-					{
+					for (i = 0, n = 0; i < uciIfaces.length; i++)					{
 						if (uciIfaces[i].device != radioName)
 							continue;
 
@@ -305,20 +304,20 @@ L2.registerController('NetworkWirelessController',
 					}
 
 					uciRadio.interfaces = cfgIfaces;
-					uciRadio.frequencies = freqMap[radioName] || [ ];
+					uciRadio.frequencies = freqMap[radioName] || [];
 				}
 
 				return l2rpc.flush();
 			}).then(function(iwStats) {
-				for (var i = 0; i < iwStats.length; i++)
-				{
+				var i, j;
+				for (i = 0; i < iwStats.length; i++)				{
 					var uciIface = networkRefs[i];
 					var uciRadio = stat[uciIface.radio];
 
-					for (var j = 0; j < phy_attrs.length; j++)
+					for (j = 0; j < phy_attrs.length; j++)
 						uciRadio[phy_attrs[j]] = iwStats[i][phy_attrs[j]];
 
-					for (var j = 0; j < net_attrs.length; j++)
+					for (j = 0; j < net_attrs.length; j++)
 						uciIface[net_attrs[j]] = iwStats[i][net_attrs[j]];
 
 					if (!uciRadio.hardwareName)
@@ -332,10 +331,8 @@ L2.registerController('NetworkWirelessController',
 								gettext('Wifi Device'),
 								uciIface.radio);
 
-					if (!uciIface.ifname)
-					{
-						if (!uciIface.config.ifname)
-						{
+					if (!uciIface.ifname)					{
+						if (!uciIface.config.ifname)						{
 							var phyIndex = (uciRadio.phy || uciIface.radio || '')
 								.replace(/^[^0-9]+/, '');
 
@@ -343,9 +340,7 @@ L2.registerController('NetworkWirelessController',
 								? '-%d'.format(uciIface.index) : '';
 
 							uciIface.ifname = 'wlan%d%s'.format(phyIndex, netIndex);
-						}
-						else
-						{
+						}						else						{
 							uciIface.ifname = uciIface.config.ifname;
 						}
 					}
@@ -376,4 +371,4 @@ L2.registerController('NetworkWirelessController',
 	$scope.$on('$destroy', function() {
 		$timeout.cancel(networkWirelessCtrl.$timeout);
 	});
-}]);
+});

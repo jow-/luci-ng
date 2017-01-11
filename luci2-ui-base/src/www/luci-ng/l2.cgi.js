@@ -2,20 +2,19 @@ angular.module('LuCI2').factory('l2cgi', function($q, $http, l2rpc) {
 	var _cgi = { };
 	return angular.extend(_cgi, {
 
-		_upload: function(fd)
-		{
+		_upload: function(fd) {
 			var def=$q.defer();
-			$http.post("/cgi-bin/luci-upload", fd, {
+			$http.post('/cgi-bin/luci-upload', fd, {
 				transformRequest: angular.identity,
 				headers: {
 					'Accept': '*/*',
 					'Content-Type': undefined
-				},
-			}).then(function(response){
-					def.resolve(response.data);
-				}, function(response){
-					def.reject(response);
-				});
+				}
+			}).then(function(response) {
+				def.resolve(response.data);
+			}, function(response) {
+				def.reject(response);
+			});
 			return def.promise;
 		},
 
@@ -37,34 +36,31 @@ angular.module('LuCI2').factory('l2cgi', function($q, $http, l2rpc) {
 			return _cgi._upload(fd);
 		},
 
-		_download: function()
-		{
-			var fileName = "backup.tar.gz";
-			var a = document.createElement("a");
+		_download: function() {
+			var fileName = 'backup.tar.gz';
+			var a = document.createElement('a');
 			document.body.appendChild(a);
-			a.style = "display: none";
+			a.style = 'display: none';
 			return $http({
 				url: '/cgi-bin/luci-backup',
 				data: 'sessionid=' + l2rpc.getToken(),
 				method: 'POST',
 				headers: {
 					'Accept': '*/*',
-					'Content-Type': 'application/x-www-form-urlencoded',
+					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				responseType: "arraybuffer",
+				responseType: 'arraybuffer',
 				cache: false
-				}).then(function(response){
-						console.log("success");
-						var file = new Blob([response.data],{
-							type: 'application/x-gzip'
-							});
-						var fileURL = window.URL.createObjectURL(file);
-						a.href = fileURL;
-						a.download = fileName;
-						a.click();
-					},function(response){
-						console.log("failed");
-					});
+			}).then(function(response) {
+				console.log('success');
+				var file = new Blob([response.data], { type: 'application/x-gzip' });
+				var fileURL = window.URL.createObjectURL(file);
+				a.href = fileURL;
+				a.download = fileName;
+				a.click();
+			}, function(response) {
+				console.log('failed');
+			});
 		}
 	});
 });

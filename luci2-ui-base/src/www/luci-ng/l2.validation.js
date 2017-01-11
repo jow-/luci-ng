@@ -1,75 +1,61 @@
 angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 	var _val = { };
 	return angular.extend(_val, {
-		compile: function(code)
-		{
+		compile: function(code) {
 			var pos = 0;
 			var esc = false;
 			var depth = 0;
-			var stack = [ ];
+			var stack = [];
 
 			code += ',';
 
-			for (var i = 0; i < code.length; i++)
-			{
-				if (esc)
-				{
+			for (var i = 0; i < code.length; i++) {
+				if (esc) {
 					esc = false;
 					continue;
 				}
 
-				switch (code.charCodeAt(i))
-				{
-				case 92:
-					esc = true;
-					break;
+				switch (code.charCodeAt(i)) {
+					case 92:
+						esc = true;
+						break;
 
-				case 40:
-				case 44:
-					if (depth <= 0)
-					{
-						if (pos < i)
-						{
-							var label = code.substring(pos, i);
+					case 40:
+					case 44:
+						if (depth <= 0) {
+							if (pos < i) {
+								var label = code.substring(pos, i);
 								label = label.replace(/\\(.)/g, '$1');
 								label = label.replace(/^[ \t]+/g, '');
 								label = label.replace(/[ \t]+$/g, '');
 
-							if (label && !isNaN(label))
-							{
-								stack.push(parseFloat(label));
+								if (label && !isNaN(label)) {
+									stack.push(parseFloat(label));
+								} else if (label.match(/^(['"]).*\1$/)) {
+									stack.push(label.replace(/^(['"])(.*)\1$/, '$2'));
+								} else if (typeof _val.types[label] == 'function') {
+									stack.push(_val.types[label]);
+									stack.push([]);
+								} else							{
+									throw new Error('Syntax error, unhandled token \''+label+'\'');
+								}
 							}
-							else if (label.match(/^(['"]).*\1$/))
-							{
-								stack.push(label.replace(/^(['"])(.*)\1$/, '$2'));
-							}
-							else if (typeof _val.types[label] == 'function')
-							{
-								stack.push(_val.types[label]);
-								stack.push([ ]);
-							}
-							else
-							{
-								throw "Syntax error, unhandled token '"+label+"'";
-							}
+							pos = i+1;
 						}
-						pos = i+1;
-					}
-					depth += (code.charCodeAt(i) == 40);
-					break;
+						depth += (code.charCodeAt(i) == 40);
+						break;
 
-				case 41:
-					if (--depth <= 0)
-					{
-						if (typeof stack[stack.length-2] != 'function')
-							throw "Syntax error, argument list follows non-function";
+					case 41:
+						if (--depth <= 0) {
+							if (typeof stack[stack.length-2] != 'function')
+								throw new Error('Syntax error, argument list follows non-function');
 
-						stack[stack.length-1] =
+							stack[stack.length-1] =
 							_val.compile(code.substring(pos, i));
 
-						pos = i+1;
-					}
-					break;
+							pos = i+1;
+						}
+						break;
 				}
 			}
 
@@ -86,8 +72,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 		},
 
 		types: {
-			'integer': function()
-			{
+			'integer': function() {
 				if (this.match(/^-?[0-9]+$/) != null)
 					return true;
 
@@ -95,8 +80,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'uinteger': function()
-			{
+			'uinteger': function() {
 				if (_val.types['integer'].apply(this) && (this >= 0))
 					return true;
 
@@ -104,8 +88,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'float': function()
-			{
+			'float': function() {
 				if (!isNaN(parseFloat(this)))
 					return true;
 
@@ -113,8 +96,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'ufloat': function()
-			{
+			'ufloat': function() {
 				if (_val.types['float'].apply(this) && (this >= 0))
 					return true;
 
@@ -122,8 +104,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'ipaddr': function()
-			{
+			'ipaddr': function() {
 				if (l2ip.parseIPv4(this) || l2ip.parseIPv6(this))
 					return true;
 
@@ -131,8 +112,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'ip4addr': function()
-			{
+			'ip4addr': function() {
 				if (l2ip.parseIPv4(this))
 					return true;
 
@@ -140,8 +120,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'ip6addr': function()
-			{
+			'ip6addr': function() {
 				if (l2ip.parseIPv6(this))
 					return true;
 
@@ -149,8 +128,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'netmask4': function()
-			{
+			'netmask4': function() {
 				if (l2ip.isNetmask(l2ip.parseIPv4(this)))
 					return true;
 
@@ -158,8 +136,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'netmask6': function()
-			{
+			'netmask6': function() {
 				if (l2ip.isNetmask(l2ip.parseIPv6(this)))
 					return true;
 
@@ -167,8 +144,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'cidr4': function()
-			{
+			'cidr4': function() {
 				if (this.match(/^([0-9.]+)\/(\d{1,2})$/))
 					if (RegExp.$2 <= 32 && l2ip.parseIPv4(RegExp.$1))
 						return true;
@@ -177,8 +153,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'cidr6': function()
-			{
+			'cidr6': function() {
 				if (this.match(/^([a-fA-F0-9:.]+)\/(\d{1,3})$/))
 					if (RegExp.$2 <= 128 && l2ip.parseIPv6(RegExp.$1))
 						return true;
@@ -187,10 +162,8 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'ipmask4': function()
-			{
-				if (this.match(/^([0-9.]+)\/([0-9.]+)$/))
-				{
+			'ipmask4': function() {
+				if (this.match(/^([0-9.]+)\/([0-9.]+)$/)) {
 					var addr = RegExp.$1, mask = RegExp.$2;
 					if (l2ip.parseIPv4(addr) && l2ip.isNetmask(l2ip.parseIPv4(mask)))
 						return true;
@@ -200,12 +173,10 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'ipmask6': function()
-			{
-				if (this.match(/^([a-fA-F0-9:.]+)\/([a-fA-F0-9:.]+)$/))
-				{
+			'ipmask6': function() {
+				if (this.match(/^([a-fA-F0-9:.]+)\/([a-fA-F0-9:.]+)$/)) {
 					var addr = RegExp.$1, mask = RegExp.$2;
-					if (l2ip.parseIPv6(addr) && l2ip.isNetmask(L.parseIPv6(mask)))
+					if (l2ip.parseIPv6(addr) && l2ip.isNetmask(l2ip.parseIPv6(mask)))
 						return true;
 				}
 
@@ -213,8 +184,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'port': function()
-			{
+			'port': function() {
 				if (_val.types['integer'].apply(this) &&
 					(this >= 0) && (this <= 65535))
 					return true;
@@ -223,10 +193,8 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'portrange': function()
-			{
-				if (this.match(/^(\d+)-(\d+)$/))
-				{
+			'portrange': function() {
+				if (this.match(/^(\d+)-(\d+)$/)) {
 					var p1 = RegExp.$1;
 					var p2 = RegExp.$2;
 
@@ -234,9 +202,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 						_val.types['port'].apply(p2) &&
 						(parseInt(p1) <= parseInt(p2)))
 						return true;
-				}
-				else if (_val.types['port'].apply(this))
-				{
+				} else if (_val.types['port'].apply(this)) {
 					return true;
 				}
 
@@ -244,8 +210,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'macaddr': function()
-			{
+			'macaddr': function() {
 				if (this.match(/^([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}$/) != null)
 					return true;
 
@@ -253,8 +218,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'host': function()
-			{
+			'host': function() {
 				if (_val.types['hostname'].apply(this) ||
 					_val.types['ipaddr'].apply(this))
 					return true;
@@ -263,8 +227,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'hostname': function()
-			{
+			'hostname': function() {
 				if ((this.length <= 253) &&
 					((this.match(/^[a-zA-Z0-9]+$/) != null ||
 					 (this.match(/^[a-zA-Z0-9_][a-zA-Z0-9_\-.]*[a-zA-Z0-9]$/) &&
@@ -275,8 +238,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'network': function()
-			{
+			'network': function() {
 				if (_val.types['uciname'].apply(this) ||
 					_val.types['host'].apply(this))
 					return true;
@@ -285,8 +247,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'wpakey': function()
-			{
+			'wpakey': function() {
 				var v = this;
 
 				if ((v.length == 64)
@@ -298,11 +259,10 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'wepkey': function()
-			{
+			'wepkey': function() {
 				var v = this;
 
-				if (v.substr(0,2) == 's:')
+				if (v.substr(0, 2) == 's:')
 					v = v.substr(2);
 
 				if (((v.length == 10) || (v.length == 26))
@@ -314,8 +274,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'uciname': function()
-			{
+			'uciname': function() {
 				if (this.match(/^[a-zA-Z0-9_]+$/) != null)
 					return true;
 
@@ -323,8 +282,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'range': function(min, max)
-			{
+			'range': function(min, max) {
 				var val = parseFloat(this);
 
 				if (_val.types['integer'].apply(this) &&
@@ -335,8 +293,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'min': function(min)
-			{
+			'min': function(min) {
 				var val = parseFloat(this);
 
 				if (_val.types['integer'].apply(this) &&
@@ -347,8 +304,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'max': function(max)
-			{
+			'max': function(max) {
 				var val = parseFloat(this);
 
 				if (_val.types['integer'].apply(this) &&
@@ -359,8 +315,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'rangelength': function(min, max)
-			{
+			'rangelength': function(min, max) {
 				var val = '' + this;
 
 				if (!isNaN(min) && !isNaN(max) &&
@@ -374,8 +329,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'minlength': function(min)
-			{
+			'minlength': function(min) {
 				var val = '' + this;
 
 				if (!isNaN(min) && (val.length >= min))
@@ -385,8 +339,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'maxlength': function(max)
-			{
+			'maxlength': function(max) {
 				var val = '' + this;
 
 				if (!isNaN(max) && (val.length <= max))
@@ -396,24 +349,19 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'or': function()
-			{
-				var msgs = [ ];
+			'or': function() {
+				var msgs = [];
 
-				for (var i = 0; i < arguments.length; i += 2)
-				{
+				for (var i = 0; i < arguments.length; i += 2) {
 					delete _val.message;
 
-					if (typeof(arguments[i]) != 'function')
-					{
+					if (typeof(arguments[i]) != 'function') {
 						if (arguments[i] == this)
 							return true;
 
 						msgs.push('"%s"'.format(arguments[i]));
 						i--;
-					}
-					else if (arguments[i].apply(this, arguments[i+1]))
-					{
+					} else if (arguments[i].apply(this, arguments[i+1])) {
 						return true;
 					}
 
@@ -425,22 +373,17 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'and': function()
-			{
-				var msgs = [ ];
+			'and': function() {
+				var msgs = [];
 
-				for (var i = 0; i < arguments.length; i += 2)
-				{
+				for (var i = 0; i < arguments.length; i += 2) {
 					delete _val.message;
 
-					if (typeof arguments[i] != 'function')
-					{
+					if (typeof arguments[i] != 'function') {
 						if (arguments[i] != this)
 							return false;
 						i--;
-					}
-					else if (!arguments[i].apply(this, arguments[i+1]))
-					{
+					} else if (!arguments[i].apply(this, arguments[i+1])) {
 						return false;
 					}
 
@@ -452,14 +395,12 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return true;
 			},
 
-			'neg': function()
-			{
+			'neg': function() {
 				return _val.types['or'].apply(
 					this.replace(/^[ \t]*![ \t]*/, ''), arguments);
 			},
 
-			'list': function(subvalidator, subargs)
-			{
+			'list': function(subvalidator, subargs) {
 				if (typeof subvalidator != 'function')
 					return false;
 
@@ -471,8 +412,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return true;
 			},
 
-			'phonedigit': function()
-			{
+			'phonedigit': function() {
 				if (this.match(/^[0-9\*#!\.]+$/) != null)
 					return true;
 
@@ -480,8 +420,7 @@ angular.module('LuCI2').factory('l2validation', function(l2ip, gettext) {
 				return false;
 			},
 
-			'string': function()
-			{
+			'string': function() {
 				return true;
 			}
 		}

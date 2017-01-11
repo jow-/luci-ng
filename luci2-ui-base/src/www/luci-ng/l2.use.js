@@ -3,25 +3,20 @@ angular.module('LuCI2').factory('l2use', function($q, l2spin) {
 		_head: document.getElementsByTagName('head')[0],
 		_registry: { },
 
-		load: function(path)
-		{
+		load: function(path) {
 			var deferred = $q.defer();
 
 			if (!/^(\/|https?:\/\/)/.test(path))
 				path = this._base + path;
 
-			if (this._registry[path])
-			{
+			if (this._registry[path]) {
 				deferred.resolve(false);
-			}
-			else
-			{
+			} else {
 				l2spin.open();
 
 				var el = document.createElement('script'), loaded = false;
 
-				el.onload = el.onreadystatechange = function()
-				{
+				el.onload = el.onreadystatechange = function() {
 					if ((el.readyState && el.readyState !== 'complete' &&
 						 el.readyState !== 'loaded') || loaded)
 						return;
@@ -34,8 +29,7 @@ angular.module('LuCI2').factory('l2use', function($q, l2spin) {
 					l2spin.close();
 				};
 
-				el.onerror = function()
-				{
+				el.onerror = function() {
 					el.onerror = null;
 					loaded = true;
 
@@ -55,10 +49,8 @@ angular.module('LuCI2').factory('l2use', function($q, l2spin) {
 
 	var scripts = document.getElementsByTagName('script');
 
-	for (var i = 0; i < scripts.length; i++)
-	{
-		if (/^(.*\/)?angular\.min\.js\b/.test(scripts[i].src))
-		{
+	for (var i = 0; i < scripts.length; i++)	{
+		if (/^(.*\/)?angular\.min\.js\b/.test(scripts[i].src)) {
 			_use._base = RegExp.$1;
 			break;
 		}

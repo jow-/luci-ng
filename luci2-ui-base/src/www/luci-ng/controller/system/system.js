@@ -1,22 +1,21 @@
-L2.registerController('SystemSystemController',
-['$q', '$scope', 'l2rpc', 'l2uci', 'l2network', 'gettext', function($q, $scope, l2rpc, l2uci, l2network, gettext) {
+L2.registerController('SystemSystemController', function($q, $scope, l2rpc, l2uci, l2network, gettext) {
 	angular.extend($scope, {
 		getRoutes: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'routes',
-			expect: { routes: [ ] }
+			expect: { routes: [] }
 		}),
 
 		getIPv6Routes: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'routes6',
-			expect: { routes: [ ] }
+			expect: { routes: [] }
 		}),
 
 		getARPTable: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'arp_table',
-			expect: { entries: [ ] }
+			expect: { entries: [] }
 		}),
 
 		getStatus: function() {
@@ -49,7 +48,7 @@ L2.registerController('SystemSystemController',
 							continue;
 
 						var entries = $scope.arptable[e.macaddr] ||
-							($scope.arptable[e.macaddr] = [ ]);
+							($scope.arptable[e.macaddr] = []);
 
 						entries.push(e);
 					}
@@ -58,9 +57,7 @@ L2.registerController('SystemSystemController',
 		},
 
 		getVendor: function(mac) {
-			var info = {
-				vendor: gettext('Loading…')
-			};
+			var info = { vendor: gettext('Loading…') };
 
 			l2uci.lookup(mac).then(function(vendor) {
 				info.vendor = vendor;
@@ -101,5 +98,5 @@ L2.registerController('SystemSystemController',
 		return 'xxx';
 	};
 
-	//$scope.getStatus();
-}]);
+	// $scope.getStatus();
+});

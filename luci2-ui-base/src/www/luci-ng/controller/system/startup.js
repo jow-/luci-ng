@@ -1,8 +1,8 @@
-L2.registerController('SystemStartupController', ['$uibModal', 'l2rpc', 'l2spin', function($modal, l2rpc, l2spin) {
+L2.registerController('SystemStartupController', function($modal, l2rpc, l2spin) {
 	var startupCtrl = this;
 
 	angular.extend(startupCtrl, {
-		initList: [ ],
+		initList: [],
 
 		getRcLocal: l2rpc.declare({
 			object: 'luci2.system',
@@ -13,15 +13,17 @@ L2.registerController('SystemStartupController', ['$uibModal', 'l2rpc', 'l2spin'
 		setRcLocal: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'rclocal_set',
-			params: [ 'data' ]
+			params: ['data']
 		}),
 
 		getInitList: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'init_list',
-			expect: { initscripts: [ ] },
+			expect: { initscripts: [] },
 			filter: function(data) {
-				data.sort(function(a, b) { return (a.start || 0) - (b.start || 0) });
+				data.sort(function(a, b) {
+					return (a.start || 0) - (b.start || 0);
+				});
 				return data;
 			}
 		}),
@@ -29,7 +31,7 @@ L2.registerController('SystemStartupController', ['$uibModal', 'l2rpc', 'l2spin'
 		setInitAction: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'init_action',
-			params: [ 'name', 'action' ],
+			params: ['name', 'action'],
 			filter: function(data) {
 				return (data == 0);
 			}
@@ -74,4 +76,4 @@ L2.registerController('SystemStartupController', ['$uibModal', 'l2rpc', 'l2spin'
 		startupCtrl.rclocal = code;
 		startupCtrl.updateInitList();
 	});
-}]);
+});

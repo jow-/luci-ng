@@ -1,5 +1,5 @@
-L2.registerController('StatusOverviewController',
-['$q', '$scope', 'l2rpc', 'l2system', 'l2network', 'l2wireless', '$timeout', 'l2spin', 'l2oui', 'gettext', function($q, $scope, l2rpc, l2system, l2network, l2wireless, $timeout, l2spin, l2oui, gettext) {
+L2.registerController('StatusOverviewController', function($q, $scope, l2rpc, l2system, l2network,
+	                  l2wireless, $timeout, l2spin, l2oui, gettext) {
 	angular.extend($scope, {
 		getConntrackCount: l2rpc.declare({
 			object: 'luci2.network',
@@ -10,19 +10,19 @@ L2.registerController('StatusOverviewController',
 		getDHCPLeases: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'dhcp_leases',
-			expect: { leases: [ ] }
+			expect: { leases: [] }
 		}),
 
 		getDHCPv6Leases: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'dhcp6_leases',
-			expect: { leases: [ ] }
+			expect: { leases: [] }
 		}),
 
 		getARPTable: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'arp_table',
-			expect: { entries: [ ] }
+			expect: { entries: [] }
 		}),
 
 		getStatus: function() {
@@ -40,7 +40,8 @@ L2.registerController('StatusOverviewController',
 						sys.load[2] / 65535.0
 					);
 
-					sys.memory.pc_total    = (100 / sys.memory.total * (sys.memory.free + sys.memory.buffered)).toFixed(0);
+					sys.memory.pc_total    = (100 / sys.memory.total *
+					                         (sys.memory.free + sys.memory.buffered)).toFixed(0);
 					sys.memory.pc_free     = (100 / sys.memory.total * sys.memory.free).toFixed(0);
 					sys.memory.pc_shared   = (100 / sys.memory.total * sys.memory.shared).toFixed(0);
 					sys.memory.pc_buffered = (100 / sys.memory.total * sys.memory.buffered).toFixed(0);
@@ -84,31 +85,30 @@ L2.registerController('StatusOverviewController',
 			});
 		},
 
-		getMACFromDUID: function(duid)
-		{
+		getMACFromDUID: function(duid)		{
 			if (duid.substring(0, 8) !== '00010001' || duid.length !== 28)
 				return undefined;
 
 			return duid.substring(16).replace(/(..)(?=..)/g, '$1:');
 		},
 
-		getHostInfo: function(mac)
-		{
+		getHostInfo: function(mac)		{
 			var host = {
 				mac: mac.toUpperCase(),
 				vendor: gettext('Loading…')
 			};
+			var i, lease, entry;
 
 			l2oui.lookup(mac).then(function(vendor) {
 				if (vendor)
 					host.vendor = vendor;
 				else
-					/// unknown vendor
+					// / unknown vendor
 					host.vendor = gettext('Unknown');
 			});
 
 			if ($scope.leases)
-				for (var i = 0, lease; lease = $scope.leases[i]; i++)
+				for (i = 0, lease; lease = $scope.leases[i]; i++)
 					if (lease.macaddr.toUpperCase() === host.mac) {
 						host.name = lease.hostname;
 						host.ipaddr = lease.ipaddr;
@@ -116,7 +116,7 @@ L2.registerController('StatusOverviewController',
 					}
 
 			if ($scope.leases6)
-				for (var i = 0, lease; lease = $scope.leases6[i]; i++) {
+				for (i = 0, lease; lease = $scope.leases6[i]; i++) {
 					if (lease.duid.substring(0, 8) !== '00010001' ||
 					    lease.duid.length !== 28)
 						continue;
@@ -133,7 +133,7 @@ L2.registerController('StatusOverviewController',
 				}
 
 			if ($scope.arptable)
-				for (var i = 0, entry; entry = $scope.arptable[i]; i++)
+				for (i = 0, entry; entry = $scope.arptable[i]; i++)
 					if (entry.macaddr.toUpperCase() === host.mac) {
 						host.ipaddr = host.ipaddr || entry.ipaddr;
 						host.device = entry.device;
@@ -150,4 +150,4 @@ L2.registerController('StatusOverviewController',
 	$scope.$on('$destroy', function() {
 		$timeout.cancel($scope.$timeout);
 	});
-}]);
+});

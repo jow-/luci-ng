@@ -16,7 +16,7 @@ angular.module('LuCI2').filter('wifiSignalRange', function() {
 			return '50-75';
 		else
 			return '75-100';
-	}
+	};
 });
 
 angular.module('LuCI2').filter('wifiEncryption', function(l2wireless) {
@@ -30,7 +30,7 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 		listDeviceNames: l2rpc.declare({
 			object: 'iwinfo',
 			method: 'devices',
-			expect: { 'devices': [ ] },
+			expect: { 'devices': [] },
 			filter: function(data) {
 				data.sort();
 				return data;
@@ -45,7 +45,7 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 		getPhyName: l2rpc.declare({
 			object: 'iwinfo',
 			method: 'phyname',
-			params: [ 'section' ],
+			params: ['section'],
 			expect: { 'phyname': '' }
 		}),
 
@@ -57,11 +57,10 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 		getDeviceStatus: l2rpc.declare({
 			object: 'iwinfo',
 			method: 'info',
-			params: [ 'device' ],
+			params: ['device'],
 			expect: { '': { } },
 			filter: function(data, params) {
-				if (!angular.isEmptyObject(data))
-				{
+				if (!angular.isEmptyObject(data)) {
 					data['device'] = params['device'];
 					return data;
 				}
@@ -72,8 +71,8 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 		getAssocList: l2rpc.declare({
 			object: 'iwinfo',
 			method: 'assoclist',
-			params: [ 'device' ],
-			expect: { results: [ ] },
+			params: ['device'],
+			expect: { results: [] },
 			filter: function(data, params) {
 				for (var i = 0; i < data.length; i++)
 					data[i]['device'] = params['device'];
@@ -94,15 +93,15 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 		getWirelessFreqList: l2rpc.declare({
 			object: 'iwinfo',
 			method: 'freqlist',
-			params: [ 'device' ],
-			expect: { results: [ ] }
+			params: ['device'],
+			expect: { results: [] }
 		}),
 
 		getWirelessStatus: function() {
 			var phyMap = { },
 				freqMap = { },
-				radioNames = [ ],
-				networkRefs = [ ];
+				radioNames = [],
+				networkRefs = [];
 
 			var phy_attrs = [
 				'country', 'channel', 'frequency', 'frequency_offset',
@@ -124,8 +123,7 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 
 				l2rpc.batch();
 
-				for (var radioName in uciStat)
-				{
+				for (var radioName in uciStat) {
 					_wireless.getPhyName(radioName);
 					_wireless.getWirelessFreqList(radioName);
 
@@ -134,22 +132,20 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 
 				return l2rpc.flush();
 			}).then(function(iwResults) {
-				for (var i = 0; i < iwResults.length; i += 2)
-				{
+				var i, n;
+				for (i = 0; i < iwResults.length; i += 2) {
 					phyMap[radioNames[i/2]] = iwResults[i];
 					freqMap[radioNames[i/2]] = iwResults[i+1];
 				}
 
 				l2rpc.batch();
 
-				for (var radioName in stat)
-				{
+				for (var radioName in stat) {
 					var uciRadio = stat[radioName];
 					var uciIfaces = l2uci.sections('wireless', 'wifi-iface');
-					var cfgIfaces = [ ];
+					var cfgIfaces = [];
 
-					for (var i = 0, n = 0; i < uciIfaces.length; i++)
-					{
+					for (i = 0, n = 0; i < uciIfaces.length; i++) {
 						if (uciIfaces[i].device != radioName)
 							continue;
 
@@ -192,20 +188,20 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 					}
 
 					uciRadio.interfaces = cfgIfaces;
-					uciRadio.frequencies = freqMap[radioName] || [ ];
+					uciRadio.frequencies = freqMap[radioName] || [];
 				}
 
 				return l2rpc.flush();
 			}).then(function(iwStats) {
-				for (var i = 0; i < iwStats.length; i++)
-				{
+				var j;
+				for (var i = 0; i < iwStats.length; i++) {
 					var uciIface = networkRefs[i];
 					var uciRadio = stat[uciIface.radio];
 
-					for (var j = 0; j < phy_attrs.length; j++)
+					for (j = 0; j < phy_attrs.length; j++)
 						uciRadio[phy_attrs[j]] = iwStats[i][phy_attrs[j]];
 
-					for (var j = 0; j < net_attrs.length; j++)
+					for (j = 0; j < net_attrs.length; j++)
 						uciIface[net_attrs[j]] = iwStats[i][net_attrs[j]];
 
 					if (!uciRadio.hardwareName)
@@ -219,10 +215,8 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 								gettext('Wifi Device'),
 								uciIface.radio);
 
-					if (!uciIface.ifname)
-					{
-						if (!uciIface.config.ifname)
-						{
+					if (!uciIface.ifname) {
+						if (!uciIface.config.ifname) {
 							var phyIndex = (uciRadio.phy || uciIface.radio || '')
 								.replace(/^[^0-9]+/, '');
 
@@ -230,9 +224,7 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 								? '-%d'.format(uciIface.index) : '';
 
 							uciIface.ifname = 'wlan%d%s'.format(phyIndex, netIndex);
-						}
-						else
-						{
+						} else {
 							uciIface.ifname = uciIface.config.ifname;
 						}
 					}
@@ -255,8 +247,7 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 			});
 		},
 
-		getAssocLists: function()
-		{
+		getAssocLists: function() {
 			return _wireless.listDeviceNames().then(function(names) {
 				l2rpc.batch();
 
@@ -265,7 +256,7 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 
 				return l2rpc.flush();
 			}).then(function(assoclists) {
-				var rv = [ ];
+				var rv = [];
 
 				for (var i = 0; i < assoclists.length; i++)
 					for (var j = 0; j < assoclists[i].length; j++)
@@ -277,55 +268,52 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 		},
 
 		uciParseMode: function(v) {
-			switch (v)
-			{
-			case 'ap':		return 'Master';
-			case 'adhoc':	return 'Ad-Hoc';
-			case 'mesh':    return 'Mesh Point';
-			case 'sta':     return 'Client';
-			case 'monitor': return 'Monitor';
-			default:		return gettext('Unknown');
+			switch (v) {
+				case 'ap':		return 'Master';
+				case 'adhoc':	return 'Ad-Hoc';
+				case 'mesh':    return 'Mesh Point';
+				case 'sta':     return 'Client';
+				case 'monitor': return 'Monitor';
+				default:		return gettext('Unknown');
 			}
 		},
 
 		uciParseEncryption: function(v, k) {
 			var e = { };
 
-			if (v.match(/wep/))
-			{
+			if (v.match(/wep/)) {
 				if (v.match(/shared/))
-					e.wep = [ 'shared' ];
+					e.wep = ['shared'];
 				else if (v.match(/mixed/))
-					e.wep = [ 'open', 'shared' ];
+					e.wep = ['open', 'shared'];
 				else
-					e.wep = [ 'open' ];
+					e.wep = ['open'];
 
 				e.enabled = true;
-				e.ciphers = [ (k && k.length == 13) ? 'WEP-104' : 'WEP-40' ];
+				e.ciphers = [(k && k.length == 13) ? 'WEP-104' : 'WEP-40'];
 
 				return e;
 			}
 
 			if (v.match(/^wpa2|psk2/))
-				e.wpa = [ 2 ];
+				e.wpa = [2];
 			else if (v.match(/^wpa|psk/))
-				e.wpa = [ 1 ];
+				e.wpa = [1];
 			else if (v.match(/mixed/))
-				e.wpa = [ 1, 2 ];
+				e.wpa = [1, 2];
 
-			if (e.wpa)
-			{
+			if (e.wpa) {
 				if (v.match(/tkip\+aes|tkip\+ccmp|aes\+tkip|ccmp\+tkip/))
-					e.ciphers = [ 'ccmp', 'tkip' ];
+					e.ciphers = ['ccmp', 'tkip'];
 				else if (v.match(/tkip/))
-					e.ciphers = [ 'tkip' ];
+					e.ciphers = ['tkip'];
 				else
-					e.ciphers = [ 'ccmp' ];
+					e.ciphers = ['ccmp'];
 
 				if (v.match(/^wpa|8021x/))
-					e.authentication = [ '802.1x' ];
+					e.authentication = ['802.1x'];
 				else
-					e.authentication = [ 'psk' ];
+					e.authentication = ['psk'];
 
 				e.enabled = true;
 			}
@@ -333,32 +321,30 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 			return e;
 		},
 
-		formatEncryption: function(enc, condensed)
-		{
-			var format_list = function(l, s)
-			{
-				var rv = [ ];
+		formatEncryption: function(enc, condensed) {
+			var format_list = function(l, s) {
+				var rv = [];
 				for (var i = 0; i < l.length; i++)
 					rv.push(l[i].toUpperCase());
 				return rv.join(s ? s : ', ');
-			}
+			};
 
 			if (!enc || !enc.enabled)
 				return gettext('None');
 
-			if (enc.wep)
-			{
+			if (enc.wep) {
 				if (condensed)
 					return gettext('WEP');
 				else if (enc.wep.length == 2)
-					return gettext('WEP Open/Shared') + ' (%s)'.format(format_list(enc.ciphers, ', '));
+					return gettext('WEP Open/Shared') +
+						   ' (%s)'.format(format_list(enc.ciphers, ', '));
 				else if (enc.wep[0] == 'shared')
-					return gettext('WEP Shared Auth') + ' (%s)'.format(format_list(enc.ciphers, ', '));
+					return gettext('WEP Shared Auth') +
+						   ' (%s)'.format(format_list(enc.ciphers, ', '));
 				else
-					return gettext('WEP Open System') + ' (%s)'.format(format_list(enc.ciphers, ', '));
-			}
-			else if (enc.wpa)
-			{
+					return gettext('WEP Open System') +
+						   ' (%s)'.format(format_list(enc.ciphers, ', '));
+			} else if (enc.wpa) {
 				if (condensed && enc.wpa.length == 2)
 					return gettext('WPA mixed');
 				else if (condensed)
@@ -382,7 +368,7 @@ angular.module('LuCI2').factory('l2wireless', function(l2rpc, l2uci, gettext) {
 					);
 			}
 
-			/// unknown encryption mode
+			// unknown encryption mode
 			return gettext('Unknown');
 		}
 	});

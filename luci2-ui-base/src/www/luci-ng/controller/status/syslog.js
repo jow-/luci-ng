@@ -1,5 +1,4 @@
-L2.registerController('StatusSyslogController',
-['$scope', 'l2rpc', '$timeout', 'l2spin', function($scope, l2rpc, $timeout, l2spin) {
+L2.registerController('StatusSyslogController', function($scope, l2rpc, $timeout, l2spin) {
 	angular.extend($scope, {
 		getSystemLog: l2rpc.declare({
 			object: 'luci2.system',
@@ -24,4 +23,4 @@ L2.registerController('StatusSyslogController',
 
 	l2spin.open();
 	$scope.getLog().then(l2spin.close);
-}]);
+});

@@ -1,7 +1,6 @@
 'use strict';
 
 angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, gettext) {
-	'ngInject';
 	return {
 		restrict: 'A',
 		scope: true,
@@ -22,12 +21,14 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 				},
 
 				finish: function() {
-					self.uciValue = l2uci.get(self.uciPackageName, self.uciSectionName, self.uciOptionName);
+					self.uciValue = l2uci.get(self.uciPackageName,
+					                          self.uciSectionName, self.uciOptionName);
 					self.rawValue = self.uciValue;
 
 					for (var i = 0, dep; dep = self.dependencies[i]; i++) {
 						for (var optName in dep) {
-							var opt = self.cbiOwnerSection.getFieldByName(self.uciSectionName, optName);
+							var opt = self.cbiOwnerSection
+							          .getFieldByName(self.uciSectionName, optName);
 							if (opt) {
 								opt.rdepends[self.name] = self;
 							}
@@ -118,7 +119,8 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 							if (!dep.hasOwnProperty(optName))
 								continue;
 
-							var opt = self.cbiOwnerSection.getFieldByName(self.uciSectionName, optName);
+							var opt = self.cbiOwnerSection
+							          .getFieldByName(self.uciSectionName, optName);
 
 							if (!opt)
 								continue;
@@ -175,14 +177,13 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 					if (angular.equals(val, self.uciValue))
 						return false;
 
-					l2uci.set(self.uciPackageName, self.uciSectionName,
-						self.uciOptionName, val);
+					l2uci.set(self.uciPackageName, self.uciSectionName, self.uciOptionName, val);
 
 					return true;
 				},
 
 				isAngularScope: function(value) {
-					return (typeof(value) === 'object' &&
+					return (angular.isObject(value) &&
 						value.constructor === $scope.constructor);
 				},
 
@@ -199,7 +200,7 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 
 				textValue: function() {
 					return self.cbiWidget ? self.cbiWidget.textValue() : self.formValue();
-				},
+				}
 			});
 		},
 
@@ -229,6 +230,7 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 				dependencies = [],
 				name = iAttr.hasOwnProperty('name') ? iAttr.name : uciOption,
 				id = '%s.%s.%s'.format(uciPackage, uciSection, name);
+			var d, i, dep;
 
 			if (iAttr.hasOwnProperty('depends')) {
 				var deps;
@@ -237,25 +239,25 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 					deps = $parse(iAttr.depends)($scope);
 
 					if (angular.isArray(deps)) {
-						for (var i = 0, dep; dep = deps[i]; i++) {
+						for (i = 0, dep; dep = deps[i]; i++) {
 							if (angular.isObject(dep)) {
 								dependencies.push(dep);
 							}								else if (angular.isString(dep)) {
-								var d = { }; d[dep] = true;
+								d = { }; d[dep] = true;
 								dependencies.push(dep);
 							}
 						}
 					} else if (angular.isObject(deps)) {
 						dependencies.push(deps);
 					}	else if (angular.isString(deps)) {
-						var d = { }; d[deps] = true;
+						d = { }; d[deps] = true;
 						dependencies.push(d);
 					}
 				}	else {
 					deps = angular.toArray(iAttr.depends);
 
-					for (var i = 0, dep; dep = deps[i]; i++) {
-						var d = { }; d[dep] = true;
+					for (i = 0, dep; dep = deps[i]; i++) {
+						d = { }; d[dep] = true;
 						dependencies.push(d);
 					}
 				}
@@ -283,11 +285,11 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 				uciOptionName: uciOption,
 
 				cbiOwnerMap: cbiMapCtrl,
-				cbiOwnerSection: cbiSectionCtrl,
+				cbiOwnerSection: cbiSectionCtrl
 			}));
 
 			cbiOptionCtrl.init(iElem);
-		},
+		}
 	};
 });
 

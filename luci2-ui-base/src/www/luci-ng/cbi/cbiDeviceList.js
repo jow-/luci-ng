@@ -10,7 +10,7 @@ angular.module('LuCI2').directive('cbiDeviceList', function(gettext, l2network) 
 		controller: function($scope) {
 			var self = angular.extend(this, {
 				checked: { },
-				devices: [ ],
+				devices: [],
 				isLoading: true,
 
 				isUnspecified: function() {
@@ -43,8 +43,7 @@ angular.module('LuCI2').directive('cbiDeviceList', function(gettext, l2network) 
 					l2network.loadDevicesCallback();
 					l2network.loadInterfacesCallback();
 
-					var devnames = angular.toArray(newValue),
-					    network = l2network.getInterface(self.cbiOwnerOption.uciSectionName);
+					var network = l2network.getInterface(self.cbiOwnerOption.uciSectionName);
 
 					self.reload();
 
@@ -71,8 +70,7 @@ angular.module('LuCI2').directive('cbiDeviceList', function(gettext, l2network) 
 							delete self.checked[devName];
 						else
 							self.checked[devName] = true;
-					}
-					else {
+					}					else {
 						for (var key in self.checked)
 							if (self.checked.hasOwnProperty(key))
 								delete self.checked[key];
@@ -81,7 +79,7 @@ angular.module('LuCI2').directive('cbiDeviceList', function(gettext, l2network) 
 							self.checked[devName] = true;
 					}
 
-					$event.target.blur();
+					// $event.target.blur();
 
 					self.save();
 				},
@@ -138,8 +136,7 @@ angular.module('LuCI2').directive('cbiDeviceList', function(gettext, l2network) 
 							ifc.setDevices(devnames);
 
 						self.redraw();
-					}
-					else {
+					}					else {
 						self.cbiOwnerOption.formValue(devnames);
 					}
 
@@ -150,7 +147,7 @@ angular.module('LuCI2').directive('cbiDeviceList', function(gettext, l2network) 
 					return angular.toArray(self.cbiOwnerOption.formValue()).join(', ');
 				},
 
-				isChecked: function(dev) { 
+				isChecked: function(dev) {
 					return self.checked[dev.name()];
 				}
 

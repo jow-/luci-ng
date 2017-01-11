@@ -14,16 +14,14 @@ L2.registerFactory('l2pubkeys', [function() {
 			'/': 63, '=': 64
 		},
 
-		base64Decode: function(s)
-		{
+		base64Decode: function(s) {
 			var i = 0;
 			var d = '';
 
 			if (s.match(/[^A-Za-z0-9\+\/\=]/))
 				return undefined;
 
-			while (i < s.length)
-			{
+			while (i < s.length) {
 				var e1 = _pubkeys.base64Table[s.charAt(i++)];
 				var e2 = _pubkeys.base64Table[s.charAt(i++)];
 				var e3 = _pubkeys.base64Table[s.charAt(i++)];
@@ -45,8 +43,7 @@ L2.registerFactory('l2pubkeys', [function() {
 			return d;
 		},
 
-		lengthDecode: function(s, off)
-		{
+		lengthDecode: function(s, off) {
 			var l = (s.charCodeAt(off++) << 24) |
 					(s.charCodeAt(off++) << 16) |
 					(s.charCodeAt(off++) <<  8) |
@@ -58,8 +55,7 @@ L2.registerFactory('l2pubkeys', [function() {
 			return l;
 		},
 
-		pubkeyDecode: function(s)
-		{
+		pubkeyDecode: function(s) {
 			var parts = s.split(/\s+/);
 			if (parts.length < 2)
 				return undefined;
@@ -98,137 +94,138 @@ L2.registerFactory('l2pubkeys', [function() {
 			if (len2 & 1)
 				len2--;
 
-			switch (type)
-			{
-			case 'ssh-rsa':
-				return { type: 'RSA', bits: len2 * 8, comment: parts[2] };
+			switch (type) {
+				case 'ssh-rsa':
+					return { type: 'RSA', bits: len2 * 8, comment: parts[2] };
 
-			case 'ssh-dss':
-				return { type: 'DSA', bits: len1 * 8, comment: parts[2] };
+				case 'ssh-dss':
+					return { type: 'DSA', bits: len1 * 8, comment: parts[2] };
 
-			default:
-				return undefined;
+				default:
+					return undefined;
 			}
 		}
 	});
 }]);
 
-L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 'l2pubkeys', function($modal, l2rpc, l2spin, l2pubkeys) {
-	var adminCtrl = this;
+L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 'l2pubkeys',
+	function($modal, l2rpc, l2spin, l2pubkeys) {
+		var adminCtrl = this;
 
-	angular.extend(adminCtrl, {
-		authorizedKeys: [ ],
+		angular.extend(adminCtrl, {
+			authorizedKeys: [],
 
-		getSSHKeys: l2rpc.declare({
-			object: 'luci2.system',
-			method: 'sshkeys_get',
-			expect: { keys: [ ] }
-		}),
+			getSSHKeys: l2rpc.declare({
+				object: 'luci2.system',
+				method: 'sshkeys_get',
+				expect: { keys: [] }
+			}),
 
-		setSSHKeys: l2rpc.declare({
-			object: 'luci2.system',
-			method: 'sshkeys_set',
-			params: [ 'keys' ]
-		}),
+			setSSHKeys: l2rpc.declare({
+				object: 'luci2.system',
+				method: 'sshkeys_set',
+				params: ['keys']
+			}),
 
-		setPassword: l2rpc.declare({
-			object: 'luci2.system',
-			method: 'password_set',
-			params: [ 'user', 'password' ]
-		}),
+			setPassword: l2rpc.declare({
+				object: 'luci2.system',
+				method: 'password_set',
+				params: ['user', 'password']
+			}),
 
-		displayPubkey: function(i) {
-			$modal.open({
-				template: '<div class="modal-body"><pre>' + adminCtrl.authorizedKeys[i].raw + '</pre></div>'
-			});
-		},
-
-		savePubkeys: function(removeKeyIdx) {
-			var newKeys = [ ];
-
-			for (var i = 0; i < adminCtrl.authorizedKeys.length; i++) {
-				if (adminCtrl.authorizedKeys[i].index !== removeKeyIdx)
-					newKeys.push(adminCtrl.authorizedKeys[i].raw);
-				else
-					adminCtrl.authorizedKeys.splice(i--, 1);
-			}
-
-			l2spin.open();
-			adminCtrl.setSSHKeys(newKeys).then(l2spin.close);
-		},
-
-		addPubkeyCtrl: function($scope, $modalInstance) {
-			var dialog = this;
-			return angular.extend(dialog, {
-				isInvalid: false,
-
-				confirm: function() {
-					var key = l2pubkeys.pubkeyDecode(dialog.value);
-
-					if (!key) {
-						dialog.value = undefined;
-						dialog.isInvalid = true;
-						return;
-					}
-
-					dialog.isInvalid = false;
-					$modalInstance.dismiss();
-
-					key.raw = dialog.value;
-					key.index = adminCtrl.authorizedKeys.length;
-
-					adminCtrl.authorizedKeys.push(key);
-					adminCtrl.savePubkeys(NaN);
-				},
-
-				dismiss: function() {
-					$modalInstance.dismiss();
-				}
-			});
-		},
-
-		addPubkey: function() {
-			$modal.open({
-				controller: ['$scope', '$uibModalInstance', adminCtrl.addPubkeyCtrl],
-				controllerAs: 'Dialog',
-				templateUrl: 'system/admin/addkey.html'
-			});
-		},
-
-		isPasswordChanged: false,
-
-		changePassword: function() {
-			var p1 = adminCtrl.password1;
-			var p2 = adminCtrl.password2;
-
-			if (angular.isString(p1) && p1.length > 0 && p1 === p2) {
-				l2spin.open();
-
-				delete adminCtrl.password1;
-				delete adminCtrl.password2;
-
-				adminCtrl.setPassword('root', p1).then(function(rv) {
-					adminCtrl.isPasswordChanged = (rv === 0);
-					l2spin.close();
+			displayPubkey: function(i) {
+				$modal.open({
+					template: '<div class="modal-body"><pre>' + adminCtrl.authorizedKeys[i].raw +
+					          '</pre></div>'
 				});
+			},
+
+			savePubkeys: function(removeKeyIdx) {
+				var newKeys = [];
+
+				for (var i = 0; i < adminCtrl.authorizedKeys.length; i++) {
+					if (adminCtrl.authorizedKeys[i].index !== removeKeyIdx)
+						newKeys.push(adminCtrl.authorizedKeys[i].raw);
+					else
+					adminCtrl.authorizedKeys.splice(i--, 1);
+				}
+
+				l2spin.open();
+				adminCtrl.setSSHKeys(newKeys).then(l2spin.close);
+			},
+
+			addPubkeyCtrl: function($scope, $modalInstance) {
+				var dialog = this;
+				return angular.extend(dialog, {
+					isInvalid: false,
+
+					confirm: function() {
+						var key = l2pubkeys.pubkeyDecode(dialog.value);
+
+						if (!key) {
+							dialog.value = undefined;
+							dialog.isInvalid = true;
+							return;
+						}
+
+						dialog.isInvalid = false;
+						$modalInstance.dismiss();
+
+						key.raw = dialog.value;
+						key.index = adminCtrl.authorizedKeys.length;
+
+						adminCtrl.authorizedKeys.push(key);
+						adminCtrl.savePubkeys(NaN);
+					},
+
+					dismiss: function() {
+						$modalInstance.dismiss();
+					}
+				});
+			},
+
+			addPubkey: function() {
+				$modal.open({
+					controller: ['$scope', '$uibModalInstance', adminCtrl.addPubkeyCtrl],
+					controllerAs: 'Dialog',
+					templateUrl: 'system/admin/addkey.html'
+				});
+			},
+
+			isPasswordChanged: false,
+
+			changePassword: function() {
+				var p1 = adminCtrl.password1;
+				var p2 = adminCtrl.password2;
+
+				if (angular.isString(p1) && p1.length > 0 && p1 === p2) {
+					l2spin.open();
+
+					delete adminCtrl.password1;
+					delete adminCtrl.password2;
+
+					adminCtrl.setPassword('root', p1).then(function(rv) {
+						adminCtrl.isPasswordChanged = (rv === 0);
+						l2spin.close();
+					});
+				}
 			}
-		}
-	});
+		});
 
-	l2spin.open();
-	adminCtrl.getSSHKeys().then(function(keys) {
-		for (var i = 0; i < keys.length; i++) {
-			var key = l2pubkeys.pubkeyDecode(keys[i]);
+		l2spin.open();
+		adminCtrl.getSSHKeys().then(function(keys) {
+			for (var i = 0; i < keys.length; i++) {
+				var key = l2pubkeys.pubkeyDecode(keys[i]);
 
-			if (!key)
-				continue;
+				if (!key)
+					continue;
 
-			adminCtrl.authorizedKeys.push(angular.extend(key, {
-				index: i,
-				raw: keys[i]
-			}));
-		}
+				adminCtrl.authorizedKeys.push(angular.extend(key, {
+					index: i,
+					raw: keys[i]
+				}));
+			}
 
-		l2spin.close();
-	});
-}]);
+			l2spin.close();
+		});
+	}]);

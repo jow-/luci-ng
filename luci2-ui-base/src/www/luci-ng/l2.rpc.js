@@ -7,28 +7,21 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 
 		_date: new Date(),
 
-		getToken: function()
-		{
+		getToken: function() {
 			return _rpc._token;
 		},
 
-		_call: function(msgs, cb)
-		{
-			var q = '';
-			var url = [ '/ubus', 't='+_rpc._date.getTime() ];
-			var reqs = [ ];
+		_call: function(msgs, cb) {
+			var url = ['/ubus', 't='+_rpc._date.getTime()];
+			var reqs = [];
 
-			if (angular.isArray(msgs))
-			{
-				for (var i = 0; i < msgs.length; i++)
-				{
+			if (angular.isArray(msgs)) {
+				for (var i = 0; i < msgs.length; i++) {
 					url.push('o='+msgs[i].params[1], 'm='+msgs[i].params[2]);
 					reqs.push(msgs[i].request);
 					delete msgs[i].request;
 				}
-			}
-			else
-			{
+			}			else {
 				url.push('o='+msgs.params[1], 'm='+msgs.params[2]);
 				reqs = msgs.request;
 				delete msgs.request;
@@ -47,43 +40,37 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 			}).then(cb, cb);
 		},
 
-		_list_cb: function(res)
-		{
+		_list_cb: function(res) {
 			var msg = res.data, list;
 
 			/* verify message frame */
 			if (!angular.isObject(msg) || msg.jsonrpc !== '2.0' || !msg.id ||
 			    !angular.isArray(msg.result))
-				list = [ ];
+				list = [];
 			else
 				list = msg.result;
 
 			return list;
 		},
 
-		_call_cb: function(res)
-		{
+		_call_cb: function(res) {
 			var msgs = res.data;
-			var data = [ ];
+			var data = [];
 			var type = Object.prototype.toString;
 			var reqs = res.config._rpc_reqs;
 
-			if (!angular.isArray(reqs))
-			{
-				msgs = [ msgs ];
-				reqs = [ reqs ];
-			}
-			else if (!angular.isArray(msgs))
-			{
-				msgs = [ false ];
+			if (!angular.isArray(reqs)) {
+				msgs = [msgs];
+				reqs = [reqs];
+			}			else if (!angular.isArray(msgs)) {
+				msgs = [false];
 			}
 
-			for (var i = 0; i < msgs.length; i++)
-			{
+			for (var i = 0; i < msgs.length; i++) {
 				/* fetch related request info */
 				var req = reqs[i];
 				if (typeof(req) != 'object')
-					throw 'No related request for JSON response';
+					throw new Error('No related request for JSON response');
 
 				/* fetch response attribute and verify returned type */
 				var ret = undefined;
@@ -93,14 +80,13 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 					if (angular.isArray(msgs[i].result) && msgs[i].result[0] == 0)
 						ret = (msgs[i].result.length > 1) ? msgs[i].result[1] : msgs[i].result[0];
 
-				if (req.expect)
-				{
-					for (var key in req.expect)
-					{
+				if (req.expect) {
+					for (var key in req.expect) {
 						if (typeof(ret) != 'undefined' && key != '')
 							ret = ret[key];
 
-						if (typeof(ret) == 'undefined' || type.call(ret) != type.call(req.expect[key]))
+						if (typeof(ret) == 'undefined' ||
+						    type.call(ret) != type.call(req.expect[key]))
 							ret = req.expect[key];
 
 						break;
@@ -108,8 +94,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 				}
 
 				/* apply filter */
-				if (typeof(req.filter) == 'function')
-				{
+				if (typeof(req.filter) == 'function') {
 					req.priv[0] = ret;
 					req.priv[1] = req.params;
 					ret = req.filter.apply(_rpc, req.priv);
@@ -125,9 +110,8 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 			return data;
 		},
 
-		list: function()
-		{
-			var params = [ ];
+		list: function() {
+			var params = [];
 			for (var i = 0; i < arguments.length; i++)
 				params[i] = arguments[i];
 
@@ -141,26 +125,23 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 			return _rpc._call(msg, _rpc._list_cb);
 		},
 
-		batch: function()
-		{
+		batch: function() {
 			if (!angular.isArray(_rpc._batch))
-				_rpc._batch = [ ];
+				_rpc._batch = [];
 		},
 
-		flush: function()
-		{
+		flush: function() {
 			var req = _rpc._batch;
 			delete _rpc._batch;
 
 			if (!angular.isArray(req) || !req.length)
-				return angular.deferrable([ ]);
+				return angular.deferrable([]);
 
 			/* call rpc */
 			return _rpc._call(req, _rpc._call_cb);
 		},
 
-		declare: function(options)
-		{
+		declare: function(options) {
 			var _rpc = this;
 
 			return function() {
@@ -172,7 +153,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 						params[options.params[p_off]] = arguments[p_off];
 
 				/* all remaining arguments are private args */
-				var priv = [ undefined, undefined ];
+				var priv = [undefined, undefined];
 				for (; p_off < arguments.length; p_off++)
 					priv.push(arguments[p_off]);
 
@@ -197,8 +178,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 
 				/* when a batch is in progress then store index in request data
 				 * and push message object onto the stack */
-				if (angular.isArray(_rpc._batch))
-				{
+				if (angular.isArray(_rpc._batch)) {
 					msg.request.index = _rpc._batch.push(msg) - 1;
 					return angular.deferrable(msg);
 				}
@@ -208,8 +188,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 			};
 		},
 
-		token: function(token)
-		{
+		token: function(token) {
 			if (/^[0-9a-fA-F]{32}$/.test(token))
 				_rpc._token = token;
 			else

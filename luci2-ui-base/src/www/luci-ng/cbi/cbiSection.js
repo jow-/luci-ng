@@ -27,7 +27,8 @@ angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gette
 					} else if (self.uciSectionType) {
 						var sl = l2uci.sections(self.uciPackageName, self.uciSectionType);
 						for (var i = 0; (s = sl[i]); i++)
-							if (angular.isUndefined(self.uciSectionIndex) || self.uciSectionIndex === i)
+							if (angular.isUndefined(self.uciSectionIndex) ||
+							    self.uciSectionIndex === i)
 								if (self.filter(s))
 									self.uciSections.push(s['.name']);
 					}
@@ -52,7 +53,7 @@ angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gette
 					return self.filterFn({
 						uciSectionName: uciSection['.name'],
 						uciSectionValues: uciSection,
-						Section: self,
+						Section: self
 					});
 				},
 
@@ -79,13 +80,13 @@ angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gette
 						return;
 
 					var sid = l2uci.add(self.uciPackageName, self.uciSectionType,
-						self.isAnonymous ? undefined : self.addName);
+					                    self.isAnonymous ? undefined : self.addName);
 
 					if (self.isCollapse)
 						self.activeSectionName = sid;
 
 					if (self.addFn)
-						self.addFn($scope, {uciSectionName: sid});
+						self.addFn($scope, { uciSectionName: sid });
 
 					$scope.$broadcast('section-add', sid);
 
@@ -111,7 +112,7 @@ angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gette
 						$scope.$broadcast('section-remove', sid);
 
 						if (self.removeFn)
-							self.removeFn($scope, {uciSectionName: sid});
+							self.removeFn($scope, { uciSectionName: sid });
 
 						delete self.fieldCtrls[sid];
 						delete self.fieldErrors[sid];
@@ -201,7 +202,7 @@ angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gette
 						l = self.fieldCtrls[s] || (self.fieldCtrls[s] = { });
 
 					l[n] = cbiOptionCtrl;
-				},
+				}
 			});
 		},
 
@@ -251,11 +252,11 @@ angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gette
 				uciSectionIndex: uciSectionIndex,
 				uciSectionName: uciSectionName,
 
-				cbiOwnerMap: cbiMapCtrl,
+				cbiOwnerMap: cbiMapCtrl
 			}));
 
 			cbiSectionCtrl.init(iElem);
-		},
+		}
 	};
 });
 

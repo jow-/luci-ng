@@ -1,5 +1,4 @@
-L2.registerController('StatusDmesgController',
-['$scope', 'l2rpc', '$timeout', 'l2spin', function($scope, l2rpc, $timeout, l2spin) {
+L2.registerController('StatusDmesgController', function($scope, l2rpc, $timeout, l2spin) {
 	angular.extend($scope, {
 		getKernelLog: l2rpc.declare({
 			object: 'luci2.system',
@@ -23,4 +22,4 @@ L2.registerController('StatusDmesgController',
 
 	l2spin.open();
 	$scope.getLog().then(l2spin.close);
-}]);
+});
