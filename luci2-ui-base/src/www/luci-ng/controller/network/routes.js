@@ -1,3 +1,3 @@
-L2.registerController('NetworkRoutesController',[function() {
-}])
+L2.registerController('NetworkRoutesController', function() {
+});
 

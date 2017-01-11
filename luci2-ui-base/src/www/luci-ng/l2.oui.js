@@ -6,7 +6,7 @@ angular.module('LuCI2').factory('l2oui', function($http) {
 			    (res.data.length % 3) === 0 && res.data.length > 0)
 				_oui._database = res.data;
 			else
-				_oui._database = [ ];
+				_oui._database = [];
 		},
 
 		load: function() {

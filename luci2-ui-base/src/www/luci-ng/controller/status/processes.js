@@ -1,16 +1,16 @@
-L2.registerController('StatusProcessesController',
-['$q', '$scope', 'l2rpc', 'l2system', '$timeout', 'l2spin', 'gettext', function($q, $scope, l2rpc, l2system, $timeout, l2spin, gettext) {
+L2.registerController('StatusProcessesController', function($q, $scope, l2rpc, l2system,
+	                  $timeout, l2spin, gettext) {
 	angular.extend($scope, {
 		getProcessList: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'process_list',
-			expect: { processes: [ ] }
+			expect: { processes: [] }
 		}),
 
 		sendSignal: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'process_signal',
-			params: [ 'pid', 'signal' ],
+			params: ['pid', 'signal'],
 			filter: function(data) {
 				return (data == 0);
 			}
@@ -30,4 +30,4 @@ L2.registerController('StatusProcessesController',
 	$scope.$on('$destroy', function() {
 		$timeout.cancel($scope.$timeout);
 	});
-}]);
+});

@@ -1,14 +1,14 @@
 L2.registerFactory('fileService', function() {
-    var files = [];
-    return files;
+	var files = [];
+	return files;
 });
 
-L2.registerDirective('fileModel', [ '$parse', 'fileService', function($parse, fileService) {
+L2.registerDirective('fileModel', function($parse, fileService) {
 	return {
 		restrict: 'A',
 		link: function($scope, element) {
 			element.bind('change', function() {
-				$scope.$apply(function(){
+				$scope.$apply(function() {
 					if (element[0].files != undefined) {
 						fileService.pop();
 						fileService.push(element[0].files[0]);
@@ -17,31 +17,30 @@ L2.registerDirective('fileModel', [ '$parse', 'fileService', function($parse, fi
 			});
 		}
 	};
-}]);
+});
 
-L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', 'l2spin', 'fileService', 'gettext', function($uibModal, l2cgi, l2rpc, l2spin, fileService, gettext) {
+L2.registerController('SystemBackupController', function($uibModal, l2cgi, l2rpc, l2spin,
+	                  fileService, gettext) {
 	var upgradeCtrl = this;
 
 	angular.extend(upgradeCtrl, {
-		getUploadFile: function(){
+		getUploadFile: function() {
 			return fileService[0];
 		},
 
 		getSelectedFileName: function(log) {
 			var file=upgradeCtrl.getUploadFile();
 			if (file == undefined ) {
-				return gettext("No file selected");
-			}
-			else {
+				return gettext('No file selected');
+			}			else {
 				return file.name;
 			}
 		},
 
-		uploadFileSelected: function(){
+		uploadFileSelected: function() {
 			if (upgradeCtrl.getUploadFile() != undefined ) {
 				return false;
-			}
-			else {
+			}			else {
 				return true;
 			}
 		},
@@ -65,13 +64,13 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 		setBackupConfig: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'backup_config_set',
-			params: [ 'data' ]
+			params: ['data']
 		}),
 
 		listBackup: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'backup_list',
-			expect: { files: [ ] }
+			expect: { files: [] }
 		}),
 
 		reboot: l2rpc.declare({
@@ -89,7 +88,7 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 
 		downloadBackup: function() {
 			l2spin.open();
-			l2cgi._download().then(function () {
+			l2cgi._download().then(function() {
 				l2spin.close();
 			});
 		},
@@ -116,7 +115,7 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 			});
 		},
 
-		displayBackupConfirmCtrl: function ($scope, $uibModalInstance) {
+		displayBackupConfirmCtrl: function($scope, $uibModalInstance) {
 			var dialog = this;
 			$scope.data = upgradeCtrl.data;
 			return angular.extend(dialog, {
@@ -136,13 +135,14 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 			var file = upgradeCtrl.getUploadFile();
 			l2spin.open();
 			l2cgi.uploadBackup(file).then(function(data) {
-				upgradeCtrl.data=data
+				upgradeCtrl.data=data;
 				l2spin.close();
-				var modalInstance = $uibModal.open({
-					controller: ['$scope', '$uibModalInstance', upgradeCtrl.displayBackupConfirmCtrl],
+				$uibModal.open({
+					controller: ['$scope', '$uibModalInstance',
+					            upgradeCtrl.displayBackupConfirmCtrl],
 					controllerAs: 'Confirm',
-					templateUrl: 'system/backup/success.html',
-				})
+					templateUrl: 'system/backup/success.html'
+				});
 			});
 		},
 
@@ -166,5 +166,5 @@ L2.registerController('SystemBackupController',['$uibModal', 'l2cgi', 'l2rpc', '
 		upgradeCtrl.backupconfig=files;
 		l2spin.close();
 	});
-}]);
+});
 

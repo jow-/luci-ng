@@ -19,8 +19,7 @@ angular.module('LuCI2').factory('l2system', function(l2rpc) {
 			expect: { '': { } }
 		}),
 
-		getInfo: function(cb)
-		{
+		getInfo: function(cb) {
 			l2rpc.batch();
 
 			_system.getSystemInfo();
@@ -42,15 +41,16 @@ angular.module('LuCI2').factory('l2system', function(l2rpc) {
 		initList: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'init_list',
-			expect: { initscripts: [ ] },
+			expect: { initscripts: [] },
 			filter: function(data) {
-				data.sort(function(a, b) { return (a.start || 0) - (b.start || 0) });
+				data.sort(function(a, b) {
+					return (a.start || 0) - (b.start || 0);
+				});
 				return data;
 			}
 		}),
 
-		initEnabled: function(init, cb)
-		{
+		initEnabled: function(init, cb) {
 			return _system.initList().then(function(list) {
 				for (var i = 0; i < list.length; i++)
 					if (list[i].name == init)
@@ -63,18 +63,30 @@ angular.module('LuCI2').factory('l2system', function(l2rpc) {
 		initRun: l2rpc.declare({
 			object: 'luci2.system',
 			method: 'init_action',
-			params: [ 'name', 'action' ],
+			params: ['name', 'action'],
 			filter: function(data) {
 				return (data == 0);
 			}
 		}),
 
-		initStart:   function(init, cb) { return _system.initRun(init, 'start',   cb) },
-		initStop:    function(init, cb) { return _system.initRun(init, 'stop',    cb) },
-		initRestart: function(init, cb) { return _system.initRun(init, 'restart', cb) },
-		initReload:  function(init, cb) { return _system.initRun(init, 'reload',  cb) },
-		initEnable:  function(init, cb) { return _system.initRun(init, 'enable',  cb) },
-		initDisable: function(init, cb) { return _system.initRun(init, 'disable', cb) },
+		initStart:   function(init, cb) {
+			return _system.initRun(init, 'start',   cb);
+		},
+		initStop:    function(init, cb) {
+			return _system.initRun(init, 'stop',    cb);
+		},
+		initRestart: function(init, cb) {
+			return _system.initRun(init, 'restart', cb);
+		},
+		initReload:  function(init, cb) {
+			return _system.initRun(init, 'reload',  cb);
+		},
+		initEnable:  function(init, cb) {
+			return _system.initRun(init, 'enable',  cb);
+		},
+		initDisable: function(init, cb) {
+			return _system.initRun(init, 'disable', cb);
+		},
 
 
 		performReboot: l2rpc.declare({

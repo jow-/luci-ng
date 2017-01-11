@@ -1,22 +1,21 @@
-L2.registerController('StatusRoutesController',
-['$q', '$scope', 'l2rpc', 'l2oui', 'gettext', function($q, $scope, l2rpc, l2oui, gettext) {
+L2.registerController('StatusRoutesController', function($q, $scope, l2rpc, l2oui, gettext) {
 	angular.extend($scope, {
 		getRoutes: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'routes',
-			expect: { routes: [ ] }
+			expect: { routes: [] }
 		}),
 
 		getIPv6Routes: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'routes6',
-			expect: { routes: [ ] }
+			expect: { routes: [] }
 		}),
 
 		getARPTable: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'arp_table',
-			expect: { entries: [ ] }
+			expect: { entries: [] }
 		}),
 
 		getStatus: function() {
@@ -49,7 +48,7 @@ L2.registerController('StatusRoutesController',
 							continue;
 
 						var entries = $scope.arptable[e.macaddr] ||
-							($scope.arptable[e.macaddr] = [ ]);
+							($scope.arptable[e.macaddr] = []);
 
 						entries.push(e);
 					}
@@ -58,9 +57,7 @@ L2.registerController('StatusRoutesController',
 		},
 
 		getVendor: function(mac) {
-			var info = {
-				vendor: gettext('Loading…')
-			};
+			var info = { vendor: gettext('Loading…') };
 
 			l2oui.lookup(mac).then(function(vendor) {
 				info.vendor = vendor;
@@ -71,4 +68,4 @@ L2.registerController('StatusRoutesController',
 	});
 
 	$scope.getStatus();
-}]);
+});

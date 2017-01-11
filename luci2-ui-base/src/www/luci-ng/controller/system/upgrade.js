@@ -1,9 +1,9 @@
 L2.registerFactory('fileService', function() {
-    var files = [];
-    return files;
+	var files = [];
+	return files;
 });
 
-L2.registerDirective('fileModel', [ '$parse', 'fileService', function($parse, fileService) {
+L2.registerDirective('fileModel', function($parse, fileService) {
 	return {
 		restrict: 'A',
 		link: function($scope, element) {
@@ -17,9 +17,10 @@ L2.registerDirective('fileModel', [ '$parse', 'fileService', function($parse, fi
 			});
 		}
 	};
-}]);
+});
 
-L2.registerController('SystemUpgradeController',['$uibModal', 'l2cgi', 'l2rpc', 'l2spin', 'fileService', 'gettext', function($modal, l2cgi, l2rpc, l2spin, fileService, gettext) {
+L2.registerController('SystemUpgradeController', function($modal, l2cgi, l2rpc, l2spin,
+	                  fileService, gettext) {
 	var upgradeCtrl = this;
 
 	angular.extend(upgradeCtrl, {
@@ -44,7 +45,7 @@ L2.registerController('SystemUpgradeController',['$uibModal', 'l2cgi', 'l2rpc', 
 		upgradeStartRpc: l2rpc.declare({
 			object: 'rpc-sys',
 			method: 'upgrade_start',
-			params: [ 'keep' ]
+			params: ['keep']
 		}),
 
 		upgradeCleanRpc: l2rpc.declare({
@@ -57,7 +58,7 @@ L2.registerController('SystemUpgradeController',['$uibModal', 'l2cgi', 'l2rpc', 
 			method: 'reboot'
 		}),
 
-		displayUpgradeSuccessCtrl: function ($scope, $modalInstance) {
+		displayUpgradeSuccessCtrl: function($scope, $modalInstance) {
 			var dialog = this;
 			$scope.size = upgradeCtrl.size;
 			$scope.checksum = upgradeCtrl.checksum;
@@ -73,11 +74,11 @@ L2.registerController('SystemUpgradeController',['$uibModal', 'l2cgi', 'l2rpc', 
 			});
 		},
 
-		displayUpgradeFailedCtrl: function ($scope, $modalInstance) {
+		displayUpgradeFailedCtrl: function($scope, $modalInstance) {
 			var dialog = this;
 			$scope.code = upgradeCtrl.code;
 			$scope.stdout = upgradeCtrl.stdout;
-			$modalInstance.opened.then(function () {
+			$modalInstance.opened.then(function() {
 				upgradeCtrl.upgradeCleanRpc();
 			});
 			return angular.extend(dialog, {
@@ -92,26 +93,27 @@ L2.registerController('SystemUpgradeController',['$uibModal', 'l2cgi', 'l2rpc', 
 			l2spin.open();
 			l2cgi.uploadUpgrade(file).then(function(data) {
 				upgradeCtrl.checksum = data.checksum;
-				upgradeCtrl.size = data.size
+				upgradeCtrl.size = data.size;
 				return upgradeCtrl.upgradeTestRpc();
-			}).then(function(data){
+			}).then(function(data) {
 				upgradeCtrl.code = data.code;
 				upgradeCtrl.stdout = data.stdout;
 				l2spin.close();
 				if (data.code == 0) {
 					$modal.open({
-						controller: ['$scope', '$uibModalInstance', upgradeCtrl.displayUpgradeSuccessCtrl],
+						controller: ['$scope', '$uibModalInstance',
+						            upgradeCtrl.displayUpgradeSuccessCtrl],
 						controllerAs: 'success',
 						keyboard: false,
-						templateUrl: 'system/backup/success.html',
-					})
-				}
-				else {
+						templateUrl: 'system/backup/success.html'
+					});
+				}				else {
 					$modal.open({
-						controller: ['$scope', '$uibModalInstance', upgradeCtrl.displayUpgradeFailedCtrl],
+						controller: ['$scope', '$uibModalInstance',
+						            upgradeCtrl.displayUpgradeFailedCtrl],
 						controllerAs: 'failed',
 						keyboard: false,
-						templateUrl: 'system/backup/failed.html',
+						templateUrl: 'system/backup/failed.html'
 					});
 				}
 			});
@@ -122,9 +124,8 @@ L2.registerController('SystemUpgradeController',['$uibModal', 'l2cgi', 'l2rpc', 
 			upgradeCtrl.upgradeStartRpc(upgradeCtrl.keep).then(
 				l2spin.close()
 			);
-		},
+		}
 	});
 
 	upgradeCtrl.keep = true;
-}]);
-
+});

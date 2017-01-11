@@ -18,8 +18,7 @@ angular.module('LuCI2').directive('cbiFlag', function() {
 							val = self.defaultOn ? self.offValue : undefined;
 
 						self.cbiOwnerOption.formValue(val);
-					}
-					else {
+					} else {
 						val = self.cbiOwnerOption.formValue();
 					}
 

@@ -1,33 +1,33 @@
-L2.registerController('NetworkDiagnosticsController', ['$scope', 'l2rpc', 'l2spin', function($scope, l2rpc, l2spin) {
+L2.registerController('NetworkDiagnosticsController', function($scope, l2rpc, l2spin) {
 	angular.extend($scope, {
 		rpcPingIPv4: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'ping',
-			params: [ 'data' ]
+			params: ['data']
 		}),
 
 		rpcPingIPv6: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'ping6',
-			params: [ 'data' ]
+			params: ['data']
 		}),
 
 		rpcTracerouteIPv4: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'traceroute',
-			params: [ 'data' ]
+			params: ['data']
 		}),
 
 		rpcTracerouteIPv6: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'traceroute6',
-			params: [ 'data' ]
+			params: ['data']
 		}),
 
 		rpcNslookup: l2rpc.declare({
 			object: 'luci2.network',
 			method: 'nslookup',
-			params: [ 'data' ]
+			params: ['data']
 		}),
 
 		trim: function(text) {
@@ -68,10 +68,10 @@ L2.registerController('NetworkDiagnosticsController', ['$scope', 'l2rpc', 'l2spi
 		}
 	});
 
-	$scope.protos = [ 'IPv4', 'IPv6' ];
+	$scope.protos = ['IPv4', 'IPv6'];
 	$scope.ping.url = 'www.lede-project.org';
 	$scope.ping.proto = $scope.protos[0];
 	$scope.traceroute.url = 'www.lede-project.org';
 	$scope.traceroute.proto = $scope.protos[0];
 	$scope.nslookup.url = 'www.lede-project.org';
-}])
+});

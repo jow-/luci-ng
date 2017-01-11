@@ -1,10 +1,10 @@
-L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', 'l2spin', function($q, $modal, l2rpc, l2spin) {
+L2.registerController('SystemSoftwareController', function($q, $modal, l2rpc, l2spin) {
 	var softwareCtrl = this;
 
 	angular.extend(softwareCtrl, {
 		isLoading: true,
 
-		pkgList: [ ],
+		pkgList: [],
 		pkgTotal: 0,
 		pkgOffset: 0,
 		pkgPattern: '*',
@@ -30,13 +30,13 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 		getOpkgInfo: l2rpc.declare({
 			object: 'luci2.opkg',
 			method: 'info',
-			params: [ 'package' ]
+			params: ['package']
 		}),
 
 		getOpkgInstalled: l2rpc.declare({
 			object: 'luci2.opkg',
 			method: 'list_installed',
-			params: [ 'limit', 'offset' ]
+			params: ['limit', 'offset']
 		}),
 
 		parseOpkgInstalled: function(list) {
@@ -77,7 +77,7 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 		getOpkgList: l2rpc.declare({
 			object: 'luci2.opkg',
 			method: 'list',
-			params: [ 'limit', 'offset', 'pattern' ]
+			params: ['limit', 'offset', 'pattern']
 		}),
 
 		parseOpkgList: function(list) {
@@ -96,7 +96,8 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 				softwareCtrl.pkgList.push(list.packages[i]);
 
 			softwareCtrl.isPrevAvail = (softwareCtrl.pkgOffset > 0);
-			softwareCtrl.isNextAvail = (softwareCtrl.pkgOffset + list.packages.length < softwareCtrl.pkgTotal);
+			softwareCtrl.isNextAvail = (softwareCtrl.pkgOffset + list.packages.length <
+			                           softwareCtrl.pkgTotal);
 		},
 
 		getNextList: function() {
@@ -125,8 +126,7 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 			}
 		},
 
-		getSearchPattern: function()
-		{
+		getSearchPattern: function()		{
 			if (!softwareCtrl.pkgSearch)
 				return '*';
 			else if (softwareCtrl.pkgSearch.indexOf('*') > -1)
@@ -161,8 +161,7 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 					if (angular.isObject(info) && angular.isString(info.package)) {
 						dialog.pkgInfo = info;
 						dialog.findDependencies(true);
-					}
-					else {
+					}					else {
 						dialog.dismiss();
 					}
 				},
@@ -172,15 +171,15 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 						dialog.depCache = {
 							size: 0,
 							info: { },
-							queue: [ ],
-							needed: [ ],
+							queue: [],
+							needed: [],
 							isLoading: true
 						};
 
 						var curPkgName = dialog.pkgInfo.package;
 
 						$scope.pkgInfo = dialog.depCache.info[curPkgName] = {
-							childs: [ ],
+							childs: [],
 							state: softwareCtrl.pkgInstalled[curPkgName] ? 'installed' : 'unknown'
 						};
 
@@ -193,7 +192,8 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 						pkgInfo = {
 							package: dialog.depCache.queue[0],
 							md5sum: Math.random(),
-							state: softwareCtrl.pkgInstalled[dialog.depCache.queue[0]] ? 'installed' : 'missing'
+							state: softwareCtrl.pkgInstalled[dialog.depCache.queue[0]] ?
+							      'installed' : 'missing'
 						};
 					}
 
@@ -224,8 +224,9 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 									dialog.depCache.info[pkgDepName] = {
 										package: pkgDepName,
 										md5sum: Math.random(),
-										state: softwareCtrl.pkgInstalled[pkgDepName] ? 'installed' : 'unknown',
-										childs: [ ]
+										state: softwareCtrl.pkgInstalled[pkgDepName] ?
+										       'installed' : 'unknown',
+										childs: []
 									}
 								));
 							}
@@ -233,9 +234,9 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 					}
 
 					if (dialog.depCache.queue.length > 0) {
-						softwareCtrl.getOpkgInfo(dialog.depCache.queue[0]).then(dialog.findDependencies);
-					}
-					else {
+						softwareCtrl.getOpkgInfo(dialog.depCache.queue[0])
+							.then(dialog.findDependencies);
+					}					else {
 						for (var pkgName in dialog.depCache.info)
 							if (dialog.depCache.info[pkgName].state === 'unknown')
 								dialog.depCache.needed.push(pkgName);
@@ -263,7 +264,8 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 
 		displayInfo: function(pkgName) {
 			$modal.open({
-				controller: ['$scope', '$uibModalInstance', 'pkgName', softwareCtrl.displayInfoCtrl],
+				controller: ['$scope', '$uibModalInstance', 'pkgName',
+				            softwareCtrl.displayInfoCtrl],
 				controllerAs: 'Dialog',
 				templateUrl: 'system/software/info.html',
 				resolve: {
@@ -279,4 +281,4 @@ L2.registerController('SystemSoftwareController', ['$q', '$uibModal', 'l2rpc', '
 	softwareCtrl.updateDiskFree()
 		.then(softwareCtrl.getInstalled)
 		.then(softwareCtrl.getNextList);
-}]);
+});

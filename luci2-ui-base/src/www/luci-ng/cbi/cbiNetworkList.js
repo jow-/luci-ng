@@ -10,7 +10,7 @@ angular.module('LuCI2').directive('cbiNetworkList', function(gettext, l2network)
 		controller: function($scope) {
 			var self = angular.extend(this, {
 				checked: { },
-				interfaces: [ ],
+				interfaces: [],
 				isLoading: true,
 
 				isUnspecified: function() {
@@ -45,12 +45,11 @@ angular.module('LuCI2').directive('cbiNetworkList', function(gettext, l2network)
 					for (var i = 0, ifc; ifc = self.interfaces[i]; i++) {
 						if (selected[ifc.name()]) {
 							self.checked[ifc.name()] = true;
-							
+
 							if (!self.allowMultiple)
 								break;
 						}
 					}
-
 				},
 
 				reload: function() {
@@ -62,14 +61,12 @@ angular.module('LuCI2').directive('cbiNetworkList', function(gettext, l2network)
 				},
 
 				select: function(ifcName) {
-
 					if (self.allowMultiple) {
 						if (self.checked[ifcName])
 							delete self.checked[ifcName];
 						else
 							self.checked[ifcName] = true;
-					}
-					else {
+					} else {
 						for (var key in self.checked)
 							if (self.checked.hasOwnProperty(key))
 								delete self.checked[key];
@@ -92,8 +89,8 @@ angular.module('LuCI2').directive('cbiNetworkList', function(gettext, l2network)
 				textValue: function() {
 					return angular.toArray(self.cbiOwnerOption.formValue()).join(', ');
 				},
-				
-				isChecked: function(dev) { 
+
+				isChecked: function(dev) {
 					return self.checked[dev.name()];
 				}
 			});
