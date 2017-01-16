@@ -7,7 +7,8 @@
     "angular-route": "~1.5.8",
     "angular-gettext": "^2.3.8",
     "angular-bootstrap": "~2.1.0",
-    "bootstrap-css-only": "~3.0.0"
+    "bootstrap-css-only": "~3.0.0",
+    "angular-cookies": "^1.6.1"
   },
   "devDependencies": {},
   "overrides": {}

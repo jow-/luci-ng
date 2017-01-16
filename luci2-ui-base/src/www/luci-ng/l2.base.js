@@ -247,7 +247,8 @@ window.L2 = angular.module('LuCI2', [
 	'gettext',
 	'ngRoute',
 	'ngAnimate',
-	'ui.bootstrap'
+	'ui.bootstrap',
+	'ngCookies'
 ]);
 
 angular.module('LuCI2')
@@ -330,94 +331,7 @@ angular.module('LuCI2')
 			}
 		});
 	})
-	.factory('$cookie', function() {
-		var _cookie = { };
-		return angular.extend(_cookie, {
-			get: function(name) {
-				if (!name)
-					return null;
-
-				return decodeURIComponent(document.cookie.replace(
-						new RegExp(
-							'(?:(?:^|.*;)\\s*' +
-							encodeURIComponent(name).replace(/[\-\.\+\*]/g, '\\$&') +
-							'\\s*\\=\\s*([^;]*).*$)|^.*$'
-						), '$1'
-					)) || null;
-			},
-
-			set: function(name, value, expiry, path, domain, secure) {
-				if (!name || /^(?:expires|max\-age|path|domain|secure)$/i.test(name))
-					return false;
-
-				var expires = '';
-				if (expiry) {
-					switch (expiry.constructor) {
-						case Number:
-							expires = expiry === Infinity ?
-								'; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + expiry;
-							break;
-
-						case String:
-							expires = '; expires=' + expiry;
-							break;
-
-						case Date:
-							expires = '; expires=' + expiry.toUTCString();
-							break;
-					}
-				}
-
-				document.cookie =
-						encodeURIComponent(name)  + '='      +
-						encodeURIComponent(value) + expires  +
-						(domain ? '; domain=' + domain : '') +
-						(path   ? '; path='   + path   : '') +
-						(secure ? '; secure'           : '')
-					;
-
-				return true;
-			},
-
-			unset: function(name, path, domain) {
-				if (!this.exists(name))
-					return false;
-
-				document.cookie =
-						encodeURIComponent(name) +
-						'=; expires=Thu, 01 Jan 1970 00:00:00 GMT' +
-						(domain ? '; domain=' + domain : '') +
-						(path   ? '; path='   + path   : '')
-					;
-
-				return true;
-			},
-
-			exists: function(name) {
-				if (!name)
-					return false;
-
-				return (new RegExp(
-						'(?:^|;\\s*)' +
-						encodeURIComponent(name).replace(/[\-\.\+\*]/g, '\\$&') +
-						'\\s*\\='
-					)).test(document.cookie);
-			},
-
-			keys: function() {
-				var keys = document.cookie.replace(
-						/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g,
-						''
-					).split(/\s*(?:\=[^;]*)?;\s*/);
-
-				for (var len = keys.length, i = 0; i < len; i++)
-					keys[i] = decodeURIComponent(keys[i]);
-
-				return keys;
-			}
-		});
-	})
-	.factory('l2auth', function(l2rpc, $timeout, $uibModal, $cookie, $rootScope) {
+	.factory('l2auth', function(l2rpc, $timeout, $uibModal, $cookies, $rootScope) {
 		var _auth = { };
 		return angular.extend(_auth, {
 			login: l2rpc.declare({
@@ -454,7 +368,7 @@ angular.module('LuCI2')
 			heartbeat: function() {
 				return _auth.access('ubus', 'session', 'destroy').then(function(access) {
 					if (!access) {
-						$cookie.unset('l2-session', '/');
+						$cookies.remove('l2-session', { path: '/' });
 						l2rpc.token(undefined);
 						_auth.prompt();
 					} else {
@@ -480,8 +394,10 @@ angular.module('LuCI2')
 									if (angular.isObject(session.data) &&
 										    session.data.username) {
 										$scope.error = false;
-										$cookie.set('l2-session',
-										            session.ubus_rpc_session, Infinity, '/');
+										$cookies.put('l2-session', session.ubus_rpc_session, {
+											expires: Infinity,
+											path: '/'
+										});
 										l2rpc.token(session.ubus_rpc_session);
 										_auth.heartbeat();
 										_auth._dialog.close();
@@ -496,7 +412,7 @@ angular.module('LuCI2')
 			},
 
 			init: function() {
-				var sid = $cookie.get('l2-session');
+				var sid = $cookies.get('l2-session');
 
 				l2rpc.token(sid);
 				l2rpc.batch();
@@ -534,7 +450,7 @@ angular.module('LuCI2')
 						$scope.logout = function($event) {
 							_auth.logout().then(function() {
 								$timeout.cancel(_auth.timeout);
-								$cookie.unset('l2-session', '/');
+								$cookies.remove('l2-session', { path: '/' });
 								l2rpc.token(undefined);
 								_auth._dialog.close();
 								_auth.prompt();
