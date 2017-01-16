@@ -39,16 +39,19 @@ function clean(done) {
 function inject() {
 	const css = gulp.src(path.join(conf.paths.src, '**/*.css'), { read: false });
 
-	const js = gulp.src([path.join(conf.paths.src, conf.paths.app, '*.js'),
-		path.join(conf.paths.src, conf.paths.app, 'cbi/**/*.js')], { read: false });
+	const js = gulp.src([path.join(conf.paths.src, conf.paths.app, '**/*.js'),
+		'!' + path.join(conf.paths.src, conf.paths.app, 'controller/**/*.js'),
+		'!' + path.join(conf.paths.src, conf.paths.app, 'proto/**/*.js')], { read: false });
 
 	const opts = {
 		ignorePath: [conf.paths.src, conf.paths.tmp],
 		addRootSlash: false
 	};
 
-	gulp.src([path.join(conf.paths.src, conf.paths.app, '*.js'),
-		path.join(conf.paths.src, conf.paths.app, 'cbi/**/*.js')], { base: conf.paths.src })
+	gulp.src([path.join(conf.paths.src, conf.paths.app, '**/*.js'),
+		'!' + path.join(conf.paths.src, conf.paths.app, 'controller/**/*.js'),
+		'!' + path.join(conf.paths.src, conf.paths.app, 'proto/**/*.js')], { base: conf.paths.src })
+		.pipe($.insert.wrap('(function() {\n\'use strict\';\n', '})();\n'))
 		.pipe($.ngAnnotate({ remove: true, add: true, single_quotes: true }))
 		.pipe(gulp.dest(conf.paths.tmp));
 
@@ -172,7 +175,9 @@ function build() {
 	return gulp.src(path.join(conf.paths.tmp, conf.paths.mainHtml))
 
 		.pipe($.inject(partials, opts))
-		.pipe($.useref({}, lazypipe().pipe($.sourcemaps.init, { loadMaps: true })))
+		.pipe($.useref({}, lazypipe().pipe($.sourcemaps.init, { loadMaps: true })
+		               .pipe($.if, path.join(conf.paths.src, conf.paths.app, '**/*.js'),
+						          $.insert.wrap('(function() {\n\'use strict\';\n', '})();\n'))))
 
 		.pipe(jsFilter)
 		.pipe($.if('**/luci-ng.js', // don't annotate libs
