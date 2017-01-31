@@ -15,7 +15,7 @@ all: build
 	touch .tmp/.npm_stamp
 
 .tmp/.bower_stamp: bower.json 
-	$(BOWER) install
+	$(BOWER) install --config.interactive=false
 	mkdir -p .tmp
 	touch .tmp/.bower_stamp
 
