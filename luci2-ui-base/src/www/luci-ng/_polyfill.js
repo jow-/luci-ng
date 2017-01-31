@@ -304,7 +304,7 @@ angular.extend(angular, {
 
 			case 'string':
 				r = { };
-				var l = x.split(/\x+/);
+				var l = x.split(/\s+/);
 				for (i = 0; i < l.length; i++)
 					if (l[i].length > 0)
 						r[l[i]] = true;
