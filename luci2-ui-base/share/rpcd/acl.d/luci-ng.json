@@ -37,6 +37,7 @@
 					"devices",
 					"info",
 					"assoclist",
+					"freqlist",
 					"phyname"
 				],
 				"system": [
@@ -52,6 +53,7 @@
 					"dhcp_leases",
 					"dhcp6_leases",
 					"arp_table",
+					"eap_support",
 					"routes",
 					"routes6"
 				],
