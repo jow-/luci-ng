@@ -7,10 +7,12 @@
 
 window.L2 = angular.module('LuCI2', [
 	'gettext',
-	'ngRoute',
+	'ui.router',
 	'ngAnimate',
 	'ui.bootstrap',
-	'ngCookies'
+	'ngCookies',
+	'ngMaterial',
+	'amFramework'
 ]);
 
 angular.module('LuCI2')
