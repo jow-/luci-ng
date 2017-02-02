@@ -59,37 +59,6 @@
 		Loading...
 	</div>
 
-	<script type="text/ng-template" id="loginForm">
-		<div class="modal-content">
-			<div class="modal-header modal-title">
-				<h4>Authorization Required</h4>
-			</div>
-			<div class="modal-body">
-				<form target="" method="post">
-					<p ng-if="error" class="alert alert-danger">Wrong username or password given!</p>
-					<p>
-						<label>
-			  Username<br>
-			  <input type="text" name="username" value="root" class="form-control" ng-model="username" ng-keypress="login($event)">
-			</label>
-					</p>
-					<p>
-						<label>
-			  Password<br>
-			  <input type="password" name="password" class="form-control" ng-model="password" ng-keypress="login($event)">
-			</label>
-					</p>
-					<p>
-						Enter your username and password above, then click "Login" to proceed.
-					</p>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" ng-disabled="!username || !password" ng-click="login($event)">Login</button>
-			</div>
-		</div>
-	</script>
-
 	<script type="text/ng-template" id="logoutForm">
 		<div class="modal-content">
 			<div class="modal-header modal-title">
