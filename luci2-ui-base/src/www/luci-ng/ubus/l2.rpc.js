@@ -4,6 +4,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 		_id: 1,
 		_token: '00000000000000000000000000000000',
 		_batch: undefined,
+		_customFields: {},
 
 		_date: new Date(),
 
@@ -27,7 +28,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 				delete msgs.request;
 			}
 
-			return $http({
+			return $http(angular.extend({}, _rpc._customFields, {
 				url:         url.join('/'),
 				method:      'POST',
 				headers:     {
@@ -37,7 +38,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 				data:        msgs,
 				timeout:     5000 /* XXX */,
 				_rpc_reqs:   reqs
-			}).then(cb, cb);
+			})).then(cb, cb);
 		},
 
 		_list_cb: function(res) {
@@ -193,6 +194,11 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 				_rpc._token = token;
 			else
 				_rpc._token = '00000000000000000000000000000000';
+		},
+
+		customField: function(fields) {
+			if (angular.isObject(fields)) _rpc._customFields = fields;
+			else _rpc._customFields = {};
 		}
 	});
 });
