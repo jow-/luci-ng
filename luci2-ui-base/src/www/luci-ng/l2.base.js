@@ -14,21 +14,17 @@ window.L2 = angular.module('LuCI2', [
 ]);
 
 angular.module('LuCI2')
-	.controller('HeaderController', function(l2spin, l2menu, l2auth, $scope) {
-		$scope.logout = l2auth.destroy;
+	.controller('HeaderController', function(l2menu, l2session, $scope) {
+		$scope.logout = l2session.destroy;
 
 		$scope.$on('session.setup', function(event, session) {
-			l2spin.open();
-			$scope.user = session.data ? session.data.username : undefined;
-			$scope.token = session.ubus_rpc_session;
 			l2menu.update().then(function(menu) {
 				$scope.menu = menu;
-				l2spin.close();
 			});
 		});
 	})
 	.config(function($routeProvider, $controllerProvider, $compileProvider, $filterProvider,
-		        $uibModalProvider, $httpProvider, $provide) {
+		        $uibModalProvider, $httpProvider, $provide, amfLoginDialogProvider) {
 		angular.extend(L2, {
 			registerRoute: angular.bind($routeProvider, $routeProvider.when),
 			registerDefaultRoute: angular.bind($routeProvider, $routeProvider.otherwise),
@@ -40,8 +36,18 @@ angular.module('LuCI2')
 		});
 
 		$httpProvider.interceptors.push('l2httpRetry');
+
+		amfLoginDialogProvider.configure({
+			loginFactory: function(l2session) {
+				return l2session.loginCB;
+			},
+			retryFilter: function(req, token) {
+				if (req.data && angular.isArray(req.data.params) && req.data.params.length)
+					req.data.params[0]=token;
+			}
+		});
 	})
-	.run(function($q, $injector, l2auth, gettextCatalog) {
+	.run(function($q, $injector, l2session, gettextCatalog) {
 		angular.deferrable = function(x) {
 			var deferred = $q.defer(); deferred.resolve(x);
 			return deferred.promise;
@@ -55,7 +61,8 @@ angular.module('LuCI2')
 		gettextCatalog.setCurrentLanguage('de');
 				// gettextCatalog.debug = true;
 
-		l2auth.init();
+		// dummy rpc call to immidiatly trigger the login interceptor
+		l2session.data();
 	})
 		;
 })();
