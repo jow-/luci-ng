@@ -1,3 +1,5 @@
+/* eslint no-unreachable:0 */
+
 angular.module('LuCI2')
 	.factory('l2spin', function($uibModal, gettext) {
 		var template = '<div class="modal-content l2-modal-loader">' +
@@ -9,6 +11,7 @@ angular.module('LuCI2')
 		var _loading = { };
 		return angular.extend(_loading, {
 			open: function() {
+				return;
 				if (_loading.$modal)
 					return;
 
@@ -20,6 +23,7 @@ angular.module('LuCI2')
 			},
 
 			close: function() {
+				return;
 				if (!_loading.$modal)
 					return;
 
