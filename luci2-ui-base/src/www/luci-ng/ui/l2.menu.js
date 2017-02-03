@@ -1,6 +1,9 @@
 angular.module('LuCI2')
-	.factory('l2menu', function(l2rpc, $route) {
+	.factory('l2menu', function(l2rpc, $stateRegistry) {
 		var _menu = { };
+		var _states = [];
+		var _nodes;
+
 		return angular.extend(_menu, {
 			load: l2rpc.declare({
 				object: 'luci2.ui',
@@ -14,101 +17,103 @@ angular.module('LuCI2')
 				return (x - y);
 			},
 
-			first: function(node) {
-				var child;
-				if (node.view)
-					return node;
-
-				var nodes = [];
-				for (child in (node.childs || { }))
-					nodes.push(node.childs[child]);
-
-				nodes.sort(_menu.cmp);
-
-				for (var i = 0; i < nodes.length; i++) {
-					child = _menu.first(nodes[i]);
-					if (child) {
-						for (var key in child)
-							if (!node.hasOwnProperty(key) && child.hasOwnProperty(key))
-								node[key] = child[key];
-
-						return node;
-					}
-				}
-
-				return undefined;
-			},
-
-			route: function(node) {
-				var v = node.view,
-					c = angular.toClassName(v, 'Controller'),
-					t = '/luci-ng/view/' + v + '.html',
-					m = '/luci-ng/controller/' + v + '.js';
-
-				return {
-					templateUrl: t,
-					controller:  c,
-					controllerAs: 'View',
-					secure:      false,
-					resolve:     {
-						load: ['l2use', function(l2use) {
-							return l2use.load(m);
-						}]
-					}
+			state: function(node) {
+				var state = {
+					name: node.sref,
+					url: '/' + node.url,
+					data: { title: node.title }
 				};
+
+
+				if (node.childs)
+					angular.extend( state, {
+						abstract: true,
+						template: '<div class="ui-view"></div>'
+					});
+				else if (node.view)
+					angular.extend( state, {
+						templateUrl: '/luci-ng/view/' + node.view + '.html',
+						controller: angular.toClassName(node.view, 'Controller'),
+						controllerAs: 'View',
+						resolve: {
+							load: ['l2use', function(l2use) {
+								return l2use.load('/luci-ng/controller/' + node.view + '.js');
+							}]
+						}
+					});
+
+				return state;
 			},
+
 
 			populate: function(menu) {
-				var tree = { };
+				var tree = { sref: 'menu', url: 'menu' };
+				var path, node;
 
 				for (var entry in menu) {
-					var path = entry.split(/\//);
-					var node = tree;
+					path = entry.split(/\//);
+					node = tree;
 
 					for (var i = 0; i < path.length; i++) {
 						if (!node.childs)
 							node.childs = { };
 
 						if (!node.childs[path[i]])
-							node.childs[path[i]] = { };
+							node.childs[path[i]] = {
+								sref: 'menu.' + path.slice(0, i+1).join('.'),
+								url: path[i]
+							};
 
 						node = node.childs[path[i]];
 					}
 
 					angular.extend(node, menu[entry]);
-
-					if (angular.isString(node.view))
-						L2.registerRoute('/' + node.view, _menu.route(node));
+					if (!node.title) node.title = node.url;
 				}
 
-				return _menu.render([], tree.childs, 0, 0, 9999);
+				_menu.childsArray(tree);
+				_nodes = tree;
+
+				return _nodes;
 			},
 
-			render: function(nodes, childs, level, min, max) {
-				for (var node in childs) {
-					var child = _menu.first(childs[node]);
-					if (child)
-						nodes.push(childs[node]);
+			childsArray: function(node) {
+				var childs = [];
+
+				var state = _menu.state(node);
+				_states.push(state);
+
+				for (var child in (node.childs || {})) {
+					_menu.childsArray(node.childs[child]);
+					childs.push(node.childs[child]);
 				}
 
-				nodes.sort(_menu.cmp);
+				childs.sort(_menu.cmp);
 
-				for (var i = 0; i < nodes.length; i++) {
-					if (level === 0 && i === 0) {
-						L2.registerDefaultRoute({ redirectTo: '/' + nodes[i].view });
+				if (childs.length) {
+					node.childs = childs;
+					state.redirectTo= childs[0].sref;
+				} else
+					delete node.childs;
+			},
 
-						$route.reload();
-					}
-
-					if (nodes[i].childs && level < max)
-						nodes[i].childs = _menu.render([], nodes[i].childs, level + 1, min, max);
-				}
-
-				return nodes;
+			registerStates: function() {
+				_states.forEach(function(state) {
+					$stateRegistry.register(state);
+				});
 			},
 
 			update: function() {
 				return _menu.load().then(_menu.populate);
+			},
+
+			getNodes: function() {
+				return _nodes;
+			},
+
+			getStates: function() {
+				return _states;
 			}
+
 		});
 	});

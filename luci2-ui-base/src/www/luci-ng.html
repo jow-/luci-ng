@@ -21,71 +21,24 @@
 
 </head>
 
-<body ng-app="LuCI2">
+<body ng-app="LuCI2" ng-controller="AppController">
 
-	<div class="navbar navbar-inverse navbar-fixed-top" role="banner" ng-controller="HeaderController">
-		<div class="container">
-			<div class="navbar-header">
-				<button ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed" type="button" class="navbar-toggle">
-		  <span class="icon-bar"></span>
-		  <span class="icon-bar"></span>
-		  <span class="icon-bar"></span>
-		</button>
-				<a class="navbar-brand" href="#" id="hostname">&nbsp;</a>
+	<amf-app layout="row" layout-fill class="ng-cloak" side-menu="sideMenuItems" toolbar="toolbar" >
+		<amf-app-title>
+			<md-button layout="row" layout-align="center center" class="md-toolbar-tools" aria-label="title">
+				<md-icon md-svg-icon="router-wireless" style="margin: 0;"></md-icon>
+				<h1>LEDE</h1>
+			</md-button>
+		</amf-app-title>
+		<amf-app-content>
+			<div class="ui-view"></div>
+		</amf-app-content>
+		<amf-app-footer>
+			<div id="license-footer" flex="100">
+				Powered by LEDE &copy;{{thisYear}}.
 			</div>
-			<div uib-collapse="navCollapsed" class="collapse navbar-collapse" id="mainmenu">
-				<ul role="menu" class="nav navbar-nav">
-					<li ng-repeat="node in menu" ng-include="'menuTree'" uib-dropdown></li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right ng-cloak">
-					<li>
-						<a href="#/logout" ng-click="logout()">
-							<span class="label label-default"></span>
-						</a>
-					</li>
-					<li ng-if="user">
-						<a href="#/logout" ng-click="logout()">
-							<span class="label label-info">Logged in as {{user}}</span>
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-
-	<div id="viewmenu"></div>
-
-	<div id="maincontent" class="container" ng-view>
-		Loading...
-	</div>
-
-	<script type="text/ng-template" id="logoutForm">
-		<div class="modal-content">
-			<div class="modal-header modal-title">
-				<h4>Confirm logout</h4>
-			</div>
-			<div class="modal-body">
-				<p>
-					Do you really want to log out?
-				</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" ng-click="cancel($event)">Cancel</button>
-				<button type="button" class="btn btn-primary" ng-click="logout($event)">Logout</button>
-			</div>
-		</div>
-	</script>
-
-	<script type="text/ng-template" id="menuTree">
-		<a ng-if="!node.childs" href="#/{{node.view}}">{{node.title}}</a>
-		<a ng-if="node.childs" href="#" uib-dropdown-toggle>
-	  {{node.title}}
-	  <b class="caret"></b>
-	</a>
-		<ul ng-if="node.childs" class="dropdown-menu navbar-inverse">
-			<li ng-repeat="node in node.childs" ng-include="'menuTree'" uib-dropdown></li>
-		</ul>
-	</script>
+		</amf-app-footer>
+	</amf-app>
 
 	<!-- build:js luci-ng/libs.js -->
 	<!-- bower:js -->
