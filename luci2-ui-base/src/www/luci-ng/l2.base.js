@@ -16,20 +16,19 @@ window.L2 = angular.module('LuCI2', [
 ]);
 
 angular.module('LuCI2')
-	.controller('HeaderController', function(l2menu, l2session, $scope) {
+	.controller('AppController', function(l2menu, l2session, $scope) {
 		$scope.logout = l2session.destroy;
 
 		$scope.$on('session.setup', function(event, session) {
 			l2menu.update().then(function(menu) {
-				$scope.menu = menu;
+				$scope.sideMenuItems = menu.childs;
+				l2menu.registerStates();
 			});
 		});
 	})
-	.config(function($routeProvider, $controllerProvider, $compileProvider, $filterProvider,
-		        $uibModalProvider, $httpProvider, $provide, amfLoginDialogProvider) {
+	.config(function($controllerProvider, $compileProvider, $filterProvider,
+		        $httpProvider, $provide, amfLoginDialogProvider, $urlRouterProvider) {
 		angular.extend(L2, {
-			registerRoute: angular.bind($routeProvider, $routeProvider.when),
-			registerDefaultRoute: angular.bind($routeProvider, $routeProvider.otherwise),
 			registerController: $controllerProvider.register,
 			registerDirective: $compileProvider.directive,
 			registerFilter: $filterProvider.register,
@@ -41,6 +40,8 @@ angular.module('LuCI2')
 
 		amfLoginDialogProvider.configure({
 			loginFactory: function(l2session) {
+				'ngInject';
+
 				return l2session.loginCB;
 			},
 			retryFilter: function(req, token) {
@@ -48,6 +49,8 @@ angular.module('LuCI2')
 					req.data.params[0]=token;
 			}
 		});
+
+		$urlRouterProvider.otherwise('/menu/status/status');
 	})
 	.run(function($q, $injector, l2session, gettextCatalog) {
 		angular.deferrable = function(x) {
