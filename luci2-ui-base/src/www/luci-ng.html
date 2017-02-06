@@ -21,9 +21,10 @@
 
 </head>
 
-<body ng-app="LuCI2" ng-controller="AppController">
-
-	<amf-app layout="row" layout-fill class="ng-cloak" side-menu="sideMenuItems" toolbar="toolbar" >
+<body ng-app="LuCI2" ng-controller="AppController as app">
+	<amf-http-progress></amf-http-progress>
+	
+	<amf-app layout="row" layout-fill class="ng-cloak" side-menu="app.sideMenuItems" toolbar="app.toolbar" >
 		<amf-app-title>
 			<md-button layout="row" layout-align="center center" class="md-toolbar-tools" aria-label="title">
 				<md-icon md-svg-icon="router-wireless" style="margin: 0;"></md-icon>
@@ -35,7 +36,7 @@
 		</amf-app-content>
 		<amf-app-footer>
 			<div id="license-footer" flex="100">
-				Powered by LEDE &copy;{{thisYear}}.
+				Powered by LEDE &copy;{{app.thisYear}}.
 			</div>
 		</amf-app-footer>
 	</amf-app>

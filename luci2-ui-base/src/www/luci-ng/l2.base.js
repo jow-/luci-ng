@@ -1,9 +1,4 @@
 /* eslint angular/module-setter: 0 */
-/* eslint angular/controller-as: 0 */
-
-(function() {
-'use strict';
-
 
 window.L2 = angular.module('LuCI2', [
 	'gettext',
@@ -16,16 +11,6 @@ window.L2 = angular.module('LuCI2', [
 ]);
 
 angular.module('LuCI2')
-	.controller('AppController', function(l2menu, l2session, $scope) {
-		$scope.logout = l2session.destroy;
-
-		$scope.$on('session.setup', function(event, session) {
-			l2menu.update().then(function(menu) {
-				$scope.sideMenuItems = menu.childs;
-				l2menu.registerStates();
-			});
-		});
-	})
 	.config(function($controllerProvider, $compileProvider, $filterProvider,
 		        $httpProvider, $provide, amfLoginDialogProvider, $urlRouterProvider) {
 		angular.extend(L2, {
@@ -50,7 +35,10 @@ angular.module('LuCI2')
 			}
 		});
 
-		$urlRouterProvider.otherwise('/menu/status/status');
+		$urlRouterProvider.otherwise('/menu/status/overview');
+	})
+	.config(function($mdIconProvider) {
+		$mdIconProvider.defaultIconSet('luci-ng/icons/svg/iconset.svg');
 	})
 	.run(function($q, $injector, l2session, gettextCatalog) {
 		angular.deferrable = function(x) {
@@ -68,6 +56,4 @@ angular.module('LuCI2')
 
 		// dummy rpc call to immidiatly trigger the login interceptor
 		l2session.data();
-	})
-		;
-})();
+	});
