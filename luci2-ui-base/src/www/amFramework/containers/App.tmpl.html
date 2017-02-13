@@ -1,0 +1,38 @@
+<div layout="row" layout-fill>
+
+
+	<md-sidenav md-is-locked-open="$mdMedia('gt-sm')" md-component-id="left" class="md-whiteframe-z2 md-sidenav-left" md-colors="{'background-color': 'background'}">
+		<header class="md-whiteframe-2dp" md-colors="{color: 'primary'}">
+			<ng-transclude ng-transclude-slot="title" flex="100"></ng-transclude>
+			<md-divider></md-divider>
+		</header>
+
+		<amf-side-menu nodes="$ctrl.sideMenu" />
+	</md-sidenav>
+
+	<div layout="column" flex>
+		<md-toolbar layout="row" layout-align="start center" class="md-whiteframe-2dp">
+
+			<md-button class="md-icon-button" hide-gt-sm ng-click="$ctrl.openMenu()" aria-label="menu">
+				<md-icon md-svg-icon="menu"></md-icon>
+			</md-button>
+
+			<amf-breadcrumbs limit-to="2" limit-to-xs="1" label-property="data.title" ></amf-breadcrumbs>
+
+			<span flex></span>
+
+			<amf-toolbar-buttons buttons="$ctrl.toolbar"></amf-toolbar-buttons>
+
+		</md-toolbar>
+
+		<!-- main content -->
+		<md-content class="md-padding page-content" md-colors="{'background-color': 'background-hue-1'}" md-scroll-y layout="column" flex>
+			<ng-transclude ng-transclude-slot="content" ></ng-transclude>
+
+			<div layout="row" layout-align="center end">
+				<ng-transclude ng-transclude-slot="footer" flex="100"></ng-transclude>
+			</div>
+		</md-content>
+	</div>
+
+</div>

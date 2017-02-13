@@ -1,0 +1,20 @@
+/* amfSlide classes */
+
+
+.amf-slide-wrapper {
+	overflow: hidden;
+	transition-delay: 0s;
+	transition-duration: 0.5s;
+	transition-property: height;
+	transition-timing-function: ease-in-out;
+	height: 0px;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none;
+}
+
+.amf-slide-content {
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none;
+}

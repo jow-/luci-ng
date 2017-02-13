@@ -1,0 +1,12 @@
+/* amfHttpProgress classes */
+
+.amf-http-progress {
+	margin: 0px;
+	border: none;
+	padding: 0px;
+	width: 100%;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	z-index: 90;
+}

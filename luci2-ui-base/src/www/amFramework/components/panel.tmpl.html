@@ -1,0 +1,19 @@
+<section layout-margin class="md-whiteframe-z1 amf-panel" md-colors="{'background-color': 'background'}">
+
+	<md-toolbar class=" md-hue-1 amf-panel-toolbar ">
+		<div class="md-toolbar-tools">
+			<md-icon md-svg-icon="{{icon}}"></md-icon>
+			<h3 class="amf-panel-tittle">{{title}}</h3>
+			<span flex></span>
+			<md-button ng-show="options" ng-click="$showOptions = !$showOptions" class="md-icon-button" aria-label="Show options">
+				<md-icon md-svg-icon="dots-vertical"></md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+	
+	<md-content>
+		<ng-transclude></ng-transclude>
+	</md-content>
+	
+	
+</section>

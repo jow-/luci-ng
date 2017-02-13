@@ -1,0 +1,9 @@
+<md-content flex role="navigation" md-colors="{'background-color': 'background'}">
+
+	<ul ng-if="$ctrl.nodes.length">
+		<li ng-repeat="node in $ctrl.nodes">
+			<amf-side-menu-item node="node" level="0" />
+		</li>
+	</ul>
+
+</md-content>

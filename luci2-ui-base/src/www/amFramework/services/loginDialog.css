@@ -1,0 +1,20 @@
+/* amfLoginDialog classes */
+
+.amf-login-dialog {
+	min-width: 50%;
+	padding: 20px;
+}
+
+.amf-login-dialog-header {
+	text-align: center;
+}
+
+.amf-login-dialog-header md-icon {
+	width: 96px;
+	height: 96px;
+}
+
+.amf-login-dialog-header h2 {
+	font-size: 24px;
+	font-weight: bold;
+}
