@@ -1,0 +1,24 @@
+md-sidenav.md-locked-open.md-sidenav-left {
+	width: 200px;
+	min-width: 110px;
+	max-width: 300px;
+}
+
+.amf-notifications-label {
+	height: 16px;
+	min-width: 16px;
+	line-height: 16px;
+	text-align: center;
+	border-radius: 8px;
+	position: absolute;
+	font-size: 10px;
+	top: 2px;
+	right: 2px;
+	background-color: #E75753;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.md-icon {
+	height: auto;
+}

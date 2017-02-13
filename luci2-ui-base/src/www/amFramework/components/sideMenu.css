@@ -1,0 +1,52 @@
+/* amfSideMenu classes */
+
+.amf-button-toggle .amf-toggle-icon {
+  display: block;
+  margin-left: auto;
+  speak: none;
+  vertical-align: middle;
+  transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  transition: transform 0.3s ease-in-out;
+  -webkit-transition: -webkit-transform 0.3s ease-in-out;
+}
+.amf-button-toggle .amf-toggle-icon.toggled {
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+}
+
+amf-side-menu ul {
+	margin: 0px;
+	padding: 0px;
+	overflow-x: hidden;
+	max-width: 100%;
+	list-style: none;
+}
+
+amf-side-menu li {
+	margin: 0;
+	overflow: hidden;
+}
+
+amf-side-menu ul ul {
+	padding: 5px;
+}
+
+amf-side-menu-item {
+	
+}
+
+amf-side-menu-item .md-button {
+	margin: 0px;
+	width: 100%;
+	overflow: hidden;
+	
+}
+
+.amf-menu-item-00 {
+	text-transform: uppercase;
+}
+
+.amf-menu-item-01 {
+	text-transform: capitalize;
+}
