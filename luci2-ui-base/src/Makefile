@@ -19,11 +19,15 @@ all: build
 	mkdir -p .tmp
 	touch .tmp/.bower_stamp
 
+.tmp/.download_stamp: ./gulp/conf.js
+	$(GULP) download
+	mkdir -p .tmp
+	touch .tmp/.download_stamp
 
-prepare: .tmp/.npm_stamp .tmp/.bower_stamp
+prepare: .tmp/.npm_stamp .tmp/.bower_stamp .tmp/.download_stamp
 
 build: prepare
-	$(GULP) build
+	$(GULP) dist
 
 clean: 
 	$(GULP) clean

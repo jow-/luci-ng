@@ -24,6 +24,8 @@ define Build/Prepare
 	find ./src -maxdepth 1 -type f -exec cp -f {} $(PKG_BUILD_DIR) \;
 	$(INSTALL_DIR) $(PKG_BUILD_DIR)/www/
 	$(CP) ./src/www/* $(PKG_BUILD_DIR)/www
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)/gulp/
+	$(CP) ./src/gulp/* $(PKG_BUILD_DIR)/gulp
 	$(MAKE) -C $(PKG_BUILD_DIR) prepare
 endef
 
