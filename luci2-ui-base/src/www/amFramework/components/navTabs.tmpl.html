@@ -1,0 +1,7 @@
+<md-tabs md-selected="$ctrl.selectedIndex" md-border-bottom md-stretch-tabs>
+	<md-tab ng-repeat="tab in $ctrl.tabs" ng-disabled="tab.disabled" label="{{tab.title}}"
+			md-on-select="$ctrl.syncSref(tab)"
+			></md-tab>
+</md-tabs>
+
+<ui-view></ui-view>
