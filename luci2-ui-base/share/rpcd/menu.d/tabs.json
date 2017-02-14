@@ -1,0 +1,32 @@
+{
+    "tabs": {
+        "title": "Tabbed",
+        "index": 50
+    },
+    "tabs/network": {
+        "title": "Network",
+        "tabbed": true,
+        "index": 10
+    },
+	
+	"tabs/network/status": {
+        "title": "Status",
+        "acls": [ "status" ],
+        "view": "status/routes",
+        "index": 10
+    },
+	
+	"tabs/network/basic": {
+        "title": "Basic",
+        "acls": [ "routes" ],
+        "view": "network/routes",
+        "index": 20
+    },
+	
+	"tabs/network/advanced": {
+        "title": "Advanced",
+        "acls": [ "routes" ],
+        "view": "network/routes",
+        "index": 30
+    }
+}

@@ -24,11 +24,20 @@ angular.module('LuCI2')
 					data: { title: node.title }
 				};
 
-
-				if (node.childs)
+				if (node.tabs)
+					angular.extend( state, {
+						component: 'amfNavTabs',
+						resolve: {
+							tabs: function() {
+								return node.tabs;
+							}
+						}
+					});
+				else if (node.childs)
 					angular.extend( state, {
 						abstract: true,
-						template: '<div class="ui-view"></div>'
+						template: '<div class="ui-view"></div>',
+						redirectTo: node.childs[0].sref
 					});
 				else if (node.view)
 					angular.extend( state, {
@@ -80,9 +89,6 @@ angular.module('LuCI2')
 			childsArray: function(node) {
 				var childs = [];
 
-				var state = _menu.state(node);
-				_states.push(state);
-
 				for (var child in (node.childs || {})) {
 					_menu.childsArray(node.childs[child]);
 					childs.push(node.childs[child]);
@@ -90,11 +96,15 @@ angular.module('LuCI2')
 
 				childs.sort(_menu.cmp);
 
-				if (childs.length) {
+				if (childs.length && !node.tabbed) {
 					node.childs = childs;
-					state.redirectTo= childs[0].sref;
-				} else
+				} else {
 					delete node.childs;
+					if (childs.length && node.tabbed) node.tabs = childs;
+				}
+
+				var state = _menu.state(node);
+				_states.push(state);
 			},
 
 			registerStates: function() {
