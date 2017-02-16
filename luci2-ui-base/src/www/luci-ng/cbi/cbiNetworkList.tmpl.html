@@ -1,4 +1,4 @@
-<div uib-dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? \'outsideClick\' : \'always\' }}">
+<div uib-dropdown is-open="NetworkList.isOpen" on-toggle="NetworkList.toggled(open)" auto-close="{{ NetworkList.allowMultiple ? 'outsideClick' : 'always' }}">
 	<button class="btn btn-default uib-dropdown-toggle" type="button" uib-dropdown-toggle>
 		<div class="caption">
 			<em ng-if="NetworkList.isLoading" translate>Loading…</em>
@@ -15,7 +15,7 @@
 			<a href="#" ng-click="NetworkList.select(ifc.name()); $event.preventDefault()"><img ng-src="{{ifc.icon()}}"> {{ifc.name()}}</a>
 		</li>
 		<li ng-if="!NetworkList.allowMultiple" ng-class="{selected: NetworkList.isUnspecified()}" value="">
-			<a href="#" ng-click="NetworkList.select(\'\'); $event.preventDefault()"><em>unspecified</em></a>
+			<a href="#" ng-click="NetworkList.select(''); $event.preventDefault()"><em>unspecified</em></a>
 		</li>
 	</ul>
 </div>

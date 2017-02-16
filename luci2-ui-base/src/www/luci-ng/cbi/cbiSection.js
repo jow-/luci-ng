@@ -1,10 +1,13 @@
+/* eslint no-mixed-spaces-and-tabs:0 */
+/* eslint max-len:0 */
+
 'use strict';
 
 angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gettext, l2validation) {
 	return {
 		restrict: 'A',
 		scope: true,
-		transclude: true,
+		transclude: false,
 
 		controllerAs: 'Section',
 		controller: function($scope, $q, l2uci) {
@@ -207,8 +210,49 @@ angular.module('LuCI2').directive('cbiSection', function($timeout, $parse, gette
 		},
 
 		replace: true,
-		templateUrl: 'luci-ng/cbi/cbiSection.tmpl.html',
+		// templateUrl: 'luci-ng/cbi/cbiSection.tmpl.html',
 
+		template: function(tElem, tAttr) {
+ 			return '' +
+ 				'<div class="panel panel-default">' +
+ 					'<div ng-if="Section.title" class="panel-heading"><h3 class="panel-title">{{Section.title}}</h3></div>' +
+ 					'<ul class="l2-section-group list-group">' +
+ 						'<li ng-if="!Section.uciSections.length" class="list-group-item text-muted">{{Section.placeholder}}</li>' +
+ 						'<li class="l2-section-item list-group-item form-horizontal animate-repeat" ng-repeat="uciSectionName in Section.uciSections" cbi-section-id="{{uciSectionName}}">' +
+ 							'<div ng-if="Section.isCollapse || Section.isSortable || Section.isAddRemove" class="l2-section-header">' +
+ 								'<div ng-if="Section.isCollapse && (Section.activeSectionName !== uciSectionName)" ng-click="Section.open(uciSectionName)" class="l2-section-teaser well well-sm">' +
+ 									'<span ng-if="Section.fieldErrors[uciSectionName]" class="badge">{{Section.fieldErrors[uciSectionName]}}</span>' +
+ 									'<span ng-repeat="Option in Section.teaserFields(uciSectionName)" ng-init="textValue = Option.textValue()">' +
+ 										'<span ng-style="Option.isInvalid ? {color:\'#d9534f\'} : {}">' +
+ 											'{{Option.title}}: <strong>{{Option.textValue() || \'-\'}}</strong>' +
+ 										'</span>' +
+ 										'<span ng-if="!$last"> | </span>' +
+ 									'</span>' +
+ 								'</div>' +
+ 								'<div ng-if="Section.isSortable || Section.isAddRemove" class="btn-group">' +
+ 									'<button ng-if="Section.isSortable && !$first" type="button" title="{{\'Move up\' | translate}}" ng-click="Section.sort(uciSectionName, -1)" class="btn btn-info up">↑</button>' +
+ 									'<button ng-if="Section.isSortable && !$last" type="button" title="{{\'Move down\' | translate}}" ng-click="Section.sort(uciSectionName, 1)" class="btn btn-info down">↓</button>' +
+ 									'<button ng-if="Section.isAddRemove" type="button" title="{{Section.removeTitle}}" ng-click="Section.remove(uciSectionName)" class="btn btn-danger">{{Section.removeCaption}}</button>' +
+ 								'</div>' +
+ 							'</div>' +
+ 							'<div class="l2-section-panel panel-collapse" ng-class="{collapse: Section.isCollapse && (Section.activeSectionName !== uciSectionName)}">' +
+ 								tElem.html() +
+ 							'</div>' +
+ 						'</li>' +
+ 					'</ul>' +
+ 					'<div ng-if="Section.isAddRemove" class="panel-footer">' +
+ 						'<button ng-if="Section.isAnonymous" type="button" title="{{Section.addTitle}}" class="btn btn-success section-add-button" ng-click="Section.add($event)">{{Section.addCaption}}</button>' +
+ 						'<div ng-if="!Section.isAnonymous" class="row"><div class="input-group col-lg-6 col-sm-12" ng-class="{\'has-error\':Section.addErrorMsg}">' +
+ 							'<input type="text" class="form-control" placeholder="{{Section.addPlaceholder}}" ng-model="Section.addName">' +
+ 						'<div class="input-group-btn">' +
+ 								'<span title="{{Section.addTitle}}" class="btn btn-success" ng-disabled="Section.addErrorMsg" ng-click="Section.add($event)">{{Section.addCaption}}</span>' +
+ 							'</div>' +
+ 						'</div></div>' +
+ 						'<div ng-if="Section.addErrorMsg" class="label label-danger">{{Section.addErrorMsg}}</div>' +
+ 					'</div>' +
+ 				'</div>'
+ 			;
+ 		},
 		require: ['cbiSection', '^cbiMap'],
 		link: function($scope, iElem, iAttr, ctrls) {
 			var cbiSectionCtrl = ctrls[0],

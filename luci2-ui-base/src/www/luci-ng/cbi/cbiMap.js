@@ -48,6 +48,11 @@ angular.module('LuCI2').directive('cbiMap', function($timeout, $parse, l2uci) {
 				finish: function() {
 					self.unlock();
 				},
+				read: function() {
+					for (var i = 0, sec; sec = self.cbiChildSections[i]; i++)
+						sec.read();
+					self.unlock();
+				},
 
 				save: function($event) {
 					$event.currentTarget.blur();
@@ -92,18 +97,22 @@ angular.module('LuCI2').directive('cbiMap', function($timeout, $parse, l2uci) {
 		templateUrl: 'luci-ng/cbi/cbiMap.tmpl.html',
 
 		require: 'cbiMap',
-		link: function($scope, iElem, iAttr, cbiMapCtrl) {
-			angular.extend(cbiMapCtrl, {
-				title: iAttr.title,
-				description: iAttr.description,
+		compile: function(tElem, tAttr) {
+			return {
+				pre: function($scope, iElem, iAttr, cbiMapCtrl) {
+					angular.extend(cbiMapCtrl, {
+						title: iAttr.title,
+						description: iAttr.description,
 
-				waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
+						waitFn: iAttr.hasOwnProperty('waitfor') ? $parse(iAttr.waitfor) : null,
 
-				uciPackages: {},
-				uciPackageName: iAttr.cbiMap
-			});
+						uciPackages: {},
+						uciPackageName: iAttr.cbiMap
+					});
 
-			cbiMapCtrl.init(iElem);
+					cbiMapCtrl.init(iElem);
+				}
+			};
 		}
 	};
 });

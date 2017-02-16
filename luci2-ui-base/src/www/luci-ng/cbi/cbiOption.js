@@ -4,7 +4,7 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 	return {
 		restrict: 'A',
 		scope: true,
-		transclude: true,
+		transclude: false,
 
 		controllerAs: 'Option',
 		controller: function($scope, $q, l2uci) {
@@ -205,7 +205,19 @@ angular.module('LuCI2').directive('cbiOption', function($parse, l2validation, ge
 		},
 
 		replace: true,
-		templateUrl: 'luci-ng/cbi/cbiOption.tmpl.html',
+		// templateUrl: 'luci-ng/cbi/cbiOption.tmpl.html',
+		template: function(tElem, tAttr) {
+			return '' +
+				'<div ng-show="!Option.isUnsatisified" class="l2-field form-group"' +
+				' ng-class="{\'l2-form-error\':Option.errorMsg}">' +
+					'<label class="col-lg-2 control-label" for="{{Option.id}}">{{Option.title}}</label>' +
+					'<div class="l2-field-widget col-lg-5" ng-class="{\'has-error\':Option.errorMsg}">' +
+						tElem.html() +
+						'<div ng-if="Option.errorMsg" class="label label-danger">{{Option.errorMsg}}</div>' +
+					'</div>' +
+					'<div class="col-lg-5">{{Option.description}}</div>' +
+				'</div>';
+		},
 
 		require: ['cbiOption', '^cbiSection', '^cbiMap'],
 		link: function($scope, iElem, iAttr, ctrls) {
