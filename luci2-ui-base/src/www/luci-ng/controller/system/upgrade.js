@@ -19,7 +19,7 @@ L2.registerDirective('fileModel', function($parse, fileService) {
 	};
 });
 
-L2.registerController('SystemUpgradeController', function($modal, l2cgi, l2rpc, l2spin,
+L2.registerController('SystemUpgradeController', function($uibModal, l2cgi, l2rpc, l2spin,
 	                  fileService, gettext) {
 	var upgradeCtrl = this;
 
@@ -58,32 +58,32 @@ L2.registerController('SystemUpgradeController', function($modal, l2cgi, l2rpc, 
 			method: 'reboot'
 		}),
 
-		displayUpgradeSuccessCtrl: function($scope, $modalInstance) {
+		displayUpgradeSuccessCtrl: function($scope, $uibModalInstance) {
 			var dialog = this;
 			$scope.size = upgradeCtrl.size;
 			$scope.checksum = upgradeCtrl.checksum;
 			return angular.extend(dialog, {
 				upgrade: function() {
-					$modalInstance.dismiss();
+					$uibModalInstance.dismiss();
 					upgradeCtrl.startUpgrade();
 				},
 				cancel: function() {
-					$modalInstance.dismiss();
+					$uibModalInstance.dismiss();
 					upgradeCtrl.upgradeCleanRpc();
 				}
 			});
 		},
 
-		displayUpgradeFailedCtrl: function($scope, $modalInstance) {
+		displayUpgradeFailedCtrl: function($scope, $uibModalInstance) {
 			var dialog = this;
 			$scope.code = upgradeCtrl.code;
 			$scope.stdout = upgradeCtrl.stdout;
-			$modalInstance.opened.then(function() {
+			$uibModalInstance.opened.then(function() {
 				upgradeCtrl.upgradeCleanRpc();
 			});
 			return angular.extend(dialog, {
 				confirm: function() {
-					$modalInstance.dismiss();
+					$uibModalInstance.dismiss();
 				}
 			});
 		},
@@ -100,7 +100,7 @@ L2.registerController('SystemUpgradeController', function($modal, l2cgi, l2rpc, 
 				upgradeCtrl.stdout = data.stdout;
 				l2spin.close();
 				if (data.code == 0) {
-					$modal.open({
+					$uibModal.open({
 						controller: ['$scope', '$uibModalInstance',
 						            upgradeCtrl.displayUpgradeSuccessCtrl],
 						controllerAs: 'success',
@@ -108,7 +108,7 @@ L2.registerController('SystemUpgradeController', function($modal, l2cgi, l2rpc, 
 						templateUrl: 'system/backup/success.html'
 					});
 				}				else {
-					$modal.open({
+					$uibModal.open({
 						controller: ['$scope', '$uibModalInstance',
 						            upgradeCtrl.displayUpgradeFailedCtrl],
 						controllerAs: 'failed',

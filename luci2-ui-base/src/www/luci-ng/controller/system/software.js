@@ -1,4 +1,4 @@
-L2.registerController('SystemSoftwareController', function($q, $modal, l2rpc, l2spin) {
+L2.registerController('SystemSoftwareController', function($q, $uibModal, l2rpc, l2spin) {
 	var softwareCtrl = this;
 
 	angular.extend(softwareCtrl, {
@@ -148,7 +148,7 @@ L2.registerController('SystemSoftwareController', function($q, $modal, l2rpc, l2
 			}
 		},
 
-		displayInfoCtrl: function($scope, $modalInstance, initialPkgName) {
+		displayInfoCtrl: function($scope, $uibModalInstance, initialPkgName) {
 			var dialog = angular.extend(this, {
 				softwareCtrl: softwareCtrl,
 
@@ -253,7 +253,7 @@ L2.registerController('SystemSoftwareController', function($q, $modal, l2rpc, l2
 				},
 
 				dismiss: function() {
-					$modalInstance.dismiss();
+					$uibModalInstance.dismiss();
 				}
 			});
 
@@ -263,7 +263,7 @@ L2.registerController('SystemSoftwareController', function($q, $modal, l2rpc, l2
 		},
 
 		displayInfo: function(pkgName) {
-			$modal.open({
+			$uibModal.open({
 				controller: ['$scope', '$uibModalInstance', 'pkgName',
 				            softwareCtrl.displayInfoCtrl],
 				controllerAs: 'Dialog',

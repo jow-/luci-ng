@@ -1,4 +1,4 @@
-L2.registerController('SystemStartupController', function($modal, l2rpc, l2spin) {
+L2.registerController('SystemStartupController', function(l2rpc, l2spin) {
 	var startupCtrl = this;
 
 	angular.extend(startupCtrl, {

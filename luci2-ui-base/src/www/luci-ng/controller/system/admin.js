@@ -109,7 +109,7 @@ L2.registerFactory('l2pubkeys', [function() {
 }]);
 
 L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 'l2pubkeys',
-	function($modal, l2rpc, l2spin, l2pubkeys) {
+	function($uibModal, l2rpc, l2spin, l2pubkeys) {
 		var adminCtrl = this;
 
 		angular.extend(adminCtrl, {
@@ -134,7 +134,7 @@ L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 
 			}),
 
 			displayPubkey: function(i) {
-				$modal.open({
+				$uibModal.open({
 					template: '<div class="modal-body"><pre>' + adminCtrl.authorizedKeys[i].raw +
 					          '</pre></div>'
 				});
@@ -154,7 +154,7 @@ L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 
 				adminCtrl.setSSHKeys(newKeys).then(l2spin.close);
 			},
 
-			addPubkeyCtrl: function($scope, $modalInstance) {
+			addPubkeyCtrl: function($scope, $uibModalInstance) {
 				var dialog = this;
 				return angular.extend(dialog, {
 					isInvalid: false,
@@ -169,7 +169,7 @@ L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 
 						}
 
 						dialog.isInvalid = false;
-						$modalInstance.dismiss();
+						$uibModalInstance.dismiss();
 
 						key.raw = dialog.value;
 						key.index = adminCtrl.authorizedKeys.length;
@@ -179,13 +179,13 @@ L2.registerController('SystemAdminController', ['$uibModal', 'l2rpc', 'l2spin', 
 					},
 
 					dismiss: function() {
-						$modalInstance.dismiss();
+						$uibModalInstance.dismiss();
 					}
 				});
 			},
 
 			addPubkey: function() {
-				$modal.open({
+				$uibModal.open({
 					controller: ['$scope', '$uibModalInstance', adminCtrl.addPubkeyCtrl],
 					controllerAs: 'Dialog',
 					templateUrl: 'system/admin/addkey.html'
