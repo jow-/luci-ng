@@ -3,27 +3,27 @@
         "title": "Tabbed",
         "index": 50
     },
-    "tabs/network": {
-        "title": "Network",
+    "tabs/tests": {
+        "title": "Tests",
         "tabbed": true,
         "index": 10
     },
 	
-	"tabs/network/status": {
-        "title": "Status",
+	"tabs/tests/uci": {
+        "title": "UCI",
         "acls": [ "status" ],
-        "view": "status/routes",
+        "view": "test/test",
         "index": 10
     },
 	
-	"tabs/network/basic": {
+	"tabs/tests/basic": {
         "title": "Basic",
         "acls": [ "routes" ],
         "view": "network/routes",
         "index": 20
     },
 	
-	"tabs/network/advanced": {
+	"tabs/tests/advanced": {
         "title": "Advanced",
         "acls": [ "routes" ],
         "view": "network/routes",
