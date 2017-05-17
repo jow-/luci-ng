@@ -23,7 +23,7 @@ function injectMaterial() {
 							   conf.material.modules[i] + '.css'));
 	}
 
-	const mdModules = gulp.src(mdPaths)
+	const mdModules = gulp.src(mdPaths, { allowEmpty: true })
 	                      .pipe(buildNgMaterialDefinition());
 	mdModules.pipe($.if(/ngMaterial/, gulp.dest(conf.paths.tmp)));
 

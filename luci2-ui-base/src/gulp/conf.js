@@ -29,8 +29,9 @@ var conf = {
 
 	material: {
 		basePath: 'node_modules/angular-material/modules/js',
-		modules: ['core', 'backdrop', 'button', 'checkbox', 'dialog', 'icon', 'input', 'menu',
-		          'progressLinear', 'select', 'sidenav', 'switch', 'tabs']
+		modules: ['autocomplete', 'core', 'backdrop', 'button', 'checkbox', 'chips', 'dialog',
+		          'icon', 'input', 'menu', 'progressLinear', 'select', 'showHide', 'sidenav',
+				  'switch', 'tabs', 'virtualRepeat']
 
 	},
 
