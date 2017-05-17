@@ -464,12 +464,12 @@ angular.module('LuCI2').factory('L2validation', function(l2ip, gettext) {
 			var self = this;
 
 			return function(modelValue, viewValue) {
-				modelCtrl.uciValidator = '';
+				modelCtrl.uciValidationMessage = '';
 				if (viewValue=='' || angular.isUndefined(viewValue)) return true; // allow empty fields
 				if (!angular.isArray(viewValue)) viewValue = [viewValue];
 				for (var i=0; i < viewValue.length; i++) {
 					self.test(viewValue[i]);
-					modelCtrl.uciValidator = modelCtrl.uciValidator || self.message || '';
+					modelCtrl.uciValidationMessage = modelCtrl.uciValidationMessage || self.message || '';
 					if (!self.result) break;
 				}
 				return self.result;

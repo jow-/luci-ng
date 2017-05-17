@@ -15,7 +15,7 @@
 		<ng-messages for="$ctrl.uciForm.form[$ctrl.option.id].$error" role="alert">
 			<ng-message when="required" translate>Required field</ng-message>
 			<ng-message when="uciValidator">
-				{{$ctrl.uciForm.form[$ctrl.option.id].uciValidator}}
+				{{$ctrl.uciForm.form[$ctrl.option.id].uciValidationMessage}}
 			</ng-message>
 		</ng-messages>
 	</md-input-container>
