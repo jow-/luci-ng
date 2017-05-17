@@ -1,0 +1,24 @@
+<div ng-show="$ctrl.isRegistered && !$ctrl.isUnsatisified ">
+	<md-input-container>
+		<label>{{$ctrl.option.title}}</label>
+			<md-chips ng-if="$ctrl.option.isList" name="{{$ctrl.option.id}}_chips" ng-model="$ctrl.option.value" 
+					  uci-validator="{{$ctrl.validate}}">
+				<input type="{{$ctrl.type}}" name="{{$ctrl.option.id}}" ng-model="$ctrl.chipInput"
+					   ng-required="$ctrl.option.required" uci-validator="{{$ctrl.validate}}"/>
+			</md-chips>
+		
+			<input ng-if="!$ctrl.option.isList" 
+				name="{{$ctrl.option.id}}" ng-model="$ctrl.option.value" 
+				type="{{$ctrl.type}}" ng-required="$ctrl.option.required" uci-validator="{{$ctrl.validate}}"/>
+			
+		<div class="md-errors-spacer"></div>
+		<ng-messages for="$ctrl.uciForm.form[$ctrl.option.id].$error" role="alert">
+			<ng-message when="required" translate>Required field</ng-message>
+			<ng-message when="uciValidator">
+				{{$ctrl.uciForm.form[$ctrl.option.id].uciValidator}}
+			</ng-message>
+		</ng-messages>
+	</md-input-container>
+</div>
+
+
