@@ -154,7 +154,22 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 		}
 	}
 
-	function save() {}
+	function save() {
+		var i, j;
+
+		l2rpc.batch();
+
+		for (i=0; i < this.configs.length; i++) {
+			for (j=0; j < this.configs[i].sections.length; j++)
+				this._saveSection( this.configs[i].sections[j]);
+
+			uci.callCommit(this.configs[i].name).then(function(res) {
+				console.debug('commit CB: ' + res);
+			});
+		}
+
+		return l2rpc.flush();
+	}
 
 	function _saveSection(section) {
 		var i, o, opts = section.options;
@@ -180,9 +195,9 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 					section.changes = 0;
 
 					var j;
-					for (j=0; j < opts.length; i++) {
-						opts[i].changes = 0;
-						opts[i].uciValue = opts[i].value;
+					for (j=0; j < opts.length; j++) {
+						opts[j].changes = 0;
+						opts[j].uciValue = opts[j].value;
 					}
 					deferred.resolve(1);
 				});
@@ -196,9 +211,22 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 			// check for modifications
 
 			// update options
+			o = {};
+			var changes = false;
 			for (i=0; i < opts.length; i++) {
-				this._saveOption(opts[i]);
+				if (opts[i].uciValue != opts[i].value) {
+					o[opts[i].name] = opts[i].value;
+					opts[i].uciValue = opts[i].value;
+					changes = true;
+				}
 			}
+
+			if (changes) {
+				uci.callSet(section.config.name, section.uciName, o).then(function(res) {
+					deferred.resolve(0);
+				});
+			} else
+				deferred.resolve(false);
 		}
 
 		return deferred.promise;

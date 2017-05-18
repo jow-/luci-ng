@@ -8,7 +8,8 @@
 
 		<div>
             <md-button type="submit" ng-disabled="$ctrl.form.$invalid"
-				class="md-primary md-confirm-button" aria-label="save" translate>
+				class="md-primary md-confirm-button" aria-label="save" 
+				ng-click="$ctrl.save();" translate>
                 Save
             </md-button>
 			<md-button ng-disabled="$ctrl.form.$invalid" translate>

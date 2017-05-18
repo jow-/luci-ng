@@ -24,6 +24,7 @@ function UciFormCtrl(uci) {
 
 	/** export public methods **/
 	self.$onInit = onInit;
+	self.save = save;
 
 
 	/** public methods **/
@@ -42,6 +43,9 @@ function UciFormCtrl(uci) {
 			self.isRegistered = true;
 	}
 
+	function save() {
+		self.uciModel.save();
+	}
 	/** private methods **/
 
 	function registerEnd(config) {
