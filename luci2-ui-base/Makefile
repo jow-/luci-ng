@@ -15,7 +15,10 @@ PKG_LICENSE_FILES:=
 
 PKG_BUILD_PARALLEL:=1
 
+#add host dependency if node 4 or above is not installed
+ifneq ($(shell [[ $(node -v 2> /dev/null) =~ v([0-9]*)\. ]] && [ ${BASH_REMATCH[1]} -ge 4 ] && echo true),true)
 PKG_BUILD_DEPENDS:=node/host
+endif
 
 include $(INCLUDE_DIR)/package.mk
 
