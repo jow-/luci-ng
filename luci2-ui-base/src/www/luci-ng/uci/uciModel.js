@@ -81,34 +81,29 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 
 	function load(configName) {
 		var self=this;
-		var deferred = $q.defer();
 		var conf=this.configs.get(configName);
 
 		if (!conf) {
-			uci.callLoad(configName).then(function(values) {
+			return uci.callLoad(configName).then(function(values) {
 				var conf=new Config(configName, values);
 				self.configs.push(conf);
-				deferred.resolve(conf);
+
+				return conf;
 			});
 		} else
-			deferred.resolve(conf);
-
-		return deferred.promise;
+			return $q.resolve(conf);
 	}
 
 	function registerOption(optDef) {
 		var self=this;
-		var deferred = $q.defer();
 
 		var config = (optDef.section && optDef.section.config) || self.configs.get(optDef.configName);
 
 		if (!config)
-			self.load(optDef.configName).then(configLoadedCB);
+			return self.load(optDef.configName).then(configLoadedCB);
 		else {
-			configLoadedCB(config);
+			return $q.resolve(config).then(configLoadedCB);
 		}
-
-		return deferred.promise;
 
 		function configLoadedCB(conf) {
 			var section = optDef.section || conf.sections.get(optDef.sectionName);
@@ -124,23 +119,20 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 			} else
 				option.redefine(optDef);
 
-			deferred.resolve(option);
+			return option;
 		}
 	}
 
 	function registerSection(sectDef) {
 		var self=this;
-		var deferred = $q.defer();
 
 		var config = sectDef.config || self.configs.get(sectDef.configName);
 
 		if (!config)
-			self.load(sectDef.configName).then(configLoadedCB);
+			return self.load(sectDef.configName).then(configLoadedCB);
 		else {
-			configLoadedCB(config);
+			return $q.resolve(config).then(configLoadedCB);
 		}
-
-		return deferred.promise;
 
 		function configLoadedCB(conf) {
 			var section = conf.sections.get(sectDef.name);
@@ -150,7 +142,7 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 			else
 				section.redefine(sectDef);
 
-			deferred.resolve(section);
+			return section;
 		}
 	}
 
@@ -173,8 +165,6 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 
 	function _saveSection(section) {
 		var i, o, opts = section.options;
-		var deferred = $q.defer();
-
 
 		if (section.changes == 1) {
 		// if it is a new section
@@ -182,7 +172,7 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 			for (i=0; i < opts.length; i++)
 				o[opts[i].name] = opts[i].value;
 
-			uci.callAdd(section.config.name, section.type,
+			return uci.callAdd(section.config.name, section.type,
 			            section.anonymous ? undefined : section.name, o)
 				.then(function(res) {
 					// if it is anonymous we get back the temporary name
@@ -199,13 +189,14 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 						opts[j].changes = 0;
 						opts[j].uciValue = opts[j].value;
 					}
-					deferred.resolve(1);
+
+					return 1;
 				});
 		} else if (section.changes == -1) {
 			// removed section
-			uci.callDelete(section.config.name, section.uciName, undefined)
+			return uci.callDelete(section.config.name, section.uciName, undefined)
 				.then(function(res) {
-					deferred.resolve(-1);
+					return -1;
 				});
 		} else {
 			// check for modifications
@@ -222,14 +213,13 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 			}
 
 			if (changes) {
-				uci.callSet(section.config.name, section.uciName, o).then(function(res) {
-					deferred.resolve(0);
+				return uci.callSet(section.config.name, section.uciName, o).then(function(res) {
+					console.log('set CB: ' + res);
+					return 0;
 				});
 			} else
-				deferred.resolve(false);
+				return $q.resolve(false);
 		}
-
-		return deferred.promise;
 	}
 });
 
