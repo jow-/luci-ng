@@ -102,9 +102,12 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 				}
 
 				/* store response data */
-				if (typeof(req.index) == 'number')
+				if (typeof(req.index) == 'number') {
 					data[req.index] = ret;
-				else
+					/* resolve asociated promise */
+					if (typeof(req.deferred) == 'object')
+						req.deferred.resolve(ret);
+				} else
 					data = ret;
 			}
 
@@ -136,7 +139,7 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 			delete _rpc._batch;
 
 			if (!angular.isArray(req) || !req.length)
-				return angular.deferrable([]);
+				return $q.resolve([]);
 
 			/* call rpc */
 			return _rpc._call(req, _rpc._call_cb);
@@ -181,7 +184,8 @@ angular.module('LuCI2').factory('l2rpc', function($q, $http) {
 				 * and push message object onto the stack */
 				if (angular.isArray(_rpc._batch)) {
 					msg.request.index = _rpc._batch.push(msg) - 1;
-					return angular.deferrable(msg);
+					msg.request.deferred = $q.defer();
+					return msg.request.deferred.promise;
 				}
 
 				/* call rpc */
