@@ -1,6 +1,6 @@
 /* eslint angular/timeout-service:0 */
 
-angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
+angular.module('LuCI2').factory('l2uci', function(l2rpc, $q, $timeout) {
 	var _uci = { };
 	return angular.extend(_uci, {
 		_state: {
@@ -61,7 +61,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			method: 'confirm'
 		}),
 
-		createSID: function(conf)		{
+		createSID: function(conf) {
 			var v = _uci._state.values;
 			var n = _uci._state.creates;
 			var sid;
@@ -73,13 +73,13 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return sid;
 		},
 
-		reorderSections: function()		{
+		reorderSections: function() {
 			var v = _uci._state.values;
 			var n = _uci._state.creates;
 			var r = _uci._state.reorder;
 
 			if (angular.isEmptyObject(r))
-				return angular.deferrable();
+				return $q.resolve();
 
 			l2rpc.batch();
 
@@ -87,7 +87,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			 gather all created and existing sections, sort them according
 			 to their index value and issue an uci order call
 			*/
-			for (var c in r)			{
+			for (var c in r) {
 				var o = [], s;
 
 				if (n[c])
@@ -97,7 +97,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 				for (s in v[c])
 					o.push(v[c][s]);
 
-				if (o.length > 0)				{
+				if (o.length > 0) {
 					o.sort(function(a, b) {
 						return (a['.index'] - b['.index']);
 					});
@@ -115,7 +115,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return l2rpc.flush();
 		},
 
-		load: function(packages)		{
+		load: function(packages) {
 			var seen = { };
 			var pkgs = [];
 
@@ -125,7 +125,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			l2rpc.batch();
 
 			for (var i = 0; i < packages.length; i++)
-				if (!seen[packages[i]] && !_uci._state.values[packages[i]])				{
+				if (!seen[packages[i]] && !_uci._state.values[packages[i]]) {
 					pkgs.push(packages[i]);
 					seen[packages[i]] = true;
 					_uci.callLoad(packages[i]);
@@ -139,11 +139,11 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			});
 		},
 
-		unload: function(packages)		{
+		unload: function(packages) {
 			if (!angular.isArray(packages))
 				packages = [packages];
 
-			for (var i = 0; i < packages.length; i++)			{
+			for (var i = 0; i < packages.length; i++) {
 				delete _uci._state.values[packages[i]];
 				delete _uci._state.creates[packages[i]];
 				delete _uci._state.changes[packages[i]];
@@ -151,7 +151,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			}
 		},
 
-		add: function(conf, type, name)		{
+		add: function(conf, type, name) {
 			var n = _uci._state.creates;
 			var sid = name || _uci.createSID(conf);
 
@@ -169,13 +169,13 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return sid;
 		},
 
-		remove: function(conf, sid)		{
+		remove: function(conf, sid) {
 			var n = _uci._state.creates;
 			var c = _uci._state.changes;
 			var d = _uci._state.deletes;
 
 			/* requested deletion of a just created section */
-			if (n[conf] && n[conf][sid])			{
+			if (n[conf] && n[conf][sid]) {
 				delete n[conf][sid];
 			}			else			{
 				if (c[conf])
@@ -188,7 +188,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			}
 		},
 
-		sections: function(conf, type, cb)		{
+		sections: function(conf, type, cb) {
 			var sa = [], s;
 			var v = _uci._state.values[conf];
 			var n = _uci._state.creates[conf];
@@ -222,7 +222,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return sa;
 		},
 
-		get: function(conf, sid, opt)		{
+		get: function(conf, sid, opt) {
 			var v = _uci._state.values;
 			var n = _uci._state.creates;
 			var c = _uci._state.changes;
@@ -232,7 +232,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 				return undefined;
 
 			/* requested option in a just created section */
-			if (n[conf] && n[conf][sid])			{
+			if (n[conf] && n[conf][sid]) {
 				if (!n[conf])
 					return undefined;
 
@@ -243,9 +243,9 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			}
 
 			/* requested an option value */
-			if (typeof(opt) != 'undefined')			{
+			if (typeof(opt) != 'undefined') {
 				/* check whether option was deleted */
-				if (d[conf] && d[conf][sid])				{
+				if (d[conf] && d[conf][sid]) {
 					if (d[conf][sid] === true)
 						return undefined;
 
@@ -272,7 +272,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return undefined;
 		},
 
-		set: function(conf, sid, opt, val)		{
+		set: function(conf, sid, opt, val) {
 			var v = _uci._state.values;
 			var n = _uci._state.creates;
 			var c = _uci._state.changes;
@@ -283,12 +283,12 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 				opt.charAt(0) == '.')
 				return;
 
-			if (n[conf] && n[conf][sid])			{
+			if (n[conf] && n[conf][sid]) {
 				if (typeof(val) != 'undefined')
 					n[conf][sid][opt] = val;
 				else
 					delete n[conf][sid][opt];
-			}			else if (typeof(val) != 'undefined' && val !== '')			{
+			}			else if (typeof(val) != 'undefined' && val !== '') {
 				/* do not set within deleted section */
 				if (d[conf] && d[conf][sid] === true)
 					return;
@@ -324,11 +324,11 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			}
 		},
 
-		unset: function(conf, sid, opt)		{
+		unset: function(conf, sid, opt) {
 			return _uci.set(conf, sid, opt, undefined);
 		},
 
-		get_first: function(conf, type, opt)		{
+		get_first: function(conf, type, opt) {
 			var sid = undefined;
 
 			_uci.sections(conf, type, function(s) {
@@ -339,7 +339,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return _uci.get(conf, sid, opt);
 		},
 
-		set_first: function(conf, type, opt, val)		{
+		set_first: function(conf, type, opt, val) {
 			var sid = undefined;
 
 			_uci.sections(conf, type, function(s) {
@@ -350,11 +350,11 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return _uci.set(conf, sid, opt, val);
 		},
 
-		unset_first: function(conf, type, opt)		{
+		unset_first: function(conf, type, opt) {
 			return _uci.set_first(conf, type, opt, undefined);
 		},
 
-		swap: function(conf, sid1, sid2)		{
+		swap: function(conf, sid1, sid2) {
 			var s1 = _uci.get(conf, sid1);
 			var s2 = _uci.get(conf, sid2);
 			var n1 = s1 ? s1['.index'] : NaN;
@@ -371,7 +371,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			return true;
 		},
 
-		save: function()		{
+		save: function() {
 			l2rpc.batch();
 
 			var n = _uci._state.creates;
@@ -383,14 +383,14 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			var pkgs = { };
 
 			if (n)
-				for (conf in n)				{
-					for (sid in n[conf])					{
+				for (conf in n) {
+					for (sid in n[conf]) {
 						var r = {
 							config: conf,
 							values: { }
 						};
 
-						for (var k in n[conf][sid])						{
+						for (var k in n[conf][sid]) {
 							if (k == '.type')
 								r.type = n[conf][sid][k];
 							else if (k == '.create')
@@ -408,7 +408,7 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 				}
 
 			if (c)
-				for (conf in c)				{
+				for (conf in c) {
 					for (sid in c[conf])
 						_uci.callSet(conf, sid, c[conf][sid]);
 
@@ -416,8 +416,8 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 				}
 
 			if (d)
-				for (conf in d)				{
-					for (sid in d[conf])					{
+				for (conf in d) {
+					for (sid in d[conf]) {
 						var o = d[conf][sid];
 						_uci.callDelete(conf, sid, (o === true) ? undefined : o);
 					}
@@ -443,39 +443,33 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			});
 		},
 
-		apply: function(timeout)		{
+		apply: function(timeout) {
 			var date = new Date();
-			var deferred = $q.defer();
 
 			if (typeof(timeout) != 'number' || timeout < 1)
 				timeout = 10;
 
-			_uci.callApply(timeout, true).then(function(rv) {
-				if (rv != 0)				{
-					deferred.reject(rv);
-					return;
+			return _uci.callApply(timeout, true).then(function(rv) {
+				if (rv != 0) {
+					return $q.reject(rv);
 				}
 
 				var try_deadline = date.getTime() + 1000 * timeout;
-				var try_confirm = function()				{
+				var try_confirm = function() {
 					return _uci.callConfirm().then(function(rv) {
-						if (rv != 0)						{
+						if (rv != 0) {
 							if (date.getTime() < try_deadline)
-								window.setTimeout(try_confirm, 250);
+								$timeout(1000).then(try_confirm);
 							else
-								deferred.reject(rv);
-
-							return;
+								return $q.reject(rv);
 						}
 
-						deferred.resolve(rv);
+						return rv;
 					});
 				};
 
-				window.setTimeout(try_confirm, 1000);
+				return $timeout(1000).then(try_confirm);
 			});
-
-			return deferred.promise;
 		},
 
 		changes: l2rpc.declare({
@@ -484,12 +478,12 @@ angular.module('LuCI2').factory('l2uci', function(l2rpc, $q) {
 			expect: { changes: { } }
 		}),
 
-		readable: function(conf)		{
+		readable: function(conf) {
 			// return L2.session.hasACL('uci', conf, 'read');
 			return true;
 		},
 
-		writable: function(conf)		{
+		writable: function(conf) {
 			// return L2.session.hasACL('uci', conf, 'write');
 			return true;
 		}

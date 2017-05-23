@@ -40,12 +40,7 @@ angular.module('LuCI2')
 	.config(function($mdIconProvider) {
 		$mdIconProvider.defaultIconSet('luci-ng/icons/svg/iconset.svg');
 	})
-	.run(function($q, $injector, l2session, gettextCatalog) {
-		angular.deferrable = function(x) {
-			var deferred = $q.defer(); deferred.resolve(x);
-			return deferred.promise;
-		};
-
+	.run(function($injector, l2session, gettextCatalog) {
 		angular.extend(L2, {
 			invoke: $injector.invoke,
 			getService: angular.bind($injector, $injector.get)

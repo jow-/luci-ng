@@ -40,7 +40,7 @@ angular.module('LuCI2')
 			},
 
 			loginCB: function(user, password) {
-				var deferred=$q.defer();
+				var promise;
 				var ubus_rpc_session=null;
 
 				// if called with just one argument, it is a cookie token
@@ -50,35 +50,35 @@ angular.module('LuCI2')
 					ubus_rpc_session=user;
 					l2rpc.token(ubus_rpc_session);
 					l2rpc.customField({ ignoreAuthModule: true });
-					_session.data().then(loginOK);
+					promise = _session.data().then(loginOK);
 					l2rpc.customField(null);
 				} else {
 					l2rpc.customField({ ignoreAuthModule: true });
 					l2rpc.token(null);
-					_session.login(user, password).then(loginOK, function(err) {
+					promise = _session.login(user, password).then(loginOK, function(err) {
 						_username = null;
 						// http error
-						deferred.reject('Http error');
+						return $q.reject('Http error');
 					});
 					l2rpc.customField(null);
 				}
 
-				return deferred.promise;
+				return promise;
 
 				function loginOK(session) {
 					if (angular.isObject(session.data) && session.ubus_rpc_session) {
 						// successful login
 						_username = session.data.username;
 						l2rpc.token(session.ubus_rpc_session);
-						deferred.resolve(session.ubus_rpc_session);
+						return session.ubus_rpc_session;
 					} else if (ubus_rpc_session && angular.isObject(session) && session.username) {
 						// valid session cookie
 						_username = session.username;
-						deferred.resolve(ubus_rpc_session);
+						return ubus_rpc_session;
 					} else {
 						// rejected login
 						_username = null;
-						deferred.reject('Wrong username/password');
+						return $q.reject('Wrong username/password');
 					}
 				}
 			}

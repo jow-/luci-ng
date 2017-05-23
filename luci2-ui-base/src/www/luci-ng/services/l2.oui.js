@@ -1,4 +1,4 @@
-angular.module('LuCI2').factory('l2oui', function($http) {
+angular.module('LuCI2').factory('l2oui', function($http, $q) {
 	var _oui = { };
 	return angular.extend(_oui, {
 		_load: function(res) {
@@ -14,7 +14,7 @@ angular.module('LuCI2').factory('l2oui', function($http) {
 				return $http.get('https://raw.githubusercontent.com/jow-/oui-database/master/oui.json')
 					.then(_oui._load, _oui._load);
 
-			return angular.deferrable();
+			return $q.resolve();
 		},
 
 		_lookup: function(mac) {

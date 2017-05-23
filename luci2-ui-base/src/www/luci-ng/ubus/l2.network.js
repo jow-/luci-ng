@@ -282,7 +282,7 @@ angular.module('LuCI2').factory('l2network', function(l2class, l2use, l2rpc, l2u
 						return l2rpc.flush().then(_network.callSwitchInfoCallback);
 					}
 
-					return angular.deferrable();
+					return $q.resolve();
 				}
 			);
 		},
