@@ -1,6 +1,6 @@
 /* eslint angular/timeout-service:0 */
 
-angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
+angular.module('LuCI2').factory('uci', function(l2rpc, $q, $timeout) {
 	var uci = {
 		callLoad: l2rpc.declare({
 			object: 'uci',
@@ -51,6 +51,48 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 			method: 'confirm'
 		}),
 
+		callChanges: l2rpc.declare({
+			object: 'uci',
+			method: 'changes',
+			params: ['config']
+		}),
+
+		callConfigs: l2rpc.declare({
+			object: 'uci',
+			method: 'configs',
+			expect: { configs: [] }
+		}),
+
+		apply: function(timeout) {
+			var date = new Date();
+
+			if (typeof(timeout) != 'number' || timeout < 1)
+				timeout = 10;
+
+			return uci.callApply(timeout, true).then(function(rv) {
+				if (rv != 0) {
+					return $q.reject(rv);
+				}
+
+				var try_deadline = date.getTime() + 1000 * timeout;
+				var try_confirm = function() {
+					return uci.callConfirm().then(function(rv) {
+						if (rv != 0) {
+							if (date.getTime() < try_deadline)
+								$timeout(1000).then(try_confirm);
+							else
+								return $q.reject(rv);
+						}
+
+						return rv;
+					});
+				};
+
+				return $timeout(1000).then(try_confirm);
+			});
+		},
+
+
 		newModel: function() {
 			return new UciModel(uci);
 		}
@@ -70,9 +112,7 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 
 		load: load,
 		save: save,
-/*		apply:
-		commit:
-*/
+
 		_saveSection: _saveSection
 	};
 
@@ -147,24 +187,25 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 	}
 
 	function save() {
-		var i, j;
+		var i, j, changed=false;
 
 		l2rpc.batch();
 
-		for (i=0; i < this.configs.length; i++) {
+		for (i=0; i < this.configs.length; i++)
 			for (j=0; j < this.configs[i].sections.length; j++)
-				this._saveSection( this.configs[i].sections[j]);
+				changed = this._saveSection( this.configs[i].sections[j]) || changed;
 
-			uci.callCommit(this.configs[i].name).then(function(res) {
-				console.debug('commit CB: ' + res);
-			});
-		}
+		uci.callChanges();
 
-		return l2rpc.flush();
+
+		return l2rpc.flush().then(function(res) {
+			return uci.apply();
+		});
 	}
 
 	function _saveSection(section) {
 		var i, o, opts = section.options;
+		var changes = false;
 
 		if (section.changes == 1) {
 		// if it is a new section
@@ -172,8 +213,9 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 			for (i=0; i < opts.length; i++)
 				o[opts[i].name] = opts[i].value;
 
-			return uci.callAdd(section.config.name, section.type,
-			            section.anonymous ? undefined : section.name, o)
+
+			uci.callAdd(section.config.name, section.type,
+			                   section.anonymous ? undefined : section.name, o)
 				.then(function(res) {
 					// if it is anonymous we get back the temporary name
 					if (section.anonymous && res && res['.name'] ) {
@@ -192,34 +234,38 @@ angular.module('LuCI2').factory('uci', function(l2rpc, $q) {
 
 					return 1;
 				});
+			return true;
 		} else if (section.changes == -1) {
 			// removed section
-			return uci.callDelete(section.config.name, section.uciName, undefined)
+			uci.callDelete(section.config.name, section.uciName, undefined)
 				.then(function(res) {
 					return -1;
 				});
+			return true;
 		} else {
 			// check for modifications
 
 			// update options
 			o = {};
-			var changes = false;
+
 			for (i=0; i < opts.length; i++) {
-				if (opts[i].uciValue != opts[i].value) {
+				if (!angular.equals(opts[i].uciValue, opts[i].value)) {
 					o[opts[i].name] = opts[i].value;
-					opts[i].uciValue = opts[i].value;
 					changes = true;
 				}
 			}
 
 			if (changes) {
-				return uci.callSet(section.config.name, section.uciName, o).then(function(res) {
+				uci.callSet(section.config.name, section.uciName, o).then(function(res) {
 					console.log('set CB: ' + res);
+					// opts[i].uciValue = angular.copy(opts[i].value);
 					return 0;
 				});
-			} else
-				return $q.resolve(false);
+				return true;
+			}
 		}
+
+		return false;
 	}
 });
 

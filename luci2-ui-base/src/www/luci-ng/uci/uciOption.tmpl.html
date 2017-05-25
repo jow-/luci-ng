@@ -1,4 +1,4 @@
-<div ng-show="$ctrl.isRegistered && !$ctrl.isUnsatisified ">
+<div ng-if="$ctrl.isRegistered">
 	<md-input-container>
 		<label>{{$ctrl.option.title}}</label>
 			<md-chips ng-if="$ctrl.option.isList" name="{{$ctrl.option.id}}_chips" ng-model="$ctrl.option.value" 

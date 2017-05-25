@@ -12,8 +12,9 @@
 				ng-click="$ctrl.save();" translate>
                 Save
             </md-button>
-			<md-button ng-disabled="$ctrl.form.$invalid" translate>
-				Save &amp; Apply
+			<md-button ng-disabled="$ctrl.form.$invalid"
+				ng-click="$ctrl.reset();" translate>
+				Reset
 			</md-button>
 		</div>
 	</form>

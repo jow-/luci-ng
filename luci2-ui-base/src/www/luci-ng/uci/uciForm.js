@@ -25,6 +25,7 @@ function UciFormCtrl(uci) {
 	/** export public methods **/
 	self.$onInit = onInit;
 	self.save = save;
+	self.reset = reset;
 
 
 	/** public methods **/
@@ -39,12 +40,22 @@ function UciFormCtrl(uci) {
 			self.uciModel = uci.newModel();
 
 			self.uciModel.load(self.selector).then(registerEnd);
-		} else
+		} else {
 			self.isRegistered = true;
+		}
 	}
 
 	function save() {
-		self.uciModel.save();
+		self.uciModel.save().then(function() {
+			reset();
+		});
+	}
+
+	function reset() {
+		self.isRegistered = false;
+		self.uciModel = undefined;
+
+		onInit();
 	}
 	/** private methods **/
 
