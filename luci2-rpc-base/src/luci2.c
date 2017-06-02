@@ -1158,6 +1158,12 @@ rpc_luci2_reset_test(struct ubus_context *ctx, struct ubus_object *obj,
 					supported = true;
 					break;
 				}
+
+				if (strstr(line, "\"ubi\""))
+				{
+					supported = true;
+					break;
+				}
 			}
 
 			fclose(mtd);
@@ -1193,7 +1199,7 @@ rpc_luci2_reset_start(struct ubus_context *ctx, struct ubus_object *obj,
 
 		sleep(1);
 
-		execl("/sbin/mtd", "/sbin/mtd", "-r", "erase", "rootfs_data", NULL);
+		execl("/sbin/jffs2reset", "/sbin/jffs2reset", "-y", NULL);
 
 		return rpc_errno_status();
 
