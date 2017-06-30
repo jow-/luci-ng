@@ -1,0 +1,46 @@
+<div *appUbus="['system','info']; repeat: 5000; let result; let c=count; let keys=keys" class="flex-container-col">
+
+
+
+  <wdg-stats title="Load" [value]="result.load[0] / 65535 * 100" svgIcon="chip" class="wdg">
+    {{result.load[0] / 65535 * 100 | number:'1.1-1'}}<span class="unit">%</span>
+  </wdg-stats>
+
+
+  <wdg-stats title="Uptime" svgIcon="clock-fast" class="wdg">
+    {{result.uptime * 1000 | date:'d HH:mm:ss' }}<span class="unit">d h:m:s</span>
+  </wdg-stats>
+
+  <wdg-stats title="Memory" [value]="result.memory.free / result.memory.total * 100" svgIcon="memory" class="wdg">
+    {{result.memory.free / 1048576 | number:'1.1-1'}}/{{result.memory.total / 1048576 | number:'1.1-1'}}<span class="unit">MB</span>
+  </wdg-stats>
+
+  <div *appUbus="['system','board']; repeat: 0; let board; let c=count; let keys=keys" class="flex-container-col">
+
+
+    <md-card class="wdg">
+      <md-card-header>
+        <div md-card-avatar>
+          <md-icon svgIcon="router-wireless"></md-icon>
+        </div>
+        <md-card-title>{{board.model}}</md-card-title>
+        <md-card-subtitle>{{board.release.description}}</md-card-subtitle>
+      </md-card-header>
+      <md-card-content>
+        <p>Hostname: {{board.hostname}}</p>
+        <p>Kernel: {{board.kernel}}</p>
+        <p>System: {{board.system}}</p>
+        <p>Target: {{board.release.target}}</p>
+      </md-card-content>
+
+
+    </md-card>
+  </div>
+
+  <md-expansion-panel>
+    <md-expansion-panel-header> Header </md-expansion-panel-header>
+    Content
+  </md-expansion-panel>
+
+
+</div>

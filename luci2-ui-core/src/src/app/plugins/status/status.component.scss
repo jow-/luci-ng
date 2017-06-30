@@ -1,0 +1,17 @@
+@import './../../../styles/_components.scss';
+
+
+app-status {
+
+  .flex-container-col {
+    @include flex-container(row, flex-start);
+    flex-wrap: wrap;
+    
+    .wdg {
+      flex: 1 1 auto;
+
+    }
+
+  }
+ 
+}

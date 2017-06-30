@@ -1,0 +1,18 @@
+<div md-dialog-title>
+  Login
+</div>
+
+<form #loginForm="ngForm" md-dialog-content novalidate (submit)="login()">
+  <md-input-container>
+    <input mdInput placeholder="User" [(ngModel)]="user" name="user" required>
+  </md-input-container>
+  <md-input-container>
+    <input type="password" mdInput placeholder="Password" [(ngModel)]="password" name="password" required>
+  </md-input-container>
+
+  <div *ngIf="errorMessage" class="mat-input-error">{{errorMessage}}</div>
+
+  <div md-dialog-actions>
+    <button md-button type="submit" [disabled]="!loginForm.form.valid">Login</button>
+  </div>
+</form>

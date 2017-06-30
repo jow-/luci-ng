@@ -1,0 +1,60 @@
+
+// can be: xs sm md lg xl or gt-xs gt-sm ....
+@mixin media-query($bp) {
+
+  @if      $bp == xs { @media (max-width: $bp-xs) { @content; } }
+  @else if $bp == sm { @media (max-width: $bp-sm) { @content; } }
+  @else if $bp == md { @media (max-width: $bp-md) { @content; } }
+  @else if $bp == lg { @media (max-width: $bp-lg) { @content; } }
+  @else if $bp == xl { @media (max-width: $bp-xl) { @content; } }
+  @else if $bp == gt-xs { @media (min-width: $bp-xs) { @content; } }
+  @else if $bp == gt-sm { @media (min-width: $bp-sm) { @content; } }
+  @else if $bp == gt-md { @media (min-width: $bp-md) { @content; } }
+  @else if $bp == gt-lg { @media (min-width: $bp-lg) { @content; } }
+  @else if $bp == gt-xl { @media (min-width: $bp-xl) { @content; } }
+
+}
+
+@mixin flex-container($dir, $align) {
+  display: flex;
+  flex-flow: $dir nowrap;
+  justify-content: flex-start;
+
+  align-content: $align;
+  align-items: $align;
+
+}
+
+
+@mixin rotate($degrees) {
+  -moz-transform: rotate($degrees);
+  -webkit-transform: rotate($degrees);
+  -o-transform: rotate($degrees);
+  -ms-transform: rotate($degrees);
+  transform: rotate($degrees);
+  transition: transform 150ms;
+  transition-timing-function: ease-in-out;
+}
+
+@mixin codeblock($bgcolor) {
+    background-color: $bgcolor;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0 auto; // was 24
+    border: 0.5px solid $lightgray;
+}
+
+@mixin card($height, $width) {
+  height: $height;
+  width: $width;
+  background-color: $white;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+  box-sizing: border-box;
+  transition: box-shadow 500ms;
+
+  &:hover {
+    box-shadow: 0 8px 8px rgba($black, 0.24), 0 0 8px rgba($black, 0.12);
+    text-decoration: none;
+  }
+}
