@@ -1,0 +1,6 @@
+{
+  "/ubus": {
+    "target": "http://lede.lan/ubus",
+    "secure": false
+  }
+}

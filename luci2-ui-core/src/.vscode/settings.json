@@ -1,0 +1,36 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	"tslint.rulesDirectory": "./node_modules/tslint-eslint-rules/dist/rules",
+	"editor.tabSize": 2,
+	"stylelint.enable": true,
+	"css.validate": false,
+  "scss.validate": false,
+  "typescript.tsc.autoDetect": "off",
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "files.associations": {
+    ".stylelintrc": "json"
+  },
+  "json.schemas": [
+        {
+        "fileMatch": [
+            "/.stylelintrc"
+        ],
+        "url": "http://json.schemastore.org/stylelintrc"
+    }
+
+  ],
+
+  "terminal.integrated.shellArgs.linux": [
+    "--rcfile",
+    ".vscode/bashrc"
+  ],
+  "tslint.exclude": "**/node_modules/**",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  }
+}
