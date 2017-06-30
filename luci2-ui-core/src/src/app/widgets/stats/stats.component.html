@@ -1,0 +1,15 @@
+<md-card class="stats-card">
+  <div *ngIf="svgIcon" class="stats-icon-container">
+    <md-icon [svgIcon]="svgIcon" class="stats-icon"></md-icon>
+  </div>
+
+  <div class="stats-content">
+    <div class="stats-data">
+      <ng-content></ng-content>
+    </div>
+    <md-progress-bar *ngIf="value!=null" mode="determinate" color="primary" [value]="value" class="stats-bar"></md-progress-bar>
+    <h5>{{title}}</h5>
+  </div>
+
+
+</md-card>

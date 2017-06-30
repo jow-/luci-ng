@@ -1,0 +1,32 @@
+<p>
+  ubusViewer works!
+</p>
+
+<md-input-container>
+      <input mdInput placeholder="object" [(ngModel)]="ubusObject">
+    </md-input-container>
+    <md-input-container>
+      <input mdInput placeholder="method" [(ngModel)]="ubusMethod">
+    </md-input-container>
+    <md-input-container>
+      <input mdInput placeholder="params" [(ngModel)]="ubusParam">
+    </md-input-container>
+    <button md-button (click)="callUbus()">call</button>
+
+    <md-card>
+
+
+      <md-card-header>
+        Ubus Result with Auto Update | {{ubusObject}}
+      </md-card-header>
+
+      <div *appUbus="ubus; repeat: 5000; let result; let c=count; let keys=keys">
+        <p>count={{c}}</p>
+
+
+        <p *ngFor="let prop of keys">{{prop}}: {{result[prop]}}</p>
+
+        <p>{{result | json}}</p>
+      </div>
+
+    </md-card>

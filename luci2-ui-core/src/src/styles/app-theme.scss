@@ -1,0 +1,19 @@
+// Include Material core styles
+@import '~@angular/material/theming';
+@include mat-core();
+
+// Define theme
+$primary: mat-palette($mat-indigo);
+$accent:  mat-palette($mat-red, 700, 600, 800);
+$warn:    mat-palette($mat-red);
+
+$theme: mat-light-theme($primary, $accent, $warn);
+
+// TODO: include by component only used ones?
+@include angular-material-theme($theme);
+
+// APP Theming
+
+@import './../app/shell/nav-menu/_nav-menu.theming.scss';
+@include nav-menu-theme($theme);
+

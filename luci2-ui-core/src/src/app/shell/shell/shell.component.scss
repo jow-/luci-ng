@@ -1,0 +1,41 @@
+@import './../../../styles/_components.scss';
+
+
+app-shell {
+
+  flex: 1 1 auto;
+
+  @include flex-container(column, stretch);
+
+}
+
+.app-bar {
+  position: relative;
+  z-index: 10;
+}
+
+.main-content {
+  padding: ($unit * 2);
+  min-height: 100%;
+}
+
+
+.footer {
+  flex: 0 1 auto;
+
+}
+
+md-sidenav-container.app-content {
+  overflow: hidden;
+  flex: 1 1 auto;
+
+   display: flex;
+   flex-direction: column;
+
+}
+
+md-sidenav {
+	width: $bp-xs * 0.66;
+	min-width: $bp-xs * 0.33;
+	max-width: $bp-xs * 0.8;
+}
