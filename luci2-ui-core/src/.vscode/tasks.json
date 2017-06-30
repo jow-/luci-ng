@@ -1,0 +1,38 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": [
+				{
+					"owner": "external",
+					"fileLocation": "absolute",
+					"pattern": [
+						{
+							"regexp": "^(/.*)$",
+							"file": 1
+						},
+						{
+							"regexp": "^(WARNING|ERROR):\\s+(\\d+):(\\d+)\\s+(.*)$",
+							"line": 2,
+							"column": 3,
+							"severity": 1,
+							"message": 4,
+							"loop": true
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "npm",
+      "script": "start",
+      "isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "luci2-ui-core",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build -prod --build-optimizer",
+    "test": "ng test",
+    "lint": "ng lint --type-check --format stylish && stylelint \"src/**/*.scss\" --config .stylelintrc"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^4.3.3",
+    "@angular/cdk": "^2.0.0-beta.8",
+    "@angular/common": "^4.3.3",
+    "@angular/compiler": "^4.3.3",
+    "@angular/core": "^4.3.3",
+    "@angular/flex-layout": "2.0.0-beta.8",
+    "@angular/forms": "^4.3.3",
+    "@angular/http": "^4.3.3",
+    "@angular/material": "^2.0.0-beta.8",
+    "@angular/platform-browser": "^4.3.3",
+    "@angular/platform-browser-dynamic": "^4.3.3",
+    "@angular/router": "^4.3.3",
+    "core-js": "^2.5.0",
+    "rxjs": "^5.4.2",
+    "web-animations-js": "^2.3.1",
+    "zone.js": "^0.8.16"
+  },
+  "devDependencies": {
+    "@angular/cli": "^1.3.0",
+    "@angular/compiler-cli": "^4.3.3",
+    "@angular/language-service": "^4.3.3",
+    "@types/node": "^6.0.85",
+    "codelyzer": "^3.1.2",
+    "stylelint": "^8.0.0",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.6.0",
+    "tslint-consistent-codestyle": "^1.6.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.4.2",
+    "vrsource-tslint-rules": "^5.1.1"
+  },
+  "false": {}
+}
