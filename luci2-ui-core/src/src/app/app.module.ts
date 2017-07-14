@@ -13,16 +13,24 @@ import { Routes } from '@angular/router/router';
 import { AppComponent } from './app.component';
 import { StatusComponent } from './plugins/status/status.component';
 import { UbusViewerComponent } from './plugins/ubusViewer/ubusViewer.component';
+import { UciEditorComponent } from './plugins/uciEditor/uciEditor.component';
 import { JsonrpcService } from './shared/jsonrpc.service';
 import { MenuService } from './shell/menu/menu.service';
 import { ShellModule } from './shell/shell.module';
 import { UbusDirective } from './ubus/ubus.directive';
 import { UbusService } from './ubus/ubus.service';
+import { UciConfigComponent } from './uci/components/uciConfig/uciConfig.component';
+import { UciFormComponent } from './uci/components/uciForm/uciForm.component';
+import { UciOptionComponent } from './uci/components/uciOption/uciOption.component';
+import { UciSectionComponent } from './uci/components/uciSection/uciSection.component';
+import { UciService } from './uci/uci.service';
+import { UciModelService } from './uci/uciModel.service';
 import { StatsComponent } from './widgets/stats/stats.component';
 
 const routes: Routes = [
   {path: 'status', component: StatusComponent},
   {path: 'system', component: UbusViewerComponent},
+  {path: 'network', component: UciEditorComponent},
   { path: '', redirectTo: '/status', pathMatch: 'full'},
 ];
 
@@ -33,7 +41,13 @@ const routes: Routes = [
 
     StatusComponent,
     UbusViewerComponent,
-    StatsComponent
+    StatsComponent,
+    UciEditorComponent,
+
+    UciOptionComponent,
+    UciSectionComponent,
+    UciConfigComponent,
+    UciFormComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +56,7 @@ const routes: Routes = [
     ShellModule,
     RouterModule.forRoot(routes),
   ],
-  providers: [ JsonrpcService, UbusService, MenuService ],
+  providers: [ JsonrpcService, UbusService, MenuService, UciService, UciModelService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

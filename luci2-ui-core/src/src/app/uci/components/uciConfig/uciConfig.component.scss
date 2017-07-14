@@ -1,0 +1,9 @@
+@import './../../../../styles/_components.scss';
+
+
+uci-config {
+  .mat-card {
+    margin: $unit;
+    margin-top: $unit * 2;
+  }
+}
