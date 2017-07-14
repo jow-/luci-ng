@@ -1,0 +1,8 @@
+
+<md-select placeholder="Config file" [(ngModel)]="selectedConfig" name="config" *appUbus="['uci', 'configs']; let configs">
+  <md-option *ngFor="let config of configs.configs" [value]="config">{{config}}</md-option>
+
+</md-select>
+
+<uci-form [configName]="selectedConfig"></uci-form>
+
