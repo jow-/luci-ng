@@ -1,0 +1,21 @@
+<div ng-if="$ctrl.isRegistered">
+	<h2 ng-if="$ctrl.title">{{$ctrl.title}}</h2>
+	<p ng-if="$ctrl.description">{{$ctrl.description}}</p>
+
+	<form name="$ctrl.form" novalidate>
+
+		<ng-transclude></ng-transclude>
+
+		<div>
+            <md-button type="submit" ng-disabled="$ctrl.form.$invalid"
+				class="md-primary md-confirm-button" aria-label="save" 
+				ng-click="$ctrl.save();" translate>
+                Save
+            </md-button>
+			<md-button ng-disabled="$ctrl.form.$invalid"
+				ng-click="$ctrl.reset();" translate>
+				Reset
+			</md-button>
+		</div>
+	</form>
+</div>
