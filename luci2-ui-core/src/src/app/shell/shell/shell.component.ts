@@ -4,7 +4,7 @@
  */
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { ObservableMedia } from '@angular/flex-layout/media-query/observable-media';
+import { ObservableMedia } from '@angular/flex-layout';
 import { MdIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 

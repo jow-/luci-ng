@@ -11,10 +11,10 @@ import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/catch';
 
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
-import { IJsonrpcRequest, IJsonrpcResponse } from './jsonrpc.interface';
+import { IJsonrpcError, IJsonrpcRequest, IJsonrpcResponse } from './jsonrpc.interface';
 
 
 export class JsonrpcRequest implements IJsonrpcRequest {
@@ -35,14 +35,14 @@ export class JsonrpcRequest implements IJsonrpcRequest {
  */
 @Injectable()
 export class JsonrpcService {
-  private static _headers = new Headers({ 'Accept': 'application/json', 'Content-Type': 'application/json' });
+  private static _headers = new HttpHeaders({ 'Accept': 'application/json', 'Content-Type': 'application/json' });
 
   private _url = '';
   private _retrayDelay = 2500;
   private _retryCount = 3;
 
 
-  constructor(private _http: Http) { }
+  constructor(private _http: HttpClient) { }
 
   setUrl(url: string) { this._url = url; }
   getUrl() { return this._url; }
@@ -66,7 +66,7 @@ export class JsonrpcService {
     if (!this._url) throw new Error('Jsonrpc: url not initialized');
 
 
-    return this._http.post(this._url, reqData, { headers: JsonrpcService._headers })
+    return this._http.post<IJsonrpcResponse>(this._url, reqData, { headers: JsonrpcService._headers })
 
       // retry on http errors a maximun of {_retryCount} times waiting {_retrayDelay} milliseconds
       .retryWhen(o => o
@@ -78,16 +78,14 @@ export class JsonrpcService {
       )
 
       // rethrow http errors wrapped in IJsonrpcError format, to unify response
-      .catch((e: Response) => {
-        throw { code: e.status, message: e.statusText, data: e.text(), layer: 'http' };
+      .catch((e: HttpErrorResponse) => {
+        throw { code: e.status, message: e.statusText, data: e.error, layer: 'http' };
       })
 
       // check if there is an inner jsonrpc error to rethrow; if not emit result
-      .map((r: Response) => {
-        const respData = r.json() || {};
-
-        if (respData.error) throw { ...respData.error, layer: 'jsonrpc' };
-        return respData.result;
+      .map((r: IJsonrpcResponse) => {
+        if (r.error) throw { ...r.error, layer: 'jsonrpc' };
+        return r.result;
       })
 
       .debug('jsonrpc');

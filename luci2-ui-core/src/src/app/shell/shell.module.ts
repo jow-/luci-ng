@@ -5,7 +5,7 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MediaQueriesModule } from '@angular/flex-layout/media-query/_module';
+import { MediaQueriesModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import {
   MdButtonModule,

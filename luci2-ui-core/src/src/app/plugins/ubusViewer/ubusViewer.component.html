@@ -2,15 +2,15 @@
   ubusViewer works!
 </p>
 
-<md-input-container>
+<md-form-field>
       <input mdInput placeholder="object" [(ngModel)]="ubusObject">
-    </md-input-container>
-    <md-input-container>
+    </md-form-field>
+    <md-form-field>
       <input mdInput placeholder="method" [(ngModel)]="ubusMethod">
-    </md-input-container>
-    <md-input-container>
+    </md-form-field>
+    <md-form-field>
       <input mdInput placeholder="params" [(ngModel)]="ubusParam">
-    </md-input-container>
+    </md-form-field>
     <button md-button (click)="callUbus()">call</button>
 
     <md-card>

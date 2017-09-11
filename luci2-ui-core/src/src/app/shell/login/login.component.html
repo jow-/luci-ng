@@ -3,12 +3,12 @@
 </div>
 
 <form #loginForm="ngForm" md-dialog-content novalidate (submit)="login()">
-  <md-input-container>
+  <md-form-field>
     <input mdInput placeholder="User" [(ngModel)]="user" name="user" required>
-  </md-input-container>
-  <md-input-container>
+  </md-form-field>
+  <md-form-field>
     <input type="password" mdInput placeholder="Password" [(ngModel)]="password" name="password" required>
-  </md-input-container>
+  </md-form-field>
 
   <div *ngIf="errorMessage" class="mat-input-error">{{errorMessage}}</div>
 
