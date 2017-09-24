@@ -14,7 +14,7 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
-import { IJsonrpcError, IJsonrpcRequest, IJsonrpcResponse } from './jsonrpc.interface';
+import { IJsonrpcRequest, IJsonrpcResponse } from './jsonrpc.interface';
 
 
 export class JsonrpcRequest implements IJsonrpcRequest {

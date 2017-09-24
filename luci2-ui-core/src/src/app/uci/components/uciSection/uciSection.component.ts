@@ -3,7 +3,7 @@
  * Licensed under the MIT license.
  */
 
- import { Section } from '../../section';
+import { Section } from '../../section';
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 

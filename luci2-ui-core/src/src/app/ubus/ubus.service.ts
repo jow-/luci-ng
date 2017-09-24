@@ -8,7 +8,8 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/observable/throw';
 
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogConfig, MatDialogRef, MatSnackBar } from '@angular/material';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs/Observable';
 
 import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';

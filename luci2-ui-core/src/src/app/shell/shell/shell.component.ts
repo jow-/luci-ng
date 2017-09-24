@@ -5,7 +5,7 @@
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { ObservableMedia } from '@angular/flex-layout';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { IMenuItem } from '../menu/menu.interface';

@@ -28,7 +28,7 @@ import { UciService } from './uci/uci.service';
 import { UciModelService } from './uci/uciModel.service';
 import { StatsComponent } from './widgets/stats/stats.component';
 
-import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material';
+import { MATERIAL_COMPATIBILITY_MODE } from '@angular/material/core';
 
 const routes: Routes = [
   {path: 'status', component: StatusComponent},
