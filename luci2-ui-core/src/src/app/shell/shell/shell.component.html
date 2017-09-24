@@ -1,15 +1,15 @@
-<md-toolbar class="app-bar mat-elevation-z6" color="primary">
-  <button md-icon-button (click)="nav.open()" [style.display]="media.isActive('gt-sm') ? 'none' : 'block'">
-    <md-icon svgIcon="menu"></md-icon>
+<mat-toolbar class="app-bar mat-elevation-z6" color="primary">
+  <button mat-icon-button (click)="nav.open()" [style.display]="media.isActive('gt-sm') ? 'none' : 'block'">
+    <mat-icon svgIcon="menu"></mat-icon>
 
   </button>
-</md-toolbar>
+</mat-toolbar>
 
-  <md-sidenav-container class="app-content">
+  <mat-sidenav-container class="app-content">
 
-    <md-sidenav #nav [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
+    <mat-sidenav #nav [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
       <app-nav-menu [nodes]="menu"></app-nav-menu>
-    </md-sidenav>
+    </mat-sidenav>
 
     <div class="main-content">
     <ng-content select="[shell-content]"></ng-content>
@@ -19,4 +19,4 @@
     footer
     </div>
 
-  </md-sidenav-container>
+  </mat-sidenav-container>

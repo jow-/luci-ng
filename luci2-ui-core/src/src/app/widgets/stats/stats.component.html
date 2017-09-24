@@ -1,15 +1,15 @@
-<md-card class="stats-card">
+<mat-card class="stats-card">
   <div *ngIf="svgIcon" class="stats-icon-container">
-    <md-icon [svgIcon]="svgIcon" class="stats-icon"></md-icon>
+    <mat-icon [svgIcon]="svgIcon" class="stats-icon"></mat-icon>
   </div>
 
   <div class="stats-content">
     <div class="stats-data">
       <ng-content></ng-content>
     </div>
-    <md-progress-bar *ngIf="value!=null" mode="determinate" color="primary" [value]="value" class="stats-bar"></md-progress-bar>
+    <mat-progress-bar *ngIf="value!=null" mode="determinate" color="primary" [value]="value" class="stats-bar"></mat-progress-bar>
     <h5>{{title}}</h5>
   </div>
 
 
-</md-card>
+</mat-card>

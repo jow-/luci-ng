@@ -1,12 +1,12 @@
 <form novalidate>
-  <md-tab-group>
-    <md-tab *ngFor="let type of config.types" label="{{type[0]}}">
-      <md-card *ngFor="let section of type[1]" >
-        <md-card-title>{{section.name}}</md-card-title>
+  <mat-tab-group>
+    <mat-tab *ngFor="let type of config.types" label="{{type[0]}}">
+      <mat-card *ngFor="let section of type[1]" >
+        <mat-card-title>{{section.name}}</mat-card-title>
         <uci-section [section]="section"></uci-section>
-      </md-card>
+      </mat-card>
 
-    </md-tab>
-  </md-tab-group>
+    </mat-tab>
+  </mat-tab-group>
 
 </form>

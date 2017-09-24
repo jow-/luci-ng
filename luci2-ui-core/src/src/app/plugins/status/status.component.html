@@ -18,29 +18,29 @@
   <div *appUbus="['system','board']; repeat: 0; let board; let c=count; let keys=keys" class="flex-container-col">
 
 
-    <md-card class="wdg">
-      <md-card-header>
-        <div md-card-avatar>
-          <md-icon svgIcon="router-wireless"></md-icon>
+    <mat-card class="wdg">
+      <mat-card-header>
+        <div mat-card-avatar>
+          <mat-icon svgIcon="router-wireless"></mat-icon>
         </div>
-        <md-card-title>{{board.model}}</md-card-title>
-        <md-card-subtitle>{{board.release.description}}</md-card-subtitle>
-      </md-card-header>
-      <md-card-content>
+        <mat-card-title>{{board.model}}</mat-card-title>
+        <mat-card-subtitle>{{board.release.description}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
         <p>Hostname: {{board.hostname}}</p>
         <p>Kernel: {{board.kernel}}</p>
         <p>System: {{board.system}}</p>
         <p>Target: {{board.release.target}}</p>
-      </md-card-content>
+      </mat-card-content>
 
 
-    </md-card>
+    </mat-card>
   </div>
 
-  <md-expansion-panel>
-    <md-expansion-panel-header> Header </md-expansion-panel-header>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header> Header </mat-expansion-panel-header>
     Content
-  </md-expansion-panel>
+  </mat-expansion-panel>
 
 
 </div>

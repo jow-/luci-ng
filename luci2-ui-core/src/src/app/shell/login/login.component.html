@@ -1,18 +1,18 @@
-<div md-dialog-title>
+<div matDialogTitle>
   Login
 </div>
 
-<form #loginForm="ngForm" md-dialog-content novalidate (submit)="login()">
-  <md-form-field>
-    <input mdInput placeholder="User" [(ngModel)]="user" name="user" required>
-  </md-form-field>
-  <md-form-field>
-    <input type="password" mdInput placeholder="Password" [(ngModel)]="password" name="password" required>
-  </md-form-field>
+<form #loginForm="ngForm" mat-dialog-content novalidate (submit)="login()">
+  <mat-form-field>
+    <input matInput placeholder="User" [(ngModel)]="user" name="user" required>
+  </mat-form-field>
+  <mat-form-field>
+    <input type="password" matInput placeholder="Password" [(ngModel)]="password" name="password" required>
+  </mat-form-field>
 
   <div *ngIf="errorMessage" class="mat-input-error">{{errorMessage}}</div>
 
-  <div md-dialog-actions>
-    <button md-button type="submit" [disabled]="!loginForm.form.valid">Login</button>
+  <div mat-dialog-actions>
+    <button mat-button type="submit" [disabled]="!loginForm.form.valid">Login</button>
   </div>
 </form>

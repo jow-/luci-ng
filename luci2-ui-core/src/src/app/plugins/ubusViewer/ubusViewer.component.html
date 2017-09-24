@@ -2,23 +2,23 @@
   ubusViewer works!
 </p>
 
-<md-form-field>
-      <input mdInput placeholder="object" [(ngModel)]="ubusObject">
-    </md-form-field>
-    <md-form-field>
-      <input mdInput placeholder="method" [(ngModel)]="ubusMethod">
-    </md-form-field>
-    <md-form-field>
-      <input mdInput placeholder="params" [(ngModel)]="ubusParam">
-    </md-form-field>
-    <button md-button (click)="callUbus()">call</button>
+<mat-form-field>
+      <input matInput placeholder="object" [(ngModel)]="ubusObject">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="method" [(ngModel)]="ubusMethod">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="params" [(ngModel)]="ubusParam">
+    </mat-form-field>
+    <button mat-button (click)="callUbus()">call</button>
 
-    <md-card>
+    <mat-card>
 
 
-      <md-card-header>
+      <mat-card-header>
         Ubus Result with Auto Update | {{ubusObject}}
-      </md-card-header>
+      </mat-card-header>
 
       <div *appUbus="ubus; repeat: 5000; let result; let c=count; let keys=keys">
         <p>count={{c}}</p>
@@ -29,4 +29,4 @@
         <p>{{result | json}}</p>
       </div>
 
-    </md-card>
+    </mat-card>

@@ -1,8 +1,8 @@
 
-<md-select placeholder="Config file" [(ngModel)]="selectedConfig" name="config" *appUbus="['uci', 'configs']; let configs">
-  <md-option *ngFor="let config of configs.configs" [value]="config">{{config}}</md-option>
+<mat-select placeholder="Config file" [(ngModel)]="selectedConfig" name="config" *appUbus="['uci', 'configs']; let configs">
+  <mat-option *ngFor="let config of configs.configs" [value]="config">{{config}}</mat-option>
 
-</md-select>
+</mat-select>
 
 <uci-form [configName]="selectedConfig"></uci-form>
 

@@ -25,7 +25,7 @@ app-shell {
 
 }
 
-md-sidenav-container.app-content {
+mat-sidenav-container.app-content {
   overflow: hidden;
   flex: 1 1 auto;
 
@@ -34,7 +34,7 @@ md-sidenav-container.app-content {
 
 }
 
-md-sidenav {
+mat-sidenav {
 	width: $bp-xs * 0.66;
 	min-width: $bp-xs * 0.33;
 	max-width: $bp-xs * 0.8;

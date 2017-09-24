@@ -28,6 +28,8 @@ import { UciService } from './uci/uci.service';
 import { UciModelService } from './uci/uciModel.service';
 import { StatsComponent } from './widgets/stats/stats.component';
 
+import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material';
+
 const routes: Routes = [
   {path: 'status', component: StatusComponent},
   {path: 'system', component: UbusViewerComponent},
@@ -58,7 +60,8 @@ const routes: Routes = [
     ShellModule,
     RouterModule.forRoot(routes),
   ],
-  providers: [ JsonrpcService, UbusService, MenuService, UciService, UciModelService ],
+  providers: [ JsonrpcService, UbusService, MenuService, UciService, UciModelService,
+    {provide: MATERIAL_COMPATIBILITY_MODE, useValue: true} ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

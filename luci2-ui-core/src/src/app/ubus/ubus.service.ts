@@ -8,7 +8,7 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/observable/throw';
 
 import { Injectable } from '@angular/core';
-import { MdDialog, MdDialogConfig, MdDialogRef, MdSnackBar } from '@angular/material';
+import { MatDialog, MatDialogConfig, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Observable } from 'rxjs/Observable';
 
 import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
@@ -21,9 +21,9 @@ export class UbusService implements ILogin {
 
   // TODO: check acls befor calling
   private _sid: string;
-  private _dialogRef: MdDialogRef<LoginComponent>;
+  private _dialogRef: MatDialogRef<LoginComponent>;
 
-  constructor(private _jsonrpc: JsonrpcService, private _dialog: MdDialog, private _snackbar: MdSnackBar) {
+  constructor(private _jsonrpc: JsonrpcService, private _dialog: MatDialog, private _snackbar: MatSnackBar) {
     this._jsonrpc.setUrl('/ubus');
 
     // reuse last saved session id
@@ -69,7 +69,7 @@ export class UbusService implements ILogin {
   }
 
   loginDialog(): Observable<any> {
-    const opts: MdDialogConfig = {
+    const opts: MatDialogConfig = {
       data: this,
       disableClose: true,
       hasBackdrop: true,

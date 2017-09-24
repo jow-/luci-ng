@@ -8,19 +8,19 @@ import { NgModule } from '@angular/core';
 import { MediaQueriesModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import {
-  MdButtonModule,
-  MdDialogModule,
-  MdIconModule,
-  MdInputModule,
-  MdListModule,
-  MdSidenavModule,
-  MdCardModule,
-  MdToolbarModule,
-  MdProgressBarModule,
-  MdExpansionModule,
-  MdSelectModule,
-  MdTabsModule,
-  MdSnackBarModule
+  MatButtonModule,
+  MatDialogModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatSidenavModule,
+  MatCardModule,
+  MatToolbarModule,
+  MatProgressBarModule,
+  MatExpansionModule,
+  MatSelectModule,
+  MatTabsModule,
+  MatSnackBarModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -47,19 +47,19 @@ import { ShellComponent } from './shell/shell.component';
     FormsModule,
     BrowserAnimationsModule,
     MediaQueriesModule,
-    MdSidenavModule,
-    MdButtonModule,
+    MatSidenavModule,
+    MatButtonModule,
 
-    MdIconModule,
-    MdListModule,
-    MdInputModule,
-    MdDialogModule,
-    MdToolbarModule,
-    MdProgressBarModule,
-    MdExpansionModule,
-    MdSelectModule,
-    MdTabsModule,
-    MdSnackBarModule
+    MatIconModule,
+    MatListModule,
+    MatInputModule,
+    MatDialogModule,
+    MatToolbarModule,
+    MatProgressBarModule,
+    MatExpansionModule,
+    MatSelectModule,
+    MatTabsModule,
+    MatSnackBarModule
   ],
   declarations: [
     ShellComponent,
@@ -70,19 +70,19 @@ import { ShellComponent } from './shell/shell.component';
   exports: [
     ShellComponent,
 
-    MdSidenavModule,
-    MdButtonModule,
+    MatSidenavModule,
+    MatButtonModule,
 
-    MdIconModule,
-    MdListModule,
-    MdInputModule,
-    MdDialogModule,
-    MdCardModule,
-    MdToolbarModule,
-    MdProgressBarModule,
-    MdExpansionModule,
-    MdSelectModule,
-    MdTabsModule
+    MatIconModule,
+    MatListModule,
+    MatInputModule,
+    MatDialogModule,
+    MatCardModule,
+    MatToolbarModule,
+    MatProgressBarModule,
+    MatExpansionModule,
+    MatSelectModule,
+    MatTabsModule
 
 
   ],

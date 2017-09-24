@@ -4,7 +4,7 @@
  */
 
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
-import { MD_DIALOG_DATA, MdDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 import { IJsonrpcError } from '../../shared/jsonrpc.interface';
 import { ILogin } from './ILogin.interface';
@@ -22,7 +22,7 @@ export class LoginComponent {
   errorMessage: string;
 
 
-  constructor(private _dialogRef: MdDialogRef<LoginComponent>, @Inject(MD_DIALOG_DATA) private _loginService: ILogin) { }
+  constructor(private _dialogRef: MatDialogRef<LoginComponent>, @Inject(MAT_DIALOG_DATA) private _loginService: ILogin) { }
 
   login() {
 

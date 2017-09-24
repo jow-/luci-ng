@@ -5,7 +5,7 @@
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { ObservableMedia } from '@angular/flex-layout';
-import { MdIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { IMenuItem } from '../menu/menu.interface';
@@ -20,7 +20,7 @@ export class ShellComponent implements OnInit {
 
   @Input() menu: IMenuItem;
 
-  constructor(public media: ObservableMedia, iconRegistry: MdIconRegistry, sanitizer: DomSanitizer)  {
+  constructor(public media: ObservableMedia, iconRegistry: MatIconRegistry, sanitizer: DomSanitizer)  {
     iconRegistry.addSvgIconSet(sanitizer.bypassSecurityTrustResourceUrl('./../../../assets/mdi.svg'));
 
   }
