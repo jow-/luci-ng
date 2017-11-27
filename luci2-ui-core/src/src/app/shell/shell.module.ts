@@ -5,7 +5,7 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MediaQueriesModule } from '@angular/flex-layout';
+import { LayoutModule } from '@angular/cdk/layout';
 import { FormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -46,7 +46,7 @@ import { ShellComponent } from './shell/shell.component';
     RouterModule,
     FormsModule,
     BrowserAnimationsModule,
-    MediaQueriesModule,
+    LayoutModule,
     MatSidenavModule,
     MatButtonModule,
 

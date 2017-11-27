@@ -6,7 +6,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { Routes } from '@angular/router/router';
@@ -27,8 +26,6 @@ import { UciSectionComponent } from './uci/components/uciSection/uciSection.comp
 import { UciService } from './uci/uci.service';
 import { UciModelService } from './uci/uciModel.service';
 import { StatsComponent } from './widgets/stats/stats.component';
-
-import { MATERIAL_COMPATIBILITY_MODE } from '@angular/material/core';
 
 const routes: Routes = [
   {path: 'status', component: StatusComponent},
@@ -56,12 +53,10 @@ const routes: Routes = [
     BrowserModule,
     FormsModule,
     HttpClientModule,
-    HttpModule,
     ShellModule,
     RouterModule.forRoot(routes),
   ],
-  providers: [ JsonrpcService, UbusService, MenuService, UciService, UciModelService,
-    {provide: MATERIAL_COMPATIBILITY_MODE, useValue: true} ],
+  providers: [ JsonrpcService, UbusService, MenuService, UciService, UciModelService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
