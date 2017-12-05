@@ -19,13 +19,8 @@ import { MenuService } from './shell/menu/menu.service';
 import { ShellModule } from './shell/shell.module';
 import { UbusDirective } from './ubus/ubus.directive';
 import { UbusService } from './ubus/ubus.service';
-import { UciConfigComponent } from './uci/components/uciConfig/uciConfig.component';
-import { UciFormComponent } from './uci/components/uciForm/uciForm.component';
-import { UciOptionComponent } from './uci/components/uciOption/uciOption.component';
-import { UciSectionComponent } from './uci/components/uciSection/uciSection.component';
-import { UciService } from './uci/uci.service';
-import { UciModelService } from './uci/uciModel.service';
 import { StatsComponent } from './widgets/stats/stats.component';
+import { UciModule } from 'app/uci/module';
 import { MaterialModule } from './material.module';
 
 const routes: Routes = [
@@ -43,12 +38,9 @@ const routes: Routes = [
     StatusComponent,
     UbusViewerComponent,
     StatsComponent,
-    UciEditorComponent,
+    UciEditorComponent
 
-    UciOptionComponent,
-    UciSectionComponent,
-    UciConfigComponent,
-    UciFormComponent
+
   ],
   imports: [
     BrowserModule,
@@ -56,9 +48,11 @@ const routes: Routes = [
     HttpClientModule,
     ShellModule,
     RouterModule.forRoot(routes),
+
+    UciModule,
     MaterialModule
   ],
-  providers: [ JsonrpcService, UbusService, MenuService, UciService, UciModelService ],
+  providers: [JsonrpcService, UbusService, MenuService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
