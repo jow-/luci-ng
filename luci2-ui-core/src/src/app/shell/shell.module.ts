@@ -3,24 +3,7 @@
  * Licensed under the MIT license.
  */
 
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { LayoutModule } from '@angular/cdk/layout';
-import { FormsModule } from '@angular/forms';
-
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatCardModule } from '@angular/material/card';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -30,6 +13,7 @@ import { LoginComponent } from './login/login.component';
 import { NavItemComponent } from './nav-menu/nav-item.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ShellComponent } from './shell/shell.component';
+import { MaterialModule } from 'app/material.module';
 
 
 /**
@@ -42,24 +26,10 @@ import { ShellComponent } from './shell/shell.component';
 */
 @NgModule({
   imports: [
-    CommonModule,
     RouterModule,
-    FormsModule,
     BrowserAnimationsModule,
-    LayoutModule,
-    MatSidenavModule,
-    MatButtonModule,
 
-    MatIconModule,
-    MatListModule,
-    MatInputModule,
-    MatDialogModule,
-    MatToolbarModule,
-    MatProgressBarModule,
-    MatExpansionModule,
-    MatSelectModule,
-    MatTabsModule,
-    MatSnackBarModule
+    MaterialModule,
   ],
   declarations: [
     ShellComponent,
@@ -69,22 +39,6 @@ import { ShellComponent } from './shell/shell.component';
   ],
   exports: [
     ShellComponent,
-
-    MatSidenavModule,
-    MatButtonModule,
-
-    MatIconModule,
-    MatListModule,
-    MatInputModule,
-    MatDialogModule,
-    MatCardModule,
-    MatToolbarModule,
-    MatProgressBarModule,
-    MatExpansionModule,
-    MatSelectModule,
-    MatTabsModule
-
-
   ],
   providers: [MenuService],
   entryComponents: [LoginComponent]

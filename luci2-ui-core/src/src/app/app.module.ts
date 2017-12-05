@@ -26,12 +26,13 @@ import { UciSectionComponent } from './uci/components/uciSection/uciSection.comp
 import { UciService } from './uci/uci.service';
 import { UciModelService } from './uci/uciModel.service';
 import { StatsComponent } from './widgets/stats/stats.component';
+import { MaterialModule } from './material.module';
 
 const routes: Routes = [
-  {path: 'status', component: StatusComponent},
-  {path: 'system', component: UbusViewerComponent},
-  {path: 'network', component: UciEditorComponent},
-  { path: '', redirectTo: '/status', pathMatch: 'full'},
+  { path: 'status', component: StatusComponent },
+  { path: 'system', component: UbusViewerComponent },
+  { path: 'network', component: UciEditorComponent },
+  { path: '', redirectTo: '/status', pathMatch: 'full' },
 ];
 
 @NgModule({
@@ -55,6 +56,7 @@ const routes: Routes = [
     HttpClientModule,
     ShellModule,
     RouterModule.forRoot(routes),
+    MaterialModule
   ],
   providers: [ JsonrpcService, UbusService, MenuService, UciService, UciModelService ],
   bootstrap: [AppComponent]
