@@ -86,7 +86,7 @@
       }
     ],
     "typeof-compare": true,
-    "unified-signatures": true,
+    "unified-signatures": false,
     "variable-name": [
       true,
       "ban-keywords",
@@ -106,7 +106,7 @@
     "directive-selector": [
       true,
       "attribute",
-      "app",
+      ["app", "uci"],
       "camelCase"
     ],
     "component-selector": [
