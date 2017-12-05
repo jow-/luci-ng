@@ -6,7 +6,8 @@
 import 'rxjs/add/observable/of';
 
 import { Config } from './config';
-import { UciService } from './uci.service';
+import { ConfigData } from './data/config';
+import { UciService } from './backend/uci.service';
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
