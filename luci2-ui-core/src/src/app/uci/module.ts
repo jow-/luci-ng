@@ -11,6 +11,7 @@ import { UciConfigComponent } from 'app/uci/components/uciConfig/uciConfig.compo
 import { UciSectionComponent } from 'app/uci/components/uciSection/uciSection.component';
 import { UciOptionComponent } from 'app/uci/components/uciOption/uciOption.component';
 import { MaterialModule } from 'app/material.module';
+import { SchemaValidatorDirective } from './components/schemaValidator.directive';
 
 
 /**
@@ -36,6 +37,8 @@ import { MaterialModule } from 'app/material.module';
     UciSectionComponent,
     UciConfigComponent,
     UciFormComponent,
+
+    SchemaValidatorDirective,
   ],
   providers: [UciService, UciModelService],
   exports: [
