@@ -35,6 +35,16 @@ export class ConfigData {
     return sections && sections[1] || null;
   }
 
+  getSectionsByAction(action: number): SectionData[] {
+    const sections = [];
+
+    for (const type of this.sectionTypes)
+      for (const sec of type[1])
+        if (sec.action === action) sections.push(sec);
+
+    return sections;
+  }
+
   getTypes() {
     return this.sectionTypes;
   }

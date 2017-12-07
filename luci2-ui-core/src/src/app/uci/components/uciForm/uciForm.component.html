@@ -1,11 +1,11 @@
-<form novalidate #uciForm="ngForm">
+<form novalidate #uciForm="ngForm" (reset)="load()" (submit)="save()">
 
   <uci-config *ngIf="isLoaded" [config]="config">
 
   </uci-config>
 
   <div class="uci-form-actions">
-    <button mat-button [disabled]="uciForm.invalid">Save</button>
-    <button mat-button [disabled]="uciForm.invalid">Save & Apply</button>
+    <button mat-button [disabled]="uciForm.pristine || uciForm.invalid" type="submit" >Save</button>
+    <button mat-button type="button" (click)="load()" >Reset</button>
   </div>
 </form>

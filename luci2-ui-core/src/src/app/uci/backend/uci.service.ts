@@ -11,6 +11,7 @@ import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { of } from 'rxjs/observable/of';
+import { IUciAddSectionParam, IUciAddSectionRet, IUciSetParam, IUciDeleteParam } from 'app/uci/backend/actions.interface';
 
 
 
@@ -30,6 +31,18 @@ export class UciService {
 
   }
 
+  /** Adds a section and returns its name */
+  addSection(param: IUciAddSectionParam): Observable<string> {
+    return this._ubus.call<IUciAddSectionRet>('uci', 'add', param)
+      .map(r => r && r.section || null);
+  }
 
+  set(param: IUciSetParam): Observable<any> {
+    return this._ubus.call('uci', 'set', param);
+  }
+
+  delete(param: IUciDeleteParam): Observable<any> {
+    return this._ubus.call('uci', 'delete', param);
+  }
 
 }
