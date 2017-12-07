@@ -31,12 +31,17 @@ export class UciFormComponent implements OnInit, OnChanges {
   }
 
   load() {
+    this.isLoaded = false;
     if (this.configName) {
       this.uciModel.loadConfig(this.configName)
         .subscribe(c => { this.isLoaded = true; this.config = c; });
 
     }
 
+  }
+
+  save() {
+    this.uciModel.save();
   }
 
 }

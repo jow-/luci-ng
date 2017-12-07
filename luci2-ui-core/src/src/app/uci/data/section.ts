@@ -6,6 +6,7 @@ import { SectionSchema } from '../schema/sectionSchema';
 import { OptionData } from './option';
 
 import { IUciSectionSchema, IUciSectionData } from 'app/uci/backend/section.interface';
+import { IUciAddSectionParam, IUciSetParam } from 'app/uci/backend/actions.interface';
 import { ConfigData } from 'app/uci/data/config';
 
 /**
@@ -69,6 +70,44 @@ export class SectionData {
   }
   getModifiedOptions(): OptionData[] {
     return this.options.filter(o => o.isModified);
+  }
+
+  getAddedParams(): IUciAddSectionParam {
+    if (this.action !== 1) return null;
+
+    const param: IUciAddSectionParam = {
+      config: this.config.schema.name,
+      type: this.schema.type,
+      name: this.name
+    };
+
+    if (this.options.length) {
+      param.values = {};
+
+      for (const opt of this.options) {
+        param.values[opt.schema.name] = opt.uciValue;
+      }
+    }
+  }
+
+  getModifiedParams(): IUciSetParam {
+    if (this.action !== 0) return null;
+
+    const param: IUciSetParam = {
+      config: this.config.schema.name,
+      section: this.name,
+      values: null
+    };
+
+    if (this.options.length) {
+      let values = param.values;
+      for (const opt of this.getModifiedOptions()) {
+        if (!values) values = {};
+        values[opt.schema.name] = opt.uciValue;
+      }
+      param.values = values;
+    }
+    return param;
   }
 
 }
