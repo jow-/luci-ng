@@ -3,7 +3,7 @@
  * Licensed under the MIT license.
  */
 
-import { Section } from '../../section';
+import { SectionData } from '../../data/section';
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
@@ -11,11 +11,12 @@ import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
   selector: 'uci-section',
   templateUrl: './uciSection.component.html',
   styleUrls: ['./uciSection.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false
 })
 export class UciSectionComponent implements OnInit {
 
-  @Input() section: Section;
+  @Input() section: SectionData;
 
   constructor() { }
 

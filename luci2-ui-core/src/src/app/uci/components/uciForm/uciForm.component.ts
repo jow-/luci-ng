@@ -3,7 +3,7 @@
  * Licensed under the MIT license.
  */
 
-import { Config } from '../../config';
+import { ConfigData } from '../../data/config';
 import { UciModelService } from '../../uciModel.service';
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
@@ -18,7 +18,7 @@ export class UciFormComponent implements OnInit, OnChanges {
   @Input() configName: string;
 
   public isLoaded = false;
-  public config: Config;
+  public config: ConfigData;
 
   constructor(public uciModel: UciModelService) { }
 

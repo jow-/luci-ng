@@ -3,14 +3,14 @@
  * Licensed under the MIT license.
  */
 
-import 'rxjs/add/observable/of';
-
-import { Config } from './config';
 import { ConfigData } from './data/config';
 import { UciService } from './backend/uci.service';
 
 import { Injectable } from '@angular/core';
+
 import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators/map';
+import { of } from 'rxjs/observable/of';
 
 
 /**
@@ -21,24 +21,27 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class UciModelService {
 
-  configs: Config[] = [];
+  configs: Map<string, ConfigData>;
 
-  constructor(private _uci: UciService) { }
+  constructor(private _uci: UciService) {
+    this.configs = new Map();
+  }
 
-  getConfig(name: string): Config {
-    return this.configs.find(c => c.name === name);
+  getConfig(name: string): ConfigData {
+    return this.configs.get(name);
 
   }
 
-  loadConfig(configName: string): Observable<Config> {
-    const config = this.getConfig(configName);
+  loadConfig(configName: string): Observable<ConfigData> {
+    const config = this.configs.get(configName);
 
-    if (config) return Observable.of(config);
+    if (config) return of(config);
 
-    return this._uci.getConfig(configName).map( c => {
-      const conf = new Config(configName, c);
-      this.configs.push(conf);
-      return conf; });
+    return this._uci.getConfig(configName).pipe(map(([data, schema]) => {
+      const conf = new ConfigData(configName, data, schema);
+      this.configs.set(configName, conf);
+      return conf;
+    }));
 
 
 

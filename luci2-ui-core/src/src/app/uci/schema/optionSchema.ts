@@ -99,7 +99,10 @@ export class OptionSchema {
         break;
 
       case 'boolean':
-
+        // make sure that `enum` is always a 2 items array
+        if (!Array.isArray(this.enum) || !this.enum.length) this.enum = ['1', '0'];
+        else if (this.enum.length === 1) this.enum.push('0');
+        else if (this.enum.length > 2) this.enum = this.enum.slice(0, 2);
         break;
 
       case 'integer':
@@ -156,11 +159,8 @@ export class OptionSchema {
         return this._setError();
 
       case 'boolean':
-        if (typeof value === 'boolean') return this._setError('Value must be boolean');
-        if (Array.isArray(this.enum)) {
-          return this._setError(this.enum.includes(value) ? '' : 'Not a valid boolean string');
-        }
-        return this._setError((value === '1' || value === '0') ? '' : 'Not a valid boolean string');
+        if (typeof value === 'boolean') return this._setError();
+        return this._setError(this.enum.includes(value) ? '' : 'Not a valid boolean string');
 
       case 'integer':
         value = parseFloat(value);
