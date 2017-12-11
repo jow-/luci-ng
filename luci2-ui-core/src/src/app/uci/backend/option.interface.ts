@@ -45,12 +45,24 @@ export interface IUciOptionSchema {
    * @property "uciSelector" direct binding
    * @property "uciSelector | /regexPattern/" filtered binding
    */
-  enumBinding?: IUbusQuery | [ string, string, { [param: string]: any } ] | string;
+  enumBinding?: IUbusQuery | [string, string, { [param: string]: any }] | string;
 
 
   default?: any;
 
   items?: IUciOptionSchema;
+
+  /**
+   * Defines dependencies to other UCI options (in the same section).
+   * If any dependency is unmet the option is disabled
+   *
+   * They can be specified as:
+   * @property [ "selector", "selector2", "!selector3" ] : only check that options are present and not empty (can be negated)
+   * @property { selector: [ "value1", "value2", "!value3"] } each option included as a property is compared against an
+   * array of valid values
+   * To satisfy it must match any of the positive values AND ALL negatives
+   */
+  dependencies?: string[] | { [selector: string]: string[] };
 
   properties?: { [propName: string]: IUciOptionSchema }
 }

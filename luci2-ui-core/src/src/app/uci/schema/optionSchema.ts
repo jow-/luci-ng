@@ -41,12 +41,15 @@ export class OptionSchema {
   ubusBinding: UbusQueryDef;
 
 
+
   // schema definitions for items of an array
   items: OptionSchema;
 
   // nested option definitions for "object"
   properties: Map<string, OptionSchema>;
 
+  // dependencies
+  dependencies: { [selector: string]: boolean | string[] } = {};
 
   // last validation state
   isValid: boolean;
@@ -99,6 +102,21 @@ export class OptionSchema {
     this.required = schema.required === true;
     this.type = schema.type;
 
+
+    // parse dependencies
+
+    if (Array.isArray(schema.dependencies)) {
+      schema.dependencies.map(selector => this.dependencies[selector] = selector.charAt(0) !== '!');
+    } else if (typeof schema.dependencies === 'object') {
+      for (const key in schema.dependencies) {
+        if (!schema.dependencies.hasOwnProperty(key)) continue;
+
+        if (Array.isArray(schema.dependencies[key]) || typeof schema.dependencies[key] === 'boolean')
+          this.dependencies[key] = schema.dependencies[key];
+      }
+    }
+
+    // clear error state
     this._setError();
 
     switch (schema.type) {

@@ -4,13 +4,14 @@
  */
 import { OptionSchema } from '../schema/optionSchema';
 import { SectionData } from 'app/uci/data/section';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
 
 
 export class OptionData {
 
   schema: OptionSchema;
 
-  value: string | string[] | boolean;
   oldValue: string | string[] | boolean;
 
   /** Action to perform -1: delete | 0: set | 1: add */
@@ -19,20 +20,38 @@ export class OptionData {
 
   // validation
   errorMsg: string;
+
+  // emmiting changes
+
+  set value(value: string | string[] | boolean) {
+    // if it changed emmit the new value
+    if (this.action === -1) throw new Error('Can\'t change the value of a deleted option');
+    if (value !== this._value) this._subject.next(value);
+    this._value = value;
+  }
+  get value() { return this._value; }
+  private _value: string | string[] | boolean;
+  private _subject: BehaviorSubject<string | string[] | boolean>;
+
   constructor(public section: SectionData, schema: OptionSchema, initData: string | string[]) {
 
     this.schema = schema;
 
     if (typeof initData === 'undefined') {
       this.action = 1;
+      // initializes emmiter
+      this._subject = new BehaviorSubject<string | string[] | boolean>(undefined);
       return;
     }
 
     this.action = 0;
 
-    if (schema.type === 'array' && !Array.isArray(initData)) this.value = [initData];
-    else if (schema.type === 'boolean') this.value = initData === this.schema.enum[0];
-    else this.value = initData;
+    if (schema.type === 'array' && !Array.isArray(initData)) this._value = [initData];
+    else if (schema.type === 'boolean') this._value = initData === this.schema.enum[0];
+    else this._value = initData;
+
+    // initializes emmiter
+    this._subject = new BehaviorSubject<string | string[] | boolean>(this._value);
 
     if (Array.isArray(initData)) {
       if (schema.type !== 'array') throw new Error('Array data can only be set on a list');
@@ -45,8 +64,11 @@ export class OptionData {
 
   }
 
+  asObservable(): Observable<string | string[] | boolean> { return this._subject.asObservable(); }
   delete() {
     this.action = -1;
+
+    this._subject.complete();
   }
 
   get isModified(): boolean {
