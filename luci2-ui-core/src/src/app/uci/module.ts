@@ -12,6 +12,7 @@ import { UciSectionComponent } from 'app/uci/components/uciSection/uciSection.co
 import { UciOptionComponent } from 'app/uci/components/uciOption/uciOption.component';
 import { MaterialModule } from 'app/material.module';
 import { SchemaValidatorDirective } from './components/schemaValidator.directive';
+import { ChipArrayValueAccessorDirective } from 'app/uci/components/chipListValueAccessor.directive';
 import { ProvideParentFormDirective } from './components/provideParentForm.directive';
 import { ProvideParentFormGroupDirective } from './components/provideParentFormGroup.directive';
 
@@ -41,6 +42,7 @@ import { ProvideParentFormGroupDirective } from './components/provideParentFormG
     UciFormComponent,
 
     SchemaValidatorDirective,
+    ChipArrayValueAccessorDirective,
     ProvideParentFormDirective,
     ProvideParentFormGroupDirective
   ],

@@ -3,7 +3,7 @@
  * Licensed under the MIT license.
  */
 
-import { Config } from '../../config';
+import { ConfigData } from '../../data/config';
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
@@ -15,7 +15,7 @@ import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 })
 export class UciConfigComponent implements OnInit {
 
-  @Input() config: Config;
+  @Input() config: ConfigData;
 
   constructor() { }
 
