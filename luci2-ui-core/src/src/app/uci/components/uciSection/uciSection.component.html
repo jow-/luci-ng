@@ -1,4 +1,3 @@
-<form novalidate>
-  <uci-option *ngFor="let option of section.options" [option]="option"></uci-option>
-
-</form>
+<div provideParentFormGroup>
+    <uci-option *ngFor="let option of section.options" [option]="option"></uci-option>
+</div>

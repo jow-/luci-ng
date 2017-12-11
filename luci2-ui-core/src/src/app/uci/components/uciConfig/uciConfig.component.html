@@ -1,12 +1,18 @@
-<form novalidate>
-  <mat-tab-group>
-    <mat-tab *ngFor="let type of config.types" label="{{type[0]}}">
-      <mat-card *ngFor="let section of type[1]" >
-        <mat-card-title>{{section.name}}</mat-card-title>
+<div provideParentForm>
+  <mat-tab-group [ngModelGroup]="config.schema.name">
+    <mat-tab *ngFor="let type of config.sectionTypes" [ngModelGroup]="type" #typeGroup="ngModelGroup">
+      <ng-template mat-tab-label>
+          <span>{{type[0]}}
+        <em *ngIf="typeGroup.invalid">*</em></span>
+      </ng-template>
+      <mat-card *ngFor="let section of type[1]" [ngModelGroup]="section.name" #sectionGroup="ngModelGroup">
+        <mat-card-title >
+          {{!section.anonymous && section.name || section.schema.title}}
+          <em *ngIf="sectionGroup.invalid">*</em>
+        </mat-card-title>
         <uci-section [section]="section"></uci-section>
       </mat-card>
 
     </mat-tab>
   </mat-tab-group>
-
-</form>
+</div>
