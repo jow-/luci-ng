@@ -1,32 +1,84 @@
-<p>
-  ubusViewer works!
-</p>
+<div *ngIf="ready">
+  <div>
+    <mat-slide-toggle [(ngModel)]="autoupdate">Autoupdate</mat-slide-toggle>
+  </div>
+  <div>
+    <mat-form-field>
+      <input matInput placeholder="object" [(ngModel)]="ubusObject" [matAutocomplete]="service" (ngModelChange)="filterObjects($event)">
 
-<mat-form-field>
-      <input matInput placeholder="object" [(ngModel)]="ubusObject">
+      <mat-autocomplete #service="matAutocomplete" (optionSelected)="updateMethods($event)">
+        <mat-option *ngFor="let service of fObject" [value]="service">{{service}}</mat-option>
+      </mat-autocomplete>
+
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="method" [(ngModel)]="ubusMethod">
+      <input matInput placeholder="method" [(ngModel)]="ubusMethod" [matAutocomplete]="method" (ngModelChange)="filterMethods($event)">
+
+      <mat-autocomplete #method="matAutocomplete" (optionSelected)="updateParams($event)">
+        <mat-option *ngFor="let method of fMethod" [value]="method">{{method}}</mat-option>
+      </mat-autocomplete>
+
     </mat-form-field>
     <mat-form-field>
       <input matInput placeholder="params" [(ngModel)]="ubusParam">
+      <mat-hint>{{paramsHint}} </mat-hint>
     </mat-form-field>
-    <button mat-button (click)="callUbus()">call</button>
+  </div>
+  <div>
+    <mat-form-field>
+      <input matInput placeholder="item accessor" [(ngModel)]="itemAccessor">
+    </mat-form-field>
 
-    <mat-card>
+    <mat-form-field>
+      <input matInput placeholder="subitem accessor" [(ngModel)]="subitemAccessor">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="filter accessor" [(ngModel)]="filterAccessor">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="filter pattern" [(ngModel)]="filterPattern">
+    </mat-form-field>
+  </div>
+  <div>
+    <mat-slide-toggle [(ngModel)]="concat">concat</mat-slide-toggle>
+    <mat-form-field placeholder="to Array">
+      <mat-select [(ngModel)]="toArray">
+        <mat-option value="key">key</mat-option>
+        <mat-option value="value">value</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </div>
+  <button mat-button (click)="callUbus()">call</button>
+
+  <mat-card *ngIf="query">
+
+    <mat-card-header>
+      Ubus Query
+    </mat-card-header>
+
+    {{query | json}}
+  </mat-card>
+
+  <mat-card *ngIf="query">
 
 
-      <mat-card-header>
-        Ubus Result with Auto Update | {{ubusObject}}
-      </mat-card-header>
+    <mat-card-header>
+      Ubus Result with Auto Update | {{ubusObject}}
+    </mat-card-header>
 
-      <div *appUbus="ubus; repeat: 5000; let result; let c=count; let keys=keys">
-        <p>count={{c}}</p>
+    <div *appUbus="query; repeat: autoupdate ? 5000 : 0; let result; let c=count; let keys=keys">
+      <p>count={{c}}</p>
 
 
-        <p *ngFor="let prop of keys">{{prop}}: {{result[prop]}}</p>
+      <p *ngFor="let prop of keys">{{prop}}: {{result[prop]}}</p>
 
-        <p>{{result | json}}</p>
-      </div>
+      <p>{{result | json}}</p>
+    </div>
 
-    </mat-card>
+  </mat-card>
+
+
+</div>

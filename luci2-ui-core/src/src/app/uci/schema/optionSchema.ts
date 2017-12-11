@@ -5,6 +5,7 @@
 
 import { IUciOptionSchema } from '../backend/option.interface';
 import { Format } from './format';
+import { UbusQueryDef } from 'app/ubus/ubusQuery';
 
 /**
  * Option: object that models an `uci option` schema information.
@@ -37,7 +38,7 @@ export class OptionSchema {
 
   // validations for enumarations
   enum: any[];
-  enumBinding: object;
+  ubusBinding: UbusQueryDef;
 
 
   // schema definitions for items of an array
@@ -58,7 +59,7 @@ export class OptionSchema {
   /** Creates an OptionSchema based on schema information from backend */
   constructor(name: string, data: IUciOptionSchema)
   /** Creates an OptionSchema */
-  constructor(name: string, data: string | string[] | IUciOptionSchema) {
+  constructor(name: string, data?: string | string[] | IUciOptionSchema) {
     let schema: IUciOptionSchema;
 
     this.properties = new Map();
@@ -72,7 +73,12 @@ export class OptionSchema {
       };
     } else if (typeof data.type === 'string') {
       schema = data;
+    } else if (typeof data === 'boolean') {
+      schema = { type: 'boolean' };
+    } else {
+      schema = { type: 'string' };
     }
+
 
     // TODO: case when creating directly from uci data without schema
 
@@ -83,7 +89,12 @@ export class OptionSchema {
     this.default = schema.default;
 
     this.enum = schema.enum;
-    this.enumBinding = schema.enumBinding;
+
+    if (schema.enumBinding) {
+      if (Array.isArray(schema.enumBinding) ||
+        typeof schema.enumBinding === 'object' && Array.isArray(schema.enumBinding.call))
+        this.ubusBinding = new UbusQueryDef(schema.enumBinding);
+    }
 
     this.required = schema.required === true;
     this.type = schema.type;

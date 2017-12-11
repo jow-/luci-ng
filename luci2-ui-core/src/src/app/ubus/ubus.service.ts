@@ -16,6 +16,9 @@ import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
 import { JsonrpcService } from '../shared/jsonrpc.service';
 import { ILogin } from '../shell/login/ILogin.interface';
 import { LoginComponent } from '../shell/login/login.component';
+import { UbusQueryDef, UbusQuery } from 'app/ubus/ubusQuery';
+import { IUbusQuery } from 'app/ubus/ubus.interface';
+import { OptionData } from 'app/uci/data/option';
 
 @Injectable()
 export class UbusService implements ILogin {
@@ -37,10 +40,13 @@ export class UbusService implements ILogin {
   }
   get sid(): string { return this._sid; }
 
+  list(params: any): Observable<Array<any>> {
+    return this._jsonrpc.request('list', params);
+  }
 
   call<T>(service: string, method: string, params?: object, autologin = true): Observable<T> {
     // cache params in object, so that SID can be changed later and be seen by resuscription holding a reference
-    const jsonrpcParams = [this.sid, service, method, params || {} ];
+    const jsonrpcParams = [this.sid, service, method, params || {}];
     return this._jsonrpc.request('call', jsonrpcParams)
 
 
@@ -60,8 +66,8 @@ export class UbusService implements ILogin {
             jsonrpcParams[0] = this.sid
           ).debug('loginDialog') : Observable.throw(e)
       ))
-      .catch( e => {
-        this._snackbar.open(`Error calling ${service} ${method}: ${e.message}`, 'close', {duration: 5000});
+      .catch(e => {
+        this._snackbar.open(`Error calling ${service} ${method}: ${e.message}`, 'close', { duration: 5000 });
         throw e;
       })
 
@@ -94,11 +100,26 @@ export class UbusService implements ILogin {
       .debug('login');
   }
 
+  query(query: UbusQueryDef): Observable<any> {
+
+    if (!query || !query.call) return Observable.throw('Invalid ubus query');
+    return this.call(query.call[0], query.call[1], query.call[2])
+      .repeatWhen(
+      o =>
+        query.autoupdate ? o.delay(query.autoupdate) : Observable.empty())
+      .retryWhen(
+      o =>
+        query.autoupdate ? o.delay(query.autoupdate) : Observable.throw(o))
+      .debug('query pre')
+      .map(data => query.transform(data)).debug('query post');
+  }
+
+
   declare<T>(service: string, method: string, paramNames?: Array<string>) {
     if (!Array.isArray(paramNames)) paramNames = [];
     return ((...args: any[]) => {
       const params = {};
-      for (let i = 0; i < paramNames.length; i++ )
+      for (let i = 0; i < paramNames.length; i++)
         params[paramNames[i]] = args[i];
       return <Observable<T>>this.call(service, method, params);
     });

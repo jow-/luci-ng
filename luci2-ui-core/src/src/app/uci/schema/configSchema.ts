@@ -18,9 +18,9 @@ export class ConfigSchema {
 
   sections: Map<string, SectionSchema>;
 
-  constructor(name: string, schema: IUciConfigSchema, data?: IUciConfigData) {
+  constructor(name: string, schema?: IUciConfigSchema, data?: IUciConfigData) {
 
-    this.sections = new Map();
+    this.sections = new Map<string, SectionSchema>();
     this.name = this.title = name;
     if (typeof schema === 'object' && schema.type === 'object') {
       this.title = schema.title || name;
@@ -38,7 +38,7 @@ export class ConfigSchema {
   updateFromData(data: IUciConfigData) {
     if (typeof data === 'object') {
       for (const sec in data)
-        if (data.hasOwnProperty(sec)) {
+        if (data.hasOwnProperty(sec) && data[sec]['.type']) {
           if (this.sections.has(data[sec]['.type']))
             this.sections.get(data[sec]['.type']).updateFromData(data[sec]);
           else

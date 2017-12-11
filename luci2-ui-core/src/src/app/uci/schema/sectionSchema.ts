@@ -35,7 +35,7 @@ export class SectionSchema {
 
   constructor(type: string, schema: IUciSectionSchema, data?: IUciSectionData) {
     this.type = type;
-    this.options = new Map();
+    this.options = new Map<string, OptionSchema>();
 
     // if we have a backend schema info use it to construct the object
     if (typeof schema === 'object') {
