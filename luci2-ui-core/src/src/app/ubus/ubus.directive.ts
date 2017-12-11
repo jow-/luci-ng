@@ -21,6 +21,8 @@ import {
 import { UbusService } from './ubus.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import { UbusQueryDef } from 'app/ubus/ubusQuery';
+import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 
 
 export class UbusContext {
@@ -36,10 +38,8 @@ export class UbusContext {
 })
 export class UbusDirective implements OnChanges, OnDestroy {
   repeatInterval = 0;
-  service: string;
-  method: string;
-  params: Object;
 
+  private _queryDef: UbusQueryDef;
   private _context: UbusContext = new UbusContext;
   private _hasView: boolean;
   private _subscription: Subscription;
@@ -52,27 +52,21 @@ export class UbusDirective implements OnChanges, OnDestroy {
 
   @Input() set appUbus(args: any) {
     console.log('set appUbus', args);
-    this.service = null;
-    if (typeof(args) === 'undefined')
-      return;
-    if (!Array.isArray(args) || typeof (args[0]) !== 'string' || typeof (args[1]) !== 'string')
-      throw new Error('appUbus: input value must be [service: string, method: string, params?: Object|Array]');
-
-    this.service = args[0];
-    this.method = args[1];
-    this.params = args[2];
+    this._queryDef = new UbusQueryDef(args);
   }
 
   constructor(private _templateRef: TemplateRef<UbusContext>, private _viewContainer: ViewContainerRef,
-              private _changeDetector: ChangeDetectorRef, private _ubus: UbusService) { }
+    private _changeDetector: ChangeDetectorRef, private _ubus: UbusService) {
+
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log('onChange', changes);
-    if (changes.appUbus && this.service) {
+    if (changes.appUbus && this._queryDef) {
       this._unsubscribe();
       this._subscribe();
     }
-    if (changes.appUbusRepeat && this.repeatInterval && this.service &&
+    if (changes.appUbusRepeat && this.repeatInterval && this._queryDef &&
       (!this._subscription || this._subscription.closed))
       this._subscribe();
   }
@@ -85,15 +79,10 @@ export class UbusDirective implements OnChanges, OnDestroy {
   private _subscribe(): void {
     this._unsubscribe();
 
-    if (this.service && this.method) {
+    if (this._queryDef) {
       this._context.count = 0;
-      this._subscription = this._ubus.call(this.service, this.method, this.params)
-        .repeatWhen(
-        o =>
-          this.repeatInterval ? o.delay(this.repeatInterval).do( d => this._context.count++) : Observable.empty())
-        .retryWhen(
-        o =>
-          this.repeatInterval ? o.delay(this.repeatInterval).do( d => this._context.count++) : Observable.throw(o))
+      this._subscription = this._ubus.query(this._queryDef)
+        .do(d => this._context.count++)
         .subscribe(
         r => {
           this._context.result = this._context.$implicit = r;
@@ -113,7 +102,8 @@ export class UbusDirective implements OnChanges, OnDestroy {
           this._changeDetector.markForCheck();
         },
         () => {
-          this._subscription = null; });
+          this._subscription = null;
+        });
     }
 
   }

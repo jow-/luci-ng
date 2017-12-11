@@ -5,10 +5,11 @@
 
 import { OptionData } from '../../data/option';
 
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { MatChipInputEvent } from '@angular/material/chips';
 
-import {ENTER, COMMA} from '@angular/cdk/keycodes';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { UbusService } from 'app/ubus/ubus.service';
 
 /**
  * uciOption: renders an uci Option object using the correct input control
@@ -28,7 +29,26 @@ export class UciOptionComponent implements OnInit {
 
   listInput = '';
 
+  listEnum: string[];
+
+  acOptions: string[];
+
+  constructor(private _ubus: UbusService, private _ref: ChangeDetectorRef) { }
+
   ngOnInit() {
+
+    if (this.option.schema.ubusBinding) {
+      this.listEnum = this.acOptions = [];
+      this._ubus.query(this.option.schema.ubusBinding)
+        .subscribe(
+        data => {
+          this.listEnum = this.acOptions = (this.option.schema.enum || []).concat(Array.isArray(data) ? data : []);
+          this._ref.markForCheck();
+        });
+    } else if (this.option.schema.enum)
+      this.listEnum = this.acOptions = this.option.schema.enum;
+
+
   }
 
   addChip(event: MatChipInputEvent, valueAccessor: any): void {
@@ -58,6 +78,10 @@ export class UciOptionComponent implements OnInit {
       valueAccessor.onChange(this.option.value);
       valueAccessor.onTouched();
     }
+  }
+
+  filterAutocomplete(text) {
+    this.acOptions  = this.listEnum.filter(data => data.toLowerCase().indexOf(text) >= 0);
   }
 
 }
