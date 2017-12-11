@@ -1,4 +1,4 @@
-<div [ngSwitch]="option.schema.type" provideParentFormGroup>
+<div [ngSwitch]="option.schema.type" provideParentFormGroup *ngIf="dependenciesState">
 
   <mat-slide-toggle *ngSwitchCase="'boolean'" [(ngModel)]="option.value" [name]="option.schema.name" labelPosition="before">{{option.schema.title}}</mat-slide-toggle>
 
