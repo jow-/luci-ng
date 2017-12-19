@@ -3,6 +3,7 @@
  * Licensed under the MIT license.
  */
 import { IUciOptionSchema } from './option.interface';
+import { SectionData } from 'app/uci/data/section';
 
 
 
@@ -51,6 +52,7 @@ export interface IUciPropertiesSchema {
 
 
 export interface IUciSectionData {
+  '.section'?: SectionData;
   '.anonymous': boolean;
   '.type': string;
   '.name': string;

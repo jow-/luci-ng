@@ -4,6 +4,7 @@
  */
 
 import { IUciSectionData, IUciSectionSchema } from './section.interface';
+import { ConfigData } from 'app/uci/data/config';
 
 /**
  * Config File Schema used by UCI backend
@@ -24,5 +25,7 @@ export interface IUciConfigSchema {
 }
 
 export interface IUciConfigData {
-  [section: string]: IUciSectionData
+  '.config'?: ConfigData;
+
+  [section: string]: IUciSectionData | any;
 }

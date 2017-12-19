@@ -23,10 +23,11 @@ import { forkJoin } from 'rxjs/observable/forkJoin';
 @Injectable()
 export class UciModelService {
 
-  configs: ConfigData[];
+  configs: ConfigData[] = [];
 
-  constructor(private _uci: UciService) {
-    this.configs = [];
+  store: { [config: string]: IUciConfigData } = {} ;
+
+  constructor(private _uci: UciService, private _ubus: UbusService) {
   }
 
   getConfig(name: string): ConfigData {
@@ -41,6 +42,7 @@ export class UciModelService {
     return this._uci.getConfig(configName).pipe(map(([data, schema]) => {
       const conf = new ConfigData(configName, data, schema);
       this.configs.push(conf);
+      this.store[configName] = conf.store;
       return conf;
     }));
   }
