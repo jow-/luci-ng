@@ -18,18 +18,24 @@ import { ConfigData } from 'app/uci/data/config';
 export class SectionData {
   schema: SectionSchema;
 
-  name: string;
   oldName: string;
   index: number;
   oldIndex: number;
-
-  anonymous: boolean;
 
   /** Action to perform -1: delete | 0: set | 1: add */
   action: number;
 
   options: OptionData[];
 
+  store: IUciSectionData;
+
+  /** Gets current data from store */
+  get name(): string {
+    return this.store['.name'];
+  }
+  set name(name: string) {
+    this.store['.name'] = name;
+  }
   constructor(public config: ConfigData, data: IUciSectionData, schema?: IUciSectionSchema | SectionSchema) {
 
 
@@ -37,19 +43,22 @@ export class SectionData {
     else if (schema instanceof SectionSchema) this.schema = schema;
     else this.schema = new SectionSchema(data['.type'], schema, data);
 
-    this.name = data['.name'];
+    this.store = {
+      '.section': this,
+      '.type': data['.type'],
+      '.name': data['.name'],
+      '.index': data['.index'],
+      '.anonymous': data['.anonymous']
+    };
+
     this.oldName = this.name;
-    this.index = data['.index'] || 0;
-    this.oldIndex = this.index;
-    this.anonymous = !!data['.anonymous'];
+    this.oldIndex = data['.index'];
 
     this.action = 0;
 
-    this.options = Object.keys(data)
-      .filter((key: string) =>
-        key.charAt(0) !== '.' && this.schema.options.has(key))
+    this.options = Array.from(this.schema.options.keys())
       .map(key =>
-        new OptionData(this, this.schema.options.get(key), data[key])
+        this.store[key] = new OptionData(this, this.schema.options.get(key), data[key])
       );
   }
 
@@ -63,6 +72,7 @@ export class SectionData {
 
   delete() {
     this.action = -1;
+    // TODO: remove reference from parent config store;
   }
 
   getOption(name: string): OptionData {

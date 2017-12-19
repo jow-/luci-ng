@@ -39,19 +39,17 @@ export class OptionData {
 
     if (typeof initData === 'undefined') {
       this.action = 1;
-      // initializes emmiter
-      this._subject = new BehaviorSubject<string | string[] | boolean>(undefined);
-      return;
-    }
-
-    this.action = 0;
+      if (schema.default) {
+        if (schema.type === 'boolean')
+          initData = schema.default === true || schema.default === this.schema.enum[0] ? this.schema.enum[0] : this.schema.enum[1];
+        else initData = schema.default;
+      }
+    } else
+      this.action = 0;
 
     if (schema.type === 'array' && !Array.isArray(initData)) this._value = [initData];
     else if (schema.type === 'boolean') this._value = initData === this.schema.enum[0];
     else this._value = initData;
-
-    // initializes emmiter
-    this._subject = new BehaviorSubject<string | string[] | boolean>(this._value);
 
     if (Array.isArray(initData)) {
       if (schema.type !== 'array') throw new Error('Array data can only be set on a list');
@@ -62,6 +60,8 @@ export class OptionData {
       this.oldValue = initData;
     }
 
+    // initializes emmiter
+    this._subject = new BehaviorSubject<string | string[] | boolean>(this._value);
   }
 
   asObservable(): Observable<string | string[] | boolean> { return this._subject.asObservable(); }
