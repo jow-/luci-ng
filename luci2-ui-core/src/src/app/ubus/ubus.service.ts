@@ -16,8 +16,6 @@ import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
 import { JsonrpcService } from '../shared/jsonrpc.service';
 import { ILogin } from '../shell/login/ILogin.interface';
 import { LoginComponent } from '../shell/login/login.component';
-import { UbusQueryDef, UbusQuery } from 'app/ubus/ubusQuery';
-import { OptionData } from 'app/uci/data/option';
 
 @Injectable()
 export class UbusService implements ILogin {
@@ -98,21 +96,6 @@ export class UbusService implements ILogin {
       })
       .debug('login');
   }
-
-  query(query: UbusQueryDef): Observable<any> {
-
-    if (!query || !query.service) return Observable.throw('Invalid ubus query');
-    return this.call(query.service, query.method, query.params)
-      .repeatWhen(
-      o =>
-        query.autoupdate ? o.delay(query.autoupdate) : Observable.empty())
-      .retryWhen(
-      o =>
-        query.autoupdate ? o.delay(query.autoupdate) : Observable.throw(o))
-      .debug('query pre')
-      .map(data => query.transform(data)).debug('query post');
-  }
-
 
   declare<T>(service: string, method: string, paramNames?: Array<string>) {
     if (!Array.isArray(paramNames)) paramNames = [];

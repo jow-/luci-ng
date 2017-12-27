@@ -6,6 +6,7 @@
 import { IUciOptionSchema } from '../backend/option.interface';
 import { Format } from './format';
 import { UbusQueryDef } from 'app/ubus/ubusQuery';
+import { UciSelector } from 'app/uci/uciSelector.class';
 
 /**
  * Option: object that models an `uci option` schema information.
@@ -39,6 +40,7 @@ export class OptionSchema {
   // validations for enumarations
   enum: any[];
   ubusBinding: UbusQueryDef;
+  uciBinding: UciSelector;
 
 
 
@@ -96,6 +98,8 @@ export class OptionSchema {
     if (schema.enumBinding) {
       if (Array.isArray(schema.enumBinding))
         this.ubusBinding = new UbusQueryDef(schema.enumBinding);
+      else if (typeof schema.enumBinding === 'string')
+        this.uciBinding = new UciSelector(schema.enumBinding);
     }
 
     this.required = schema.required === true;

@@ -11,6 +11,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { UbusService } from 'app/ubus/ubus.service';
+import { UciModelService } from 'app/uci/uciModel.service';
 
 /**
  * uciOption: renders an uci Option object using the correct input control
@@ -39,14 +40,22 @@ export class UciOptionComponent implements OnInit {
   dependenciesState = false;
 
 
-  constructor(private _ubus: UbusService, private _ref: ChangeDetectorRef) { }
+  constructor(private _ubus: UbusService, private _model: UciModelService, private _ref: ChangeDetectorRef) { }
 
   ngOnInit() {
 
     if (this.option.schema.ubusBinding) {
       this.listEnum = this.acOptions = [];
-      this._ubus.query(this.option.schema.ubusBinding)
+      this.option.schema.ubusBinding.bind(this.option, this._model, this._ubus)
         .subscribe(
+        data => {
+          this.listEnum = this.acOptions = (this.option.schema.enum || []).concat(Array.isArray(data) ? data : []);
+          this._ref.markForCheck();
+        });
+    } else if (this.option.schema.uciBinding) {
+      this.listEnum = this.acOptions = [];
+
+      this._model.bindSelector(this.option.schema.uciBinding, this.option, true).subscribe(
         data => {
           this.listEnum = this.acOptions = (this.option.schema.enum || []).concat(Array.isArray(data) ? data : []);
           this._ref.markForCheck();

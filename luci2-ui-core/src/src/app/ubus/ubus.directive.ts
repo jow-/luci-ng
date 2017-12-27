@@ -19,10 +19,9 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { UbusService } from './ubus.service';
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { UbusQueryDef } from 'app/ubus/ubusQuery';
-import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
+import { UciModelService } from 'app/uci/uciModel.service';
 
 
 export class UbusContext {
@@ -56,7 +55,7 @@ export class UbusDirective implements OnChanges, OnDestroy {
   }
 
   constructor(private _templateRef: TemplateRef<UbusContext>, private _viewContainer: ViewContainerRef,
-    private _changeDetector: ChangeDetectorRef, private _ubus: UbusService) {
+              private _changeDetector: ChangeDetectorRef, private _ubus: UbusService, private _model: UciModelService) {
 
   }
 
@@ -81,7 +80,7 @@ export class UbusDirective implements OnChanges, OnDestroy {
 
     if (this._queryDef) {
       this._context.count = 0;
-      this._subscription = this._ubus.query(this._queryDef)
+      this._subscription = this._queryDef.bind(null, this._model, this._ubus)
         .do(d => this._context.count++)
         .subscribe(
         r => {
