@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "title": "SSH Configuration",
+  "description": "The ssh configuration is handled by the dropbear subsystem. Each dropbear SSH server instance uses a single section of the configuration file, and you can have multiple instances.",
+  "properties": {
+    "dropbear": {
+      "title": "Dropbear instance",
+      "description": "General System options",
+      "type": "object",
+      "anonymous": true,
+      "properties": {
+        "enable": {
+          "title": "Enable",
+          "description": "Start this dropbear instance at system boot",
+          "default": true,
+          "type": "boolean"
+        },
+        "Interface": {
+          "title": "Interface",
+          "description": "Listen only on the specified interface, if unspecified, on all.",
+          "type": "string",
+          "enumBinding": "network.@interface[?(@['.name']!='loopback')]"
+        },
+        "Port": {
+          "title": "Port",
+          "description": "Port number to listen on.",
+          "type": "number",
+          "default": 22
+        },
+        "GatewayPorts": {
+          "title": "Gateway Ports",
+          "description": "Allow remote hosts to connect to forwarded ports.",
+          "type": "boolean",
+          "default": false
+        },
+        "PasswordAuth": {
+          "title": "Password Authentication",
+          "description": "Authenticate with passwords",
+          "type": "boolean",
+          "default": true
+        },
+        "RootPasswordAuth": {
+          "title": "Enable Root with Password",
+          "description": "Disable authenticating as Root with passwords",
+          "type": "boolean",
+          "default": true
+        },
+        "RootLogin": {
+          "title": "Enable Root",
+          "description": "Disable SSH logins as Root",
+          "type": "boolean",
+          "default": true
+        },
+        "rsakeyfile": {
+          "title": "RSA key File",
+          "description": "Path to RSA file.",
+          "type": "string",
+          "format": "path"
+        },
+        "dsskeyfile": {
+          "title": "DSS/DSA key File",
+          "description": "Path to DSS/DSA file.",
+          "type": "string",
+          "format": "path"
+        },
+        "verbose": {
+          "title": "Verbose",
+          "description": "Enable verbose output by the start script.",
+          "default": false,
+          "type": "boolean"
+        },
+        "BannerFile": {
+          "title": "Banner File",
+          "description": "Name of a file to be printed before the user has authenticated successfully.",
+          "type": "string",
+          "format": "path"
+        },
+        "SSHKeepAlive": {
+          "title": "SSH Keep Alive",
+          "description": "Keep alive in ms.",
+          "default": 300,
+          "type": "integer"
+        },
+        "IdleTimeout": {
+          "title": "Idle Timeout",
+          "description": "Idle Timeout in ms.",
+          "default": 0,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "MaxAuthTries": {
+          "title": "Max Athentications Tries",
+          "description": "Amount of times you can retry writing the password when logging in before the SSH server closes the connection.",
+          "default": 3,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "mdns": {
+          "title": "mDNS",
+          "description": "Whether to annouce the service via mDNS (a.k.a. Bonjour / zero-configuration networking).",
+          "default": true,
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
