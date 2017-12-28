@@ -38,7 +38,7 @@ export class UbusService implements ILogin {
   get sid(): string { return this._sid; }
 
 
-  call(service: string, method: string, params?: object, autologin = true): Observable<any> {
+  call<T>(service: string, method: string, params?: object, autologin = true): Observable<T> {
     // cache params in object, so that SID can be changed later and be seen by resuscription holding a reference
     const jsonrpcParams = [this.sid, service, method, params || {} ];
     return this._jsonrpc.request('call', jsonrpcParams)
@@ -84,7 +84,7 @@ export class UbusService implements ILogin {
 
   login(user: string, password: string): Observable<any> {
     this.sid = ' '; // always call login with reseted SID
-    return this.call('session', 'login', { username: user, password: password, timeout: 900 }, false)
+    return this.call<any>('session', 'login', { username: user, password: password, timeout: 900 }, false)
       .map(s => {
         // save new token on successful login
         this.sid = s && s.ubus_rpc_session;

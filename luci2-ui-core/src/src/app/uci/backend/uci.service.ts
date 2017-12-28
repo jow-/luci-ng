@@ -10,6 +10,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs/observable/forkJoin';
+import { of } from 'rxjs/observable/of';
 
 
 
@@ -19,11 +20,13 @@ export class UciService {
 
   constructor(private _ubus: UbusService, private _http: HttpClient) { }
 
-  getConfig(config: string): Observable<[IUciConfigData, IUciConfigSchema]> {
+  getConfig(config: string): Observable<[IUciConfigData, any]> {
 
     return forkJoin(
-      this._ubus.call('uci', 'get', { config }).map(r => r && <IUciConfigData>r.values || <IUciConfigData>{}),
-      this._http.get<IUciConfigSchema>(`/assets/schemas/${config}.json`));
+      this._ubus.call<IUciConfigData>('uci', 'get', { config }).map(r => r && r.values || {}),
+      this._http.get<{}>(`/schemas/${config}.json`).debug('schema get')
+        .catch(err => of(<IUciConfigSchema>undefined)).debug('schema')
+        ).debug('forkJoin UCI');
 
   }
 

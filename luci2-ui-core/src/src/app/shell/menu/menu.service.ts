@@ -16,7 +16,7 @@ export class MenuService {
   constructor(private _ubus: UbusService) {   }
 
   loadMenu(): Observable<IMenuItem> {
-    return this._ubus.call('luci2.ui', 'menu')
+    return this._ubus.call<any>('luci2.ui', 'menu')
       .map(r => this.toChildArray(this.toChildTree(r.menu)));
   }
 
