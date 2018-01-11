@@ -53,7 +53,7 @@
     "gulp-util": "^3.0.8",
     "http-proxy-middleware": "^0.17.3",
     "lazypipe": "^1.0.1",
-    "require-dir": "^0.3.1",
+    "require-dir": "^0.3.2",
     "stream-series": "^0.1.1",
     "through2": "^2.0.3",
     "wiredep": "^4.0.0"

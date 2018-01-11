@@ -24,8 +24,9 @@ function injectMaterial() {
 	}
 
 	const mdModules = gulp.src(mdPaths, { allowEmpty: true })
-	                      .pipe(buildNgMaterialDefinition());
-	mdModules.pipe($.if(/ngMaterial/, gulp.dest(conf.paths.tmp)));
+	                      .pipe(buildNgMaterialDefinition())
+	                      .pipe($.debug());
+	mdModules.pipe($.if(/ngMaterial/, gulp.dest('.')));
 
 	return gulp.src(path.join(conf.path.mainHtml('tmp', '')))
 		.pipe($.inject(mdModules, { name: 'material', relative:  true }))
@@ -54,7 +55,7 @@ function buildNgMaterialDefinition() {
 		                       conf.closure.post;
 
 		var angularFile = new $.util.File({
-			path:  path.join(process.cwd(), '/ngMaterial.js'),
+			path:  path.join(process.cwd(), conf.paths.tmp, '/ngMaterial.js'),
 			contents: new Buffer(ngMaterialModule)
 		});
 
