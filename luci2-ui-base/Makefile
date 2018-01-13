@@ -15,7 +15,8 @@ PKG_LICENSE_FILES:=
 
 PKG_BUILD_PARALLEL:=1
 
-PKG_BUILD_DEPENDS:=node/host
+PKG_BUILD_DEPENDS:=!LUCI2_USE_HOST_NODE:node/host
+PKG_CONFIG_DEPENDS:=CONFIG_LUCI2_USE_HOST_NODE
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -43,6 +44,16 @@ endef
 
 define Package/luci2-ui-base/description
  Provides the LuCI2 web interface with standard functionality.
+endef
+
+define Package/luci2-ui-base/config
+  config LUCI2_USE_HOST_NODE
+	bool "Use existing nodejs installation on the host system"
+	default n
+	help
+	  This disables the build dependency on the node package from
+	  the OpenWrt packages feed, allowing for faster development
+	  builds.
 endef
 
 define Package/luci2-ui-base/install
