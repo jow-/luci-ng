@@ -6,10 +6,13 @@ import { UbusService } from 'app/ubus/ubus.service';
 
 import { Observable } from 'rxjs/Observable';
 import { OptionData } from 'app/uci/data/option';
-import * as jsonpath from 'jsonpath';
+import { jsonPathFactory } from 'espression'
 import { ParameterExpansion } from 'app/uci/data/parameterExpansion';
 import { UciModelService } from 'app/uci/uciModel.service';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+
+
+const jsonpath = jsonPathFactory();
 
 /**
  * UbusQueryDef
@@ -63,7 +66,7 @@ export class UbusQueryDef {
 
       this.jsonPath.bind(context, _model),
 
-      (data, path) => (typeof data !== 'object' || !path) ? data : jsonpath.query(data, path)
+      (data, path) => (typeof data !== 'object' || !path) ? data : jsonpath.jsonPath(data, path).values
     );
   }
 }
