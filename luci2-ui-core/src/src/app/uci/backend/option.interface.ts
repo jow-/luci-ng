@@ -2,9 +2,6 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { IUbusQuery } from 'app/ubus/ubus.interface';
-
-
 
 /**
  * Option Schema used by UCI backend
@@ -38,14 +35,13 @@ export interface IUciOptionSchema {
    * Binding to get the list of valid entries from.
    *
    * To bind to UBUS calls use one of the following
-   * @property [ "ubusObject", "ubusMethod", { params }] : to bind to the direct response from ubus
-   * @property  { IUbusQuery } : to define transformations/filtering to apply to the ubus response
+   * @property [ "ubusObject", "ubusMethod", { params }?, "jsonPath?"] : to bind to the direct response from ubus
    *
    * To bind to other UCI data:
    * @property "uciSelector" direct binding
    * @property "uciSelector | /regexPattern/" filtered binding
    */
-  enumBinding?: IUbusQuery | [string, string, { [param: string]: any }] | string;
+  enumBinding?: [string, string, { [param: string]: any }, string ] | string;
 
 
   default?: any;

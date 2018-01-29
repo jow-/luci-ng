@@ -5,7 +5,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { IUbusQuery } from 'app/ubus/ubus.interface';
 import { UbusService } from 'app/ubus/ubus.service';
 
 @Component({
@@ -19,16 +18,11 @@ export class UbusViewerComponent implements OnInit {
   ubusMethod: string;
   ubusParam: string;
 
-  itemAccessor: string;
-  subitemAccessor: string;
-  filterAccessor: string;
-  filterPattern: string;
-  concat: boolean;
-  toArray: string;
+  jsonPath: string;
   autoupdate = false;
 
   ubusResponse: Observable<any>;
-  query: IUbusQuery;
+  query: Array<any>;
   ready = true;
 
   ubusList: Array<string>;
@@ -54,19 +48,7 @@ export class UbusViewerComponent implements OnInit {
 
 
   callUbus() {
-    this.query = {
-      call: [this.ubusObject, this.ubusMethod, JSON.parse(this.ubusParam || '{}')],
-
-      item: this.itemAccessor,
-      subItem: this.subitemAccessor,
-      filterBy: this.filterAccessor,
-      pattern: this.filterPattern,
-
-      concat: this.concat,
-      toArray: this.toArray
-    };
-
-
+    this.query = [this.ubusObject, this.ubusMethod, JSON.parse(this.ubusParam || '{}'), this.jsonPath || '' ];
   }
 
   filterObjects(text) {

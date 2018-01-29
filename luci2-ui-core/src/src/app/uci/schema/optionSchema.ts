@@ -94,8 +94,7 @@ export class OptionSchema {
     this.enum = schema.enum;
 
     if (schema.enumBinding) {
-      if (Array.isArray(schema.enumBinding) ||
-        typeof schema.enumBinding === 'object' && Array.isArray(schema.enumBinding.call))
+      if (Array.isArray(schema.enumBinding))
         this.ubusBinding = new UbusQueryDef(schema.enumBinding);
     }
 

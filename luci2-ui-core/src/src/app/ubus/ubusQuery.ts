@@ -2,7 +2,6 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { IUbusQuery } from './ubus.interface';
 import { PropertyAccessor } from '../shared/propertyAccessor.class';
 import { UbusService } from 'app/ubus/ubus.service';
 
@@ -10,6 +9,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { OptionData } from 'app/uci/data/option';
+import * as jsonpath from 'jsonpath';
 
 /**
  * UbusQueryDef
@@ -21,55 +21,28 @@ export class UbusQueryDef {
 
   /** ubus method and params to use in the call */
   call: [string, string, { [param: string]: any }];
+  service: string;
+  method: string;
+  params: Object;
+  jsonPath: string;
 
-  item: PropertyAccessor;
-  subItem: PropertyAccessor;
-
-  filterBy: PropertyAccessor;
-
-  pattern: RegExp;
-
-  concat: boolean;
-  toArray: string;
   autoupdate = 0;
 
 
 
   /** Parses the definition to create to initialize the query */
-  constructor(def: IUbusQuery | [string, string, { [param: string]: any }]) {
-    let query: IUbusQuery;
+  constructor(def: [string, string, { [param: string]: any }, string]) {
 
-    if (Array.isArray(def)) query = { call: def };
-    else query = def;
+    if (!Array.isArray(def) || def.length < 2 ||
+      typeof def[0] !== 'string' || typeof def[1] !== 'string' ||
+      (def.length >= 2 && def[2] && typeof def[2] !== 'object') ||
+      (def.length >= 3 && typeof def[3] !== 'string'))
+      throw new Error('Ubus Query must be ["service", "method", {params}?, "jsonPathTransform?"]');
 
-    if (Array.isArray(query.call) && query.call.length >= 2 &&
-      typeof query.call[0] === 'string' && typeof query.call[1] === 'string' &&
-      (typeof query.call[2] === 'object' || query.call.length === 2))
-      this.call = query.call;
-    else this.call = null;
-
-
-    // only process non empty strings
-    if (typeof query.item === 'string' && query.item.trim())
-      this.item = new PropertyAccessor(query.item);
-    else this.item = null;
-
-    if (typeof query.subItem === 'string' && query.subItem.trim())
-      this.subItem = new PropertyAccessor(query.subItem);
-    else this.subItem = null;
-
-    if (typeof query.filterBy === 'string' && query.filterBy.trim())
-      this.filterBy = new PropertyAccessor(query.filterBy);
-    else this.filterBy = null;
-
-    if (typeof query.pattern === 'string' && query.pattern.trim())
-      this.pattern = new RegExp(query.pattern);
-    else this.pattern = null;
-
-    this.concat = !!query.concat;
-
-    if (typeof query.toArray === 'string' && query.toArray.trim())
-      this.toArray = query.toArray === 'key' ? 'key' : 'value';
+    this.service = def[0];
+    this.method = def[1];
+    this.params = def.length > 2 ? def[2] : {};
+    this.jsonPath = def.length > 3 ? def[3].trim() : null;
 
   }
 
@@ -77,89 +50,10 @@ export class UbusQueryDef {
 
   /** Applies transformations to the input data */
   transform(data: Object | Array<any>): any {
-    const resultObject = {};
-    let resultArray = [];
 
-    if (typeof data !== 'object') return data;
+    if (typeof data !== 'object' || !this.jsonPath) return data;
 
-
-    // select data member
-    if (this.item) data = this.item.get(data);
-
-
-
-    // Check if additional Filter and transform value are needed (can only transform array or object)
-    if (!this.subItem && !this.pattern) return data;
-
-
-    // transform array items
-    if (Array.isArray(data)) {
-
-      if (this.pattern)
-        data = data.filter(value => {
-          if (typeof value === 'object') {
-            if (this.filterBy) value = this.filterBy.get(value);
-            else if (this.subItem) value = this.subItem.get(value);
-          }
-
-          if (typeof value !== 'string') return false;
-
-          return this.pattern.test(value);
-        });
-      if (Array.isArray(data))
-        data = data.map(value => {
-          if (this.subItem)
-            value = this.subItem.get(value);
-          if (this.concat)
-            resultArray = resultArray.concat(this._toArray(value));
-          else if (this.toArray)
-            resultArray.push(this._toArray(value));
-
-        });
-
-      return resultArray;
-    }
-
-    // tranform object properties
-
-
-    for (const key in data) {
-      if (!data.hasOwnProperty(key)) continue;
-      let value = data[key], filter: any;
-
-      if (typeof value === 'object') {
-        if (this.subItem) value = this.subItem.get(value);
-
-        if (this.filterBy) filter = this.filterBy.get(value);
-        else filter = value;
-      }
-
-      if (this.pattern && typeof filter === 'string' && this.pattern.test(filter) || !this.pattern) {
-        if (this.concat)
-          resultArray = resultArray.concat(this._toArray(value));
-        else if (this.toArray)
-          resultArray.push(this._toArray(value));
-        else resultObject[key] = value;
-      }
-    }
-
-    return (this.toArray || this.concat) ? resultArray : resultObject;
-  }
-
-  private _toArray(obj: Object): Array<any> {
-    const result = [];
-
-    if (Array.isArray(obj)) return obj;
-    if (typeof obj !== 'object') return [obj];
-    for (const key in obj) {
-      if (!obj.hasOwnProperty(key)) continue;
-
-      if (this.toArray === 'key')
-        result.push(key);
-      else result.push(obj[key]);
-    }
-
-    return result;
+    return jsonpath.query(data, this.jsonPath);
   }
 
 }
