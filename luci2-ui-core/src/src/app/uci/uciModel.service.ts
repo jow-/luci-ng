@@ -18,9 +18,9 @@ import { forkJoin } from 'rxjs/observable/forkJoin';
 import { OptionData } from 'app/uci/data/option';
 import { UciSelector } from './uciSelector.class';
 import { IUciConfigData } from 'app/uci/backend/config.interface';
-import * as jsonpath from 'jsonpath';
+import { jsonPathFactory } from 'espression';
 
-
+const jsonpath = jsonPathFactory();
 /**
  * UciModelService
  * Is an object that acts as the glue layer between the data model (Config/Section/Option)
@@ -70,10 +70,10 @@ export class UciModelService {
     // once we have the config data, return the observable of the selected option
     return this.loadConfig(selector.config || context.section.config.schema.name).pipe(
       map(d => {
-        const query = jsonpath.query(store, selector.jsonPath, multiple ? undefined : 1);
+        const query = jsonpath.jsonPath(store, selector.jsonPath).values;
         if (multiple) {
           // TODO: reemit on change
-          return of(query.map( o => selector.option ? o.value : o));
+          return of(query.map(o => selector.option ? o.value : o));
 
         } else {
           if (!query || !query.length) return of('');

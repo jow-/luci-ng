@@ -23,7 +23,7 @@
     "@angular/router": "^5.2.2",
     "@types/jsonpath": "^0.2.0",
     "core-js": "^2.5.3",
-    "jsonpath": "^1.0.0",
+    "espression": "0.0.4",
     "rxjs": "^5.5.6",
     "web-animations-js": "^2.3.1",
     "zone.js": "^0.8.20"
