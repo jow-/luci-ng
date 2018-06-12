@@ -3,13 +3,13 @@
  * Licensed under the MIT license.
  */
 import { UbusService } from 'app/ubus/ubus.service';
-
-import { Observable } from 'rxjs/Observable';
 import { OptionData } from 'app/uci/data/option';
-import { jsonPathFactory } from 'espression'
 import { ParameterExpansion } from 'app/uci/data/parameterExpansion';
 import { UciModelService } from 'app/uci/uciModel.service';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { jsonPathFactory } from 'espression';
+import { combineLatest, empty, throwError } from 'rxjs';
+import { delay, repeatWhen, retryWhen } from 'rxjs/operators';
+
 
 
 const jsonpath = jsonPathFactory();
@@ -59,10 +59,11 @@ export class UbusQueryDef {
 
     return combineLatest(
       _ubus.call(this.service, this.method, this.params)
-        .repeatWhen(o =>
-          this.autoupdate ? o.delay(this.autoupdate) : Observable.empty())
-        .retryWhen(o =>
-          this.autoupdate ? o.delay(this.autoupdate) : Observable.throw(o)),
+        .pipe(
+          repeatWhen(o =>
+            this.autoupdate ? o.pipe(delay(this.autoupdate)) : empty()),
+          retryWhen(o =>
+            this.autoupdate ? o.pipe(delay(this.autoupdate)) : throwError(o))),
 
       this.jsonPath.bind(context, _model),
 

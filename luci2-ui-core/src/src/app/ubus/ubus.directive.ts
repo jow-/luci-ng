@@ -3,25 +3,12 @@
  * Licensed under the MIT license.
  */
 
-import 'rxjs/add/operator/repeatWhen';
-import 'rxjs/add/observable/empty';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/do';
-
-import {
-  ChangeDetectorRef,
-  Directive,
-  Input,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-  TemplateRef,
-  ViewContainerRef,
-} from '@angular/core';
-import { UbusService } from './ubus.service';
-import { Subscription } from 'rxjs/Subscription';
+import { ChangeDetectorRef, Directive, Input, OnChanges, OnDestroy, SimpleChanges, TemplateRef, ViewContainerRef } from '@angular/core';
 import { UbusQueryDef } from 'app/ubus/ubusQuery';
 import { UciModelService } from 'app/uci/uciModel.service';
+import { Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { UbusService } from './ubus.service';
 
 
 export class UbusContext {
@@ -80,8 +67,8 @@ export class UbusDirective implements OnChanges, OnDestroy {
 
     if (this._queryDef) {
       this._context.count = 0;
-      this._subscription = this._queryDef.bind(null, this._model, this._ubus)
-        .do(d => this._context.count++)
+      this._subscription = this._queryDef.bind(null, this._model, this._ubus).pipe(
+        tap(d => this._context.count++))
         .subscribe(
         r => {
           this._context.result = this._context.$implicit = r;

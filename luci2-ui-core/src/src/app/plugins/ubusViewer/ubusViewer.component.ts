@@ -4,8 +4,8 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { UbusService } from 'app/ubus/ubus.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-ubus-viewer',

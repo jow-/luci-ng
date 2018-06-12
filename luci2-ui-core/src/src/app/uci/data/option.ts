@@ -2,10 +2,9 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { OptionSchema } from '../schema/optionSchema';
 import { SectionData } from 'app/uci/data/section';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { OptionSchema } from '../schema/optionSchema';
 
 
 export class OptionData {

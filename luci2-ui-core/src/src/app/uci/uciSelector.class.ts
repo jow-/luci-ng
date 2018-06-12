@@ -60,7 +60,7 @@ export class UciSelector {
     this.jsonPath = '$';
     if (this.config) this.jsonPath += `.${this.config}`;
     if (this.sectionType) this.jsonPath += `['@${this.sectionType}'][${this.match}]`;
-    else if(this.sectionName) this.jsonPath += `.${this.sectionName}`;
+    else if (this.sectionName) this.jsonPath += `.${this.sectionName}`;
     if (this.option) this.jsonPath += `.${this.option}`;
     else this.jsonPath += `['.name']`;
 

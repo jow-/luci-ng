@@ -2,12 +2,10 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { UciSelector } from 'app/uci/uciSelector.class';
 import { OptionData } from 'app/uci/data/option';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
 import { UciModelService } from 'app/uci/uciModel.service';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { UciSelector } from 'app/uci/uciSelector.class';
+import { combineLatest, Observable, of } from 'rxjs';
 
 
 export class ParameterExpansion {

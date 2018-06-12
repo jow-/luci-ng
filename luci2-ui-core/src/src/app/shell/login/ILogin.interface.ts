@@ -3,7 +3,7 @@
  * Licensed under the MIT license.
  */
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 export interface ILogin {
   login(username: string, password: string): Observable<any>

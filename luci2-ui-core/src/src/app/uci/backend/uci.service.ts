@@ -3,16 +3,14 @@
  * Licensed under the MIT license.
  */
 
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { IUciAddSectionParam, IUciAddSectionRet, IUciDeleteParam, IUciSetParam } from 'app/uci/backend/actions.interface';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { debug } from 'app/shared/observable.debug';
 import { UbusService } from '../../ubus/ubus.service';
 import { IUciConfigData, IUciConfigSchema } from './config.interface';
-
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { HttpClient } from '@angular/common/http';
-import { forkJoin } from 'rxjs/observable/forkJoin';
-import { of } from 'rxjs/observable/of';
-import { IUciAddSectionParam, IUciAddSectionRet, IUciSetParam, IUciDeleteParam } from 'app/uci/backend/actions.interface';
-
 
 
 
@@ -24,17 +22,19 @@ export class UciService {
   getConfig(config: string): Observable<[IUciConfigData, any]> {
 
     return forkJoin(
-      this._ubus.call<IUciConfigData>('uci', 'get', { config }).map(r => r && r.values || {}),
-      this._http.get<{}>(`/schemas/${config}.json`).debug('schema get')
-        .catch(err => of(<IUciConfigSchema>undefined)).debug('schema')
-        ).debug('forkJoin UCI');
+      this._ubus.call<IUciConfigData>('uci', 'get', { config }).pipe(map(r => r && r.values || {})),
+      this._http.get<{}>(`/schemas/${config}.json`).pipe(
+        debug('schema get'),
+        catchError(err => of(<IUciConfigSchema>undefined)),
+        debug('schema'))
+    ).pipe(debug('forkJoin UCI'));
 
   }
 
   /** Adds a section and returns its name */
   addSection(param: IUciAddSectionParam): Observable<string> {
-    return this._ubus.call<IUciAddSectionRet>('uci', 'add', param)
-      .map(r => r && r.section || null);
+    return this._ubus.call<IUciAddSectionRet>('uci', 'add', param).pipe(
+      map(r => r && r.section || null));
   }
 
   set(param: IUciSetParam): Observable<any> {

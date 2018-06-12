@@ -3,18 +3,14 @@
  * Licensed under the MIT license.
  */
 
-import './observable.debug';
-import 'rxjs/add/operator/delay';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/retryWhen';
-import 'rxjs/add/operator/scan';
-import 'rxjs/add/operator/catch';
 
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
-
+import { debug } from 'app/shared/observable.debug';
+import { Observable } from 'rxjs';
+import { catchError, delay, map, retryWhen, scan } from 'rxjs/operators';
 import { IJsonrpcRequest, IJsonrpcResponse } from './jsonrpc.interface';
+
 
 
 export class JsonrpcRequest implements IJsonrpcRequest {
@@ -69,26 +65,27 @@ export class JsonrpcService {
     return this._http.post<IJsonrpcResponse>(this._url, reqData, { headers: JsonrpcService._headers })
 
       // retry on http errors a maximun of {_retryCount} times waiting {_retrayDelay} milliseconds
-      .retryWhen(o => o
-        .scan((acc, e) => {
-          if (acc >= this._retryCount) throw e;
-          return ++acc;
-        }, 0)
-        .delay(this._retrayDelay)
-      )
+      .pipe(
+        retryWhen(o => o.pipe(
+          scan((acc, e) => {
+            if (acc >= this._retryCount) throw e;
+            return ++acc;
+          }, 0),
+          delay(this._retrayDelay)
+        )),
 
-      // rethrow http errors wrapped in IJsonrpcError format, to unify response
-      .catch((e: HttpErrorResponse) => {
-        throw { code: e.status, message: e.statusText, data: e.error, layer: 'http' };
-      })
+        // rethrow http errors wrapped in IJsonrpcError format, to unify response
+        catchError((e: HttpErrorResponse) => {
+          throw { code: e.status, message: e.statusText, data: e.error, layer: 'http' };
+        }),
 
-      // check if there is an inner jsonrpc error to rethrow; if not emit result
-      .map((r: IJsonrpcResponse) => {
-        if (r.error) throw { ...r.error, layer: 'jsonrpc' };
-        return r.result;
-      })
+        // check if there is an inner jsonrpc error to rethrow; if not emit result
+        map((r: IJsonrpcResponse) => {
+          if (r.error) throw { ...r.error, layer: 'jsonrpc' };
+          return r.result;
+        }),
 
-      .debug('jsonrpc');
+        debug('jsonrpc'));
 
   }
 

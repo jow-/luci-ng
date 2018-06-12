@@ -3,9 +3,8 @@
  * Licensed under the MIT license.
  */
 
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { OptionData } from '../data/option';
-import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 /** Emmits boolean each time a dependant value changes, stating the new status of the dependency */
 export class UciDependency {

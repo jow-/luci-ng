@@ -4,11 +4,12 @@
  */
 
 import { Injectable } from '@angular/core';
-
-
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { UbusService } from '../../ubus/ubus.service';
 import { IMenu, IMenuItem } from './menu.interface';
-import { Observable } from 'rxjs/Observable';
+
+
 
 @Injectable()
 export class MenuService {
@@ -16,8 +17,8 @@ export class MenuService {
   constructor(private _ubus: UbusService) {   }
 
   loadMenu(): Observable<IMenuItem> {
-    return this._ubus.call<any>('luci2.ui', 'menu')
-      .map(r => this.toChildArray(this.toChildTree(r.menu)));
+    return this._ubus.call<any>('luci2.ui', 'menu').pipe(
+      map(r => this.toChildArray(this.toChildTree(r.menu))));
   }
 
 

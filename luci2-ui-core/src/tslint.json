@@ -4,7 +4,8 @@
     "tslint-consistent-codestyle"
   ],
   "rulesDirectory": [
-    "node_modules/codelyzer"
+    "node_modules/codelyzer",
+    "node_modules/rxjs-tslint"
   ],
   "rules": {
     "arrow-return-shorthand": true,
@@ -14,7 +15,7 @@
     "curly": false,
     "eofline": true,
     "forin": true,
-    "import-blacklist": [true, "rxjs","rxjs/Rx", "@angular/material"],
+    "import-blacklist": [true, "rxjs/Rx", "rxjs/add/operator", "@angular/material"],
     "import-spacing": true,
     "indent": [true, "spaces", 2],
     "interface-over-type-literal": true,
@@ -246,6 +247,14 @@
       }
     ],
     "no-static-this": true,
-    "no-unnecessary-else": true
+    "no-unnecessary-else": true,
+
+
+    // rxjs-tslint
+
+    "rxjs-collapse-imports": true,
+    "rxjs-pipeable-operators-only": true,
+    "rxjs-no-static-observable-methods": true,
+    "rxjs-proper-imports": true
   }
 }

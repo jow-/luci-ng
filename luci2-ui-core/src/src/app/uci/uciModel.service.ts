@@ -3,22 +3,19 @@
  * Licensed under the MIT license.
  */
 
-import { ConfigData } from './data/config';
-import { UciService } from './backend/uci.service';
-
 import { Injectable } from '@angular/core';
-
-import { Observable } from 'rxjs/Observable';
-import { map } from 'rxjs/operators/map';
-import { exhaust } from 'rxjs/operators/exhaust';
-import { of } from 'rxjs/observable/of';
-import { _throw } from 'rxjs/observable/throw';
-import { SectionData } from 'app/uci/data/section';
-import { forkJoin } from 'rxjs/observable/forkJoin';
-import { OptionData } from 'app/uci/data/option';
-import { UciSelector } from './uciSelector.class';
+import { debug } from 'app/shared/observable.debug';
 import { IUciConfigData } from 'app/uci/backend/config.interface';
+import { OptionData } from 'app/uci/data/option';
+import { SectionData } from 'app/uci/data/section';
 import { jsonPathFactory } from 'espression';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { exhaust, map, tap } from 'rxjs/operators';
+import { UciService } from './backend/uci.service';
+import { ConfigData } from './data/config';
+import { UciSelector } from './uciSelector.class';
+
+
 
 const jsonpath = jsonPathFactory();
 /**
@@ -52,13 +49,13 @@ export class UciModelService {
 
     // validate selector
     if (selector.invalid)
-      return _throw('Invalid selector');
+      return throwError('Invalid selector');
 
     if (!selector.config && !context)
-      return _throw('No Config in selector and no context supplied');
+      return throwError('No Config in selector and no context supplied');
 
     if (!selector.sectionName && !selector.sectionType && !context)
-      return _throw('No Section Name/Type in selector and no context supplied');
+      return throwError('No Section Name/Type in selector and no context supplied');
 
     // TODO: make Sections emmit on change
 
@@ -75,11 +72,9 @@ export class UciModelService {
           // TODO: reemit on change
           return of(query.map(o => selector.option ? o.value : o));
 
-        } else {
-          if (!query || !query.length) return of('');
-          return query[0].asObservable();
         }
-
+        if (!query || !query.length) return of('');
+        return query[0].asObservable();
       }
       ),
       // emmit inner observable until it finishes
@@ -126,11 +121,12 @@ export class UciModelService {
       // then add sections and preserve new name
       sections = config.getSectionsByAction(1);
       for (const section of sections) {
-        calls.push(this._uci.addSection(section.getAddedParams()).do(name => section.name = section.oldName = name));
+        calls.push(this._uci.addSection(section.getAddedParams()).pipe(
+          tap(name => section.name = section.oldName = name)));
       }
     }
 
-    forkJoin(calls).debug('save').subscribe(
+    forkJoin(calls).pipe(debug('save')).subscribe(
       d => console.log(d),
       e => console.log(e),
       () => console.log('complete')

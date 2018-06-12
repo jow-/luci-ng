@@ -3,19 +3,17 @@
  * Licensed under the MIT license.
  */
 
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/observable/throw';
-
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable } from 'rxjs/Observable';
-
+import { Observable } from 'rxjs';
+import { catchError, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
 import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
 import { JsonrpcService } from '../shared/jsonrpc.service';
+import { debug } from 'app/shared/observable.debug';
 import { ILogin } from '../shell/login/ILogin.interface';
 import { LoginComponent } from '../shell/login/login.component';
+
 
 @Injectable()
 export class UbusService implements ILogin {
@@ -44,31 +42,31 @@ export class UbusService implements ILogin {
   call<T>(service: string, method: string, params?: object, autologin = true): Observable<T> {
     // cache params in object, so that SID can be changed later and be seen by resuscription holding a reference
     const jsonrpcParams = [this.sid, service, method, params || {}];
-    return this._jsonrpc.request('call', jsonrpcParams)
+    return this._jsonrpc.request('call', jsonrpcParams).pipe(
 
 
       // all ubus calls return an array in the response in the form: [ status, response ]
       // for successfull responses (status=0) return directly the response
       // for errors throw corresponding error wrapped in IJsonrpcError
-      .map(r => {
+      map(r => {
         if (!Array.isArray(r)) throw { code: 0, message: 'Invalid response format', layer: 'js' };
         if (r[0] !== 0) throw { code: r[0], layer: 'ubus', data: r[1] };
         return r[1];
-      })
-      .debug('ubus pre retry')
+      }),
+      debug('ubus pre retry'),
       // if there is "accessDenied" login and retry
-      .retryWhen(o => o.mergeMap(e =>
+      retryWhen(o => o.pipe(mergeMap(e =>
         autologin && e.layer === 'jsonrpc' && e.code === JsonrpcErrorCodes.AccessDenied ?
-          this.loginDialog().do(s =>
+          this.loginDialog().pipe(tap(s =>
             jsonrpcParams[0] = this.sid
-          ).debug('loginDialog') : Observable.throw(e)
-      ))
-      .catch(e => {
+          ), debug('loginDialog')) : Observable.throw(e)
+      ))),
+      catchError(e => {
         this._snackbar.open(`Error calling ${service} ${method}: ${e.message}`, 'close', { duration: 5000 });
         throw e;
-      })
+      }),
 
-      .debug('ubus');
+      debug('ubus'));
 
   }
 
@@ -81,20 +79,20 @@ export class UbusService implements ILogin {
 
     if (!this._dialogRef) this._dialogRef = this._dialog.open(LoginComponent, opts);
 
-    return this._dialogRef.afterClosed().do(s => { this._dialogRef = null; });
+    return this._dialogRef.afterClosed().pipe(tap(s => { this._dialogRef = null; }));
 
   }
 
   login(user: string, password: string): Observable<any> {
     this.sid = ' '; // always call login with reseted SID
-    return this.call<any>('session', 'login', { username: user, password: password, timeout: 900 }, false)
-      .map(s => {
+    return this.call<any>('session', 'login', { username: user, password: password, timeout: 900 }, false).pipe(
+      map(s => {
         // save new token on successful login
         this.sid = s && s.ubus_rpc_session;
         window.localStorage.setItem('ubus-sid', this.sid);
         return this.sid;
-      })
-      .debug('login');
+      }),
+      debug('login'));
   }
 
   declare<T>(service: string, method: string, paramNames?: Array<string>) {
