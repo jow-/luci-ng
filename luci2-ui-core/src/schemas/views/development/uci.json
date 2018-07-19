@@ -1,0 +1,24 @@
+{
+    "type": "form",
+    "context": {
+        "configs=": "ubus('uci', 'configs').configs"
+    },
+    "bind": "$model",
+    "content": [{
+            "type": "autocomplete",
+            "bind": "$model.config",
+            "options": {
+                "enum=": "configs"
+            }
+        },
+        {
+            "type": "uci-config",
+            "if": "configs.indexOf($model.config)>=0",
+            "options": {
+                "config=": "$model.config"
+            }
+        }
+
+    ]
+
+}

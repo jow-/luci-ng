@@ -18,9 +18,14 @@
             "polyfills": "src/polyfills.ts",
             "assets": [
               {
-                "glob": "**/*",
+                "glob": "*.json",
                 "input": "schemas",
                 "output": "/schemas"
+              },
+              {
+                "glob": "**/*.json",
+                "input": "schemas/views",
+                "output": "/views"
               },
               "src/assets",
               "src/favicon.ico"

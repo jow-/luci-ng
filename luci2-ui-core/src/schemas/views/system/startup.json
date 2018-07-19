@@ -1,0 +1,38 @@
+{
+  "type": "tabs",
+
+  "options": {
+    "tabLabels": ["Init Scripts", "Local Startup"]
+  },
+  "content": [{
+      "type": "table",
+      "context": {
+        "data=": "ubus('luci2.system', 'init_list')"
+      },
+      "options": {
+        "colKeys": ["start", "stop", "name", "enabled"],
+        "colHeaders": ["Start Priority", "Stop Priority", "Name", "Enabled"],
+        "dataSource=": "data.initscripts",
+        "filterBy": true,
+        "actions": [
+          {
+            "icon": "reload",
+            "label": "Restart",
+            "action": "ubus('luci2.system','init_action', { name: $data.name, action: 'restart'})"
+          },
+          {
+            "icon": "play",
+            "label": "Start",
+            "action": "ubus('luci2.system','init_action', { name: $data.name, action: 'start'})"
+          }, {
+            "icon": "stop",
+            "label": "Stop",
+            "action": "ubus('luci2.system','init_action', { name: $data.name, action: 'stop'})"
+          }
+        ]
+
+      }
+    }
+
+  ]
+}

@@ -1,0 +1,49 @@
+{
+    "type": "tabs",
+
+    "options": {
+        "tabLabels": ["Password", "SSH Access", "SSH Keys"]
+    },
+
+    "content": [{
+            "type": "form",
+            "content": [{
+                "type": "input",
+                "bind": "$model.password",
+                "options": {
+                    "title": "Password",
+                    "required": true
+                }
+            }, {
+                "type": "input",
+                "bind": "$model.repassword",
+                "validate": "$value === $model.password",
+                "options": {
+                    "title": "Reenter Password"
+                }
+
+            }, {
+                "type": "button",
+                "bind": "$model.click",
+                "options": {
+                    "title": "Save",
+                    "click": "ubus()"
+                }
+            }]
+        },{
+          "type": "uci-section",
+          "options": {
+            "sectionName": "system.ntp"
+          }
+        },
+        {
+            "type": "table",
+            "options": {
+                "dataSource=": "map(ubus('luci2.system', 'sshkeys_get').keys, 'm=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec($value),{row: $value, key: m[4], type: m[1], hash: m[2], ending: m[3]}')",
+                "colKeys": ["key","type", "ending"],
+                "colHeaders": ["Remote", "Type", "Hash End"]
+            }
+        }
+    ]
+
+}

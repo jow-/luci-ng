@@ -1,0 +1,52 @@
+{
+  "type": "form",
+
+  "content": [
+    {
+      "type": "autocomplete",
+      "bind": "$model.service",
+      "options": {
+        "title": "Service",
+        "description": "Ubus service",
+        "enum=": "ubusList()"
+      }
+    },
+    {
+      "type": "autocomplete",
+      "bind": "$model.method",
+      "options": {
+        "title": "Method",
+        "description": "Ubus method",
+        "enum=": "Object.keys(ubusList([$model.service])[$model.service] || {})"
+      }
+    },
+    {
+      "type": "input",
+      "bind": "$model.params",
+      "options": {
+        "title": "Method",
+        "description=": "JSON.stringify(ubusList([$model.service])[$model.service][$model.method])"
+      }
+    },
+    {
+    "type": "button",
+    "bind": "$model.refresh",
+    "options": {
+      "title": "Execute",
+      "click": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {})"
+      }
+    },
+    {
+    "type": "code",
+    "options": {
+      "text=": "`ubus('${$model.service}', '${$model.method}', ${JSON.stringify(JSON.parse($model.params.trim()) || {})})`"
+      }
+    },
+    {
+    "type": "code",
+    "options": {
+      "text=": "JSON.stringify($model.refresh, null, 4)"
+      }
+    }
+  ]
+}

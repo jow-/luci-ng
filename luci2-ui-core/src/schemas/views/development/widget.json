@@ -1,0 +1,23 @@
+{
+  "type": "form",
+
+  "content": [{
+      "type": "input",
+      "bind": "$model.password",
+      "options": {
+        "title": "Password",
+        "description": "Enter password",
+        "required": true
+      }
+    },
+    {
+      "type": "input",
+      "bind": "$model.repassword",
+      "validate": "$value && $value == $model.password",
+      "options": {
+        "title": "Repeat Password",
+        "description": "Re-enter password"
+      }
+    }
+  ]
+}
