@@ -1,8 +1,0 @@
-
-<mat-select placeholder="Config file" [(ngModel)]="selectedConfig" name="config" *appUbus="['uci', 'configs']; let configs">
-  <mat-option *ngFor="let config of configs.configs" [value]="config">{{config}}</mat-option>
-
-</mat-select>
-
-<uci-form [configName]="selectedConfig"></uci-form>
-
