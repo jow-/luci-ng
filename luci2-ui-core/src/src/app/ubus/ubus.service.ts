@@ -6,7 +6,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
 import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
 import { JsonrpcService } from '../shared/jsonrpc.service';
@@ -59,7 +59,7 @@ export class UbusService implements ILogin {
         autologin && e.layer === 'jsonrpc' && e.code === JsonrpcErrorCodes.AccessDenied ?
           this.loginDialog().pipe(tap(() =>
             jsonrpcParams[0] = this.sid
-          ), debug('loginDialog')) : Observable.throw(e)
+          ), debug('loginDialog')) : throwError(e)
       ))),
       catchError(e => {
         this._snackbar.open(`Error calling ${service} ${method}: ${e.message}`, 'close', { duration: 5000 });
