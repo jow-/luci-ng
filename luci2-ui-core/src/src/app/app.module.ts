@@ -16,9 +16,10 @@ import { ShellModule } from './shell/shell.module';
 import { UbusService } from './ubus/ubus.service';
 import { UciModule } from './uci/module';
 import { MaterialModule } from './material.module';
-import { WidgetsModule, RoutedWidgetComponent } from './widgets';
+import { WidgetsModule } from './widgets';
 import { ViewsResolverService } from './shared/viewsresolver.service';
 import { MenuGuardService } from './shell/menu/menuguard.service';
+import { RoutedWidgetComponent } from 'reactive-json-form-ng';
 
 
 @NgModule({
