@@ -1,0 +1,17 @@
+<mat-card class="stats-card">
+  <div *ngIf="icon" class="stats-icon-container">
+    <mat-icon [svgIcon]="icon" class="stats-icon"></mat-icon>
+  </div>
+
+  <div class="stats-content">
+    <div class="stats-data">
+      <span>{{value}}</span>
+      <span *ngIf="total">/{{total}}</span>
+      <span class="unit">{{unit}}</span>
+    </div>
+    <mat-progress-bar *ngIf="!noGraph" mode="determinate" color="primary" [value]="value/total*100" class="stats-bar"></mat-progress-bar>
+    <h5>{{title}}</h5>
+  </div>
+
+
+</mat-card>

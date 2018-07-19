@@ -1,0 +1,27 @@
+<mat-expansion-panel class="expansion-card" hideToggle [disabled]="!content.length"
+(closed)="gridRow = gridRowClosed || 'auto'" (opened)="gridRow = gridRowOpen || 'auto'">
+  <mat-expansion-panel-header [collapsedHeight]="'95px'" [expandedHeight]="'95px'">
+    <div class="expansion-card-header">
+      <div *ngIf="icon" class="expansion-icon-container">
+        <mat-icon [svgIcon]="icon" class="expansion-icon"></mat-icon>
+      </div>
+
+
+      <div class="expansion-content">
+        <div class="expansion-data">
+          <span>{{value | format:format}}</span>
+          <span *ngIf="total">/{{total | format:format}}</span>
+          <span class="unit">{{unit}}</span>
+        </div>
+        <mat-progress-bar *ngIf="!noGraph" mode="determinate" color="primary" [value]="value/total*100" class="expansion-bar"></mat-progress-bar>
+        <h5>{{title}}</h5>
+      </div>
+    </div>
+  </mat-expansion-panel-header>
+
+  <ng-template matExpansionPanelContent>
+    <ng-container *ngFor="let widgetDef of content" [wdgWidget]="widgetDef" [parentContext]="context"></ng-container>
+
+  </ng-template>
+
+</mat-expansion-panel>

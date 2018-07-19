@@ -1,0 +1,8 @@
+<form novalidate
+      #uciForm="ngForm">
+
+    <uci-section *ngIf="section"
+                 [section]="section" [ngModelGroup]="section.name">
+    </uci-section>
+
+</form>

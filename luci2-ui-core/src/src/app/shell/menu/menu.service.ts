@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import { UbusService } from '../../ubus/ubus.service';
 import { IMenu, IMenuItem } from './menu.interface';
 import { Routes, Route, Router } from '@angular/router';
-import { RoutedWidgetComponent } from '../../widgets';
+import { RoutedWidgetComponent } from 'reactive-json-form-ng';
 import { ViewsResolverService } from '../../shared/viewsresolver.service';
 
 const FIXED_MENU = {
