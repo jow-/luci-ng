@@ -47,7 +47,7 @@ const routes: Routes = [
     FormsModule,
     HttpClientModule,
     ShellModule,
-    RouterModule.forRoot(routes),
+    WidgetsModule,
 
     UciModule,
     MaterialModule

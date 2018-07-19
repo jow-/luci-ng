@@ -15,6 +15,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ShellComponent } from './shell/shell.component';
 import { MaterialModule } from '../material.module';
 import { UciModule } from '../uci/module';
+import { WidgetsModule } from '../widgets';
 
 
 /**
@@ -29,6 +30,9 @@ import { UciModule } from '../uci/module';
   imports: [
     RouterModule,
     BrowserAnimationsModule,
+    RouterModule,
+
+    WidgetsModule,
 
     MaterialModule,
     UciModule
@@ -42,8 +46,11 @@ import { UciModule } from '../uci/module';
   exports: [
     ShellComponent,
   ],
-  providers: [MenuService],
+  providers: [
+    MenuService
+  ],
   entryComponents: [LoginComponent]
 })
 export class ShellModule {
 }
+
