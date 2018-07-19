@@ -8,6 +8,7 @@ export interface IMenuItem {
   title: string;
   tabbed?: boolean;
   view?: string;
+  link: string;
 
   [extra: string]: any;
 

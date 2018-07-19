@@ -4,21 +4,45 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UbusService } from '../../ubus/ubus.service';
 import { IMenu, IMenuItem } from './menu.interface';
+import { Routes, Route, Router } from '@angular/router';
+import { RoutedWidgetComponent } from '../../widgets';
+import { ViewsResolverService } from '../../shared/viewsresolver.service';
 
+const FIXED_MENU = {
+  'development': { title: 'Development', index: 999 },
+  'development/ubus':
+    { title: 'Ubus tester', view: 'development/ubus', index: 0 },
+  'development/uci':
+    { title: 'UCI editor', view: 'development/uci', index: 1 },
+  'development/widget':
+    { title: 'Widget', view: 'development/widget', index: 2 }
+};
 
 
 @Injectable()
 export class MenuService {
 
-  constructor(private _ubus: UbusService) {   }
+  private _routes: Routes = [
+  ];
+  private _menu: IMenuItem;
+
+  constructor(private _ubus: UbusService, private _router: Router) { }
 
   loadMenu(): Observable<IMenuItem> {
+    if (this._menu) return of(this._menu);
+
     return this._ubus.call<any>('luci2.ui', 'menu').pipe(
-      map(r => this.toChildArray(this.toChildTree(r.menu))));
+      map(r => this._toChildArray(this._toChildTree(Object.assign(r.menu, FIXED_MENU)))),
+      map(root => {
+        this._router.resetConfig(this._routes);
+
+        this._menu = root;
+        return root;
+      }));
   }
 
 
@@ -28,8 +52,8 @@ export class MenuService {
    *
    * @param menu
    */
-  toChildTree(menu: IMenu): IMenuItem {
-    const root: IMenuItem = { title: 'root', index: 0, childs: {} };
+  private _toChildTree(menu: IMenu): IMenuItem {
+    const root: IMenuItem = { title: 'root', index: 0, link: '/', childs: {} };
     let node: IMenuItem;
 
 
@@ -63,14 +87,17 @@ export class MenuService {
    * Children are sorted according the 'index' property
    * @param node
    */
-  toChildArray(node: IMenuItem): IMenuItem {
+  private _toChildArray(node: IMenuItem): IMenuItem {
     const childs: IMenuItem[] = [];
 
-    if (!node.childs) return node;
+    if (!node.childs) {
+      this._addRoute(node);
+      return node;
+    }
 
     for (const key in node.childs)
       if (node.childs.hasOwnProperty(key)) {
-        this.toChildArray(node.childs[key]);
+        this._toChildArray(node.childs[key]);
         childs.push(node.childs[key]);
       }
 
@@ -82,9 +109,26 @@ export class MenuService {
       delete node.childs;
     }
 
+    this._addRoute(node);
+
     return node;
 
   }
 
+  private _addRoute(item: IMenuItem) {
+
+    const route: Route = { path: item.link.substr(1) || '' };
+
+    if (item.childs) {
+      route.redirectTo = item.childs[0].link;
+      route.pathMatch = 'full';
+    } else {
+      route.component = RoutedWidgetComponent;
+      route.resolve = { widgetDef: ViewsResolverService };
+      route.data = { view: item.view };
+    }
+
+    this._routes.push(route);
+  }
 
 }
