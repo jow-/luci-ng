@@ -5,7 +5,7 @@
 
 import { Directive, Input } from '@angular/core';
 import { NG_VALIDATORS, AbstractControl, Validator } from '@angular/forms';
-import { OptionSchema } from 'app/uci/schema/optionSchema';
+import { OptionSchema } from '../schema/optionSchema';
 
 @Directive({
   selector: '[uciSchema]',

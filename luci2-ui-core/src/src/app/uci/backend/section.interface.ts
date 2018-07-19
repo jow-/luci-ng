@@ -3,7 +3,7 @@
  * Licensed under the MIT license.
  */
 import { IUciOptionSchema } from './option.interface';
-import { SectionData } from 'app/uci/data/section';
+import { SectionData } from '../data/section';
 
 
 

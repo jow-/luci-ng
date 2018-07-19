@@ -28,7 +28,7 @@ export class ChipArrayValueAccessorDirective implements ControlValueAccessor {
   onTouched = () => { };
 
 
-  writeValue(obj: any): void { }
+  writeValue(_obj: any): void { }
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }
@@ -37,7 +37,7 @@ export class ChipArrayValueAccessorDirective implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState?(isDisabled: boolean): void { }
+  setDisabledState?(_isDisabled: boolean): void { }
 
 
 }

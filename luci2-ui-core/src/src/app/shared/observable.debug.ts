@@ -5,7 +5,7 @@
 
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { environment } from './../../environments/environment';
+import { environment } from 'environments/environment';
 
 
 

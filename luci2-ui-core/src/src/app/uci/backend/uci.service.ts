@@ -5,10 +5,10 @@
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { IUciAddSectionParam, IUciAddSectionRet, IUciDeleteParam, IUciSetParam } from 'app/uci/backend/actions.interface';
+import { IUciAddSectionParam, IUciAddSectionRet, IUciDeleteParam, IUciSetParam } from './actions.interface';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { debug } from 'app/shared/observable.debug';
+import { debug } from '../../shared/observable.debug';
 import { UbusService } from '../../ubus/ubus.service';
 import { IUciConfigData, IUciConfigSchema } from './config.interface';
 
@@ -25,7 +25,7 @@ export class UciService {
       this._ubus.call<IUciConfigData>('uci', 'get', { config }).pipe(map(r => r && r.values || {})),
       this._http.get<{}>(`/schemas/${config}.json`).pipe(
         debug('schema get'),
-        catchError(err => of(<IUciConfigSchema>undefined)),
+        catchError(() => of(<IUciConfigSchema>undefined)),
         debug('schema'))
     ).pipe(debug('forkJoin UCI'));
 

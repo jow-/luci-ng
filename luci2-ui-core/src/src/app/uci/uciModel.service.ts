@@ -4,10 +4,10 @@
  */
 
 import { Injectable } from '@angular/core';
-import { debug } from 'app/shared/observable.debug';
-import { IUciConfigData } from 'app/uci/backend/config.interface';
-import { OptionData } from 'app/uci/data/option';
-import { SectionData } from 'app/uci/data/section';
+import { debug } from '../shared/observable.debug';
+import { IUciConfigData } from './backend/config.interface';
+import { OptionData } from './data/option';
+import { SectionData } from './data/section';
 import { jsonPathFactory } from 'espression';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { exhaust, map, tap } from 'rxjs/operators';
@@ -66,7 +66,7 @@ export class UciModelService {
 
     // once we have the config data, return the observable of the selected option
     return this.loadConfig(selector.config || context.section.config.schema.name).pipe(
-      map(d => {
+      map(() => {
         const query = jsonpath.jsonPath(store, selector.jsonPath).values;
         if (multiple) {
           // TODO: reemit on change

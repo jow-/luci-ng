@@ -8,7 +8,10 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -18,6 +21,10 @@
     ]
   },
   "angularCompilerOptions": {
-    "preserveWhitespaces": false
+    "preserveWhitespaces": false,
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "strictInjectionParameters": true,
+    "fullTemplateTypeCheck": true
   }
 }

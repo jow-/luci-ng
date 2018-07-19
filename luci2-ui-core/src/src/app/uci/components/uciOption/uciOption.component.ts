@@ -10,8 +10,8 @@ import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectorRef } from '
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { UbusService } from 'app/ubus/ubus.service';
-import { UciModelService } from 'app/uci/uciModel.service';
+import { UbusService } from '../../../ubus/ubus.service';
+import { UciModelService } from '../../uciModel.service';
 
 /**
  * uciOption: renders an uci Option object using the correct input control

@@ -5,9 +5,9 @@
 import { SectionSchema } from '../schema/sectionSchema';
 import { OptionData } from './option';
 
-import { IUciSectionSchema, IUciSectionData } from 'app/uci/backend/section.interface';
-import { IUciAddSectionParam, IUciSetParam } from 'app/uci/backend/actions.interface';
-import { ConfigData } from 'app/uci/data/config';
+import { IUciSectionSchema, IUciSectionData } from '../backend/section.interface';
+import { IUciAddSectionParam, IUciSetParam } from '../backend/actions.interface';
+import { ConfigData } from './config';
 
 /**
  * SectionData: object that models an `uci section` data.
@@ -98,6 +98,8 @@ export class SectionData {
         param.values[opt.schema.name] = opt.uciValue;
       }
     }
+
+    return param;
   }
 
   getModifiedParams(): IUciSetParam {

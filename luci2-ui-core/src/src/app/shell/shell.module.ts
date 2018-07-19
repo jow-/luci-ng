@@ -13,8 +13,8 @@ import { LoginComponent } from './login/login.component';
 import { NavItemComponent } from './nav-menu/nav-item.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ShellComponent } from './shell/shell.component';
-import { MaterialModule } from 'app/material.module';
-import { UciModule } from 'app/uci/module';
+import { MaterialModule } from '../material.module';
+import { UciModule } from '../uci/module';
 
 
 /**

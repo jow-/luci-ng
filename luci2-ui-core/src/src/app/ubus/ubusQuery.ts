@@ -2,10 +2,10 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { UbusService } from 'app/ubus/ubus.service';
-import { OptionData } from 'app/uci/data/option';
-import { ParameterExpansion } from 'app/uci/data/parameterExpansion';
-import { UciModelService } from 'app/uci/uciModel.service';
+import { UbusService } from './ubus.service';
+import { OptionData } from '../uci/data/option';
+import { ParameterExpansion } from '../uci/data/parameterExpansion';
+import { UciModelService } from '../uci/uciModel.service';
 import { jsonPathFactory } from 'espression';
 import { combineLatest, empty, throwError } from 'rxjs';
 import { delay, repeatWhen, retryWhen } from 'rxjs/operators';
