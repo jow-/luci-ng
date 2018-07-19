@@ -17,7 +17,13 @@
             "/.stylelintrc"
         ],
         "url": "http://json.schemastore.org/stylelintrc"
-    }
+    },
+    {
+      "fileMatch": [
+          "/schemas/views/**/*.json"
+      ],
+      "url": "file://home/ianchi/dev/ianchi_wrt/lede/luci-ng/luci2-ui-core/src/src/app/widgets/base.meta.json"
+  }
 
   ],
 
