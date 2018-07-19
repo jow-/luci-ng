@@ -25,35 +25,17 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatMenuModule } from '@angular/material/menu';
 
 /**
  * Helper module to import all material components
  */
 @NgModule({
-  imports: [
-    CommonModule,
-    LayoutModule,
-    FormsModule,
-
-    MatAutocompleteModule,
-    MatSidenavModule,
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatInputModule,
-    MatDialogModule,
-    MatToolbarModule,
-    MatProgressBarModule,
-    MatExpansionModule,
-    MatSelectModule,
-    MatTabsModule,
-    MatSnackBarModule,
-    MatSlideToggleModule,
-    MatChipsModule,
-    MatCardModule
-
-  ],
-  declarations: [],
   exports: [
     CommonModule,
     LayoutModule,
@@ -74,7 +56,13 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatSnackBarModule,
     MatSlideToggleModule,
     MatChipsModule,
-    MatCardModule
+    MatCardModule,
+    MatCheckboxModule,
+    MatSliderModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatMenuModule,
   ]
 })
 export class MaterialModule { }
