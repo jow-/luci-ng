@@ -32,7 +32,10 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			}
+			},
+			"problemMatcher": [
+				"$tsc-watch"
+			]
 		},
 		{
 			"type": "npm",
