@@ -1,0 +1,183 @@
+{
+  "type": "grid-container",
+  "options": {
+    "direction": "row"
+  },
+  "content": [{
+      "type": "stat-expand",
+      "context": {
+        "board=": "ubus('system','board')"
+      },
+      "options": {
+        "gridCol": "span 2",
+        "gridRowOpen": "span 3",
+        "gridRowClosed": "auto",
+        "value=": "board.model",
+        "title=": "board.release.description",
+        "icon": "information-variant",
+        "noGraph": true
+      },
+      "content": {
+        "type": "table",
+        "options": {
+
+          "colKeys": ["title", "value"],
+          "colHeaders": false,
+          "dataSource": [{
+              "title": "Hostname",
+              "value=": "board.hostname"
+            },
+            {
+              "title": "Kernel",
+              "value=": "board.kernel"
+            },
+            {
+              "title": "System",
+              "value=": "board.system"
+            },
+            {
+              "title": "Target",
+              "value=": "board.release.target"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat-expand",
+      "context": {
+        "info=": "ubus('system','info')"
+      },
+      "options": {
+        "title": "Uptime",
+        "icon": "clock-fast",
+        "value=": "info.uptime * 1000",
+        "unit": "d h:m:s",
+        "format": "date:'d HH:mm:ss'",
+        "noGraph": true
+      }
+    },
+    {
+      "type": "stat-expand",
+      "context": {
+        "info=": "ubus('system','info')"
+      },
+      "options": {
+        "title": "Memory",
+        "icon": "memory",
+        "value=": "info.memory.free / 1048576",
+        "total=": "info.memory.total / 1048576",
+        "unit": "Mb",
+        "format": "number:'1.1-1'"
+      }
+    },
+    {
+      "type": "stat-expand",
+      "context": {
+        "info=": "ubus('system','info')"
+      },
+      "options": {
+        "title": "Load",
+        "icon": "chip",
+        "value=": "info.load[0] / 65535 * 100",
+        "unit": "%",
+        "format": "number:'1.1-1'"
+      }
+    },
+
+
+    {
+      "type": "stat-expand",
+      "context": {
+        "leases=": "ubus('luci2.network', 'dhcp_leases')"
+      },
+      "options": {
+        "title": "DHCP Leases",
+        "value=": "leases.leases.length",
+        "unit": "leased ip",
+        "format": "number:'1.0-0'",
+        "icon": "router-wireless",
+        "noGraph": true,
+        "gridCol": "span 2",
+        "gridRowOpen": "span 5"
+      },
+      "content": {
+        "type": "table",
+        "options": {
+          "colKeys": ["hostname", "ipaddr", "macaddr", "expires"],
+          "colKeys.xs": ["hostname", "ipaddr"],
+          "colHeaders": ["Hostname", "IPaddr", "MACaddr", "Expires"],
+          "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
+          "colTransform": [null, null, null, "$data * 1000"],
+          "transform": [],
+          "actions": {},
+          "dataSource=": "leases.leases"
+        }
+      },
+      "details": {}
+
+    },
+    {
+      "type": "stat-expand",
+      "context": {
+        "leases=": "ubus('luci2.network', 'dhcp6_leases')"
+      },
+      "options": {
+        "title": "DHCPv6 Leases",
+        "value=": "leases.leases.length",
+        "unit": "leased ip",
+        "format": "number:'1.0-0'",
+        "icon": "router-wireless",
+        "noGraph": true,
+        "gridCol": "span 2",
+        "gridRowOpen": "span 5"
+      },
+      "content": {
+        "type": "table",
+        "options": {
+          "colKeys": ["hostname", "ipaddr", "macaddr", "expires"],
+          "colKeys.xs": ["hostname", "ipaddr"],
+          "colHeaders": ["Hostname", "IPaddr", "MACaddr", "Expires"],
+          "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
+          "transform": [],
+          "actions": {},
+          "dataSource=": "leases.leases"
+        }
+      },
+      "details": {}
+
+    },
+
+    {
+      "type": "stat-expand",
+      "context": {
+        "disk=": "ubus('luci2.system', 'diskfree')"
+      },
+
+      "options": {
+        "title": "Free Disk",
+        "value=": "disk.root.free / 1048576",
+        "total=": "disk.root.total / 1048576",
+        "format": "number:'1.1-2'",
+        "unit": "MB",
+        "icon": "sd"
+      }
+    },
+
+    {
+      "type": "stat-expand",
+      "context": {
+        "conntrack=": "ubus('luci2.network', 'conntrack_count')"
+      },
+
+      "options": {
+        "title": "Connection Tracking",
+        "value=": "conntrack.count",
+        "total=": "conntrack.limit",
+        "format": "number:'1.0-0'",
+        "unit": "active",
+        "icon": "link"
+      }
+    }
+  ]
+}
