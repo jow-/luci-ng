@@ -2,9 +2,9 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { OptionData } from 'app/uci/data/option';
-import { UciModelService } from 'app/uci/uciModel.service';
-import { UciSelector } from 'app/uci/uciSelector.class';
+import { OptionData } from './option';
+import { UciModelService } from '../uciModel.service';
+import { UciSelector } from '../uciSelector.class';
 import { combineLatest, Observable, of } from 'rxjs';
 
 

@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 import { catchError, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
 import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
 import { JsonrpcService } from '../shared/jsonrpc.service';
-import { debug } from 'app/shared/observable.debug';
+import { debug } from '../shared/observable.debug';
 import { ILogin } from '../shell/login/ILogin.interface';
 import { LoginComponent } from '../shell/login/login.component';
 
@@ -57,7 +57,7 @@ export class UbusService implements ILogin {
       // if there is "accessDenied" login and retry
       retryWhen(o => o.pipe(mergeMap(e =>
         autologin && e.layer === 'jsonrpc' && e.code === JsonrpcErrorCodes.AccessDenied ?
-          this.loginDialog().pipe(tap(s =>
+          this.loginDialog().pipe(tap(() =>
             jsonrpcParams[0] = this.sid
           ), debug('loginDialog')) : Observable.throw(e)
       ))),
@@ -79,7 +79,7 @@ export class UbusService implements ILogin {
 
     if (!this._dialogRef) this._dialogRef = this._dialog.open(LoginComponent, opts);
 
-    return this._dialogRef.afterClosed().pipe(tap(s => { this._dialogRef = null; }));
+    return this._dialogRef.afterClosed().pipe(tap(() => { this._dialogRef = null; }));
 
   }
 

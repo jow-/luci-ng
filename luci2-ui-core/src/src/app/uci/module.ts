@@ -4,15 +4,15 @@
  */
 
 import { NgModule } from '@angular/core';
-import { UciService } from 'app/uci/backend/uci.service';
-import { UciModelService } from 'app/uci/uciModel.service';
-import { UciFormComponent } from 'app/uci/components/uciForm/uciForm.component';
-import { UciConfigComponent } from 'app/uci/components/uciConfig/uciConfig.component';
-import { UciSectionComponent } from 'app/uci/components/uciSection/uciSection.component';
-import { UciOptionComponent } from 'app/uci/components/uciOption/uciOption.component';
-import { MaterialModule } from 'app/material.module';
+import { UciService } from './backend/uci.service';
+import { UciModelService } from './uciModel.service';
+import { UciFormComponent } from './components/uciForm/uciForm.component';
+import { UciConfigComponent } from './components/uciConfig/uciConfig.component';
+import { UciSectionComponent } from './components/uciSection/uciSection.component';
+import { UciOptionComponent } from './components/uciOption/uciOption.component';
+import { MaterialModule } from '../material.module';
 import { SchemaValidatorDirective } from './components/schemaValidator.directive';
-import { ChipArrayValueAccessorDirective } from 'app/uci/components/chipListValueAccessor.directive';
+import { ChipArrayValueAccessorDirective } from './components/chipListValueAccessor.directive';
 import { ProvideParentFormDirective } from './components/provideParentForm.directive';
 import { ProvideParentFormGroupDirective } from './components/provideParentFormGroup.directive';
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { SectionData } from 'app/uci/data/section';
+import { SectionData } from './section';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { OptionSchema } from '../schema/optionSchema';
 

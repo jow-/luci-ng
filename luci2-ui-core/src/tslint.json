@@ -86,7 +86,6 @@
         "variable-declaration": "nospace"
       }
     ],
-    "typeof-compare": true,
     "unified-signatures": false,
     "variable-name": [
       true,
@@ -107,13 +106,13 @@
     "directive-selector": [
       true,
       "attribute",
-      ["app", "uci"],
+      ["app", "uci", "dyn"],
       "camelCase"
     ],
     "component-selector": [
       true,
       "element", [
-        "app", "wdg", "uci"
+        "app", "wdg", "uci", "dyn"
       ],
       "kebab-case"
     ],

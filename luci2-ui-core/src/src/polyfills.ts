@@ -1,5 +1,5 @@
 /** HACK: force import of environment.ts/environment.prod.ts to load env specific polyfills */
-import './environments/environment';
+import 'environments/environment';
 
 
 

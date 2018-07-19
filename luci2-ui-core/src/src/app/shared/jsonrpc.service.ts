@@ -6,7 +6,7 @@
 
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { debug } from 'app/shared/observable.debug';
+import { debug } from './observable.debug';
 import { Observable } from 'rxjs';
 import { catchError, delay, map, retryWhen, scan } from 'rxjs/operators';
 import { IJsonrpcRequest, IJsonrpcResponse } from './jsonrpc.interface';

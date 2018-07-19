@@ -82,7 +82,7 @@ export class SectionSchema {
     }
   }
 
-  validate(name: string): boolean {
+  validate(_name: string): boolean {
     return true;
   }
 }

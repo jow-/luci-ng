@@ -5,8 +5,8 @@
 
 import { IUciOptionSchema } from '../backend/option.interface';
 import { Format } from './format';
-import { UbusQueryDef } from 'app/ubus/ubusQuery';
-import { UciSelector } from 'app/uci/uciSelector.class';
+import { UbusQueryDef } from '../../ubus/ubusQuery';
+import { UciSelector } from '../uciSelector.class';
 
 /**
  * Option: object that models an `uci option` schema information.

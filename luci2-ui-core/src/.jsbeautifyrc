@@ -1,0 +1,9 @@
+{
+    "space_around_combinator": true,
+    "newline_between_rules": true,
+    "selector_separator_newline": true,
+    "end_with_newline": true,
+    "wrap_attributes": "force-aligned",
+    "brace_style": "collapse,preserve-inline",
+    "max_preserve_newlines": 2
+}
