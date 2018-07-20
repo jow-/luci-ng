@@ -3,14 +3,15 @@
  * Licensed under the MIT license.
  */
 
-import { Component, Input, OnChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 
 import { IMenuNode } from '../shell.interface';
 
 @Component({
   selector: 'app-nav-item',
   templateUrl: 'nav-item.component.html',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavItemComponent implements OnChanges {
   @Input() level = 1;
