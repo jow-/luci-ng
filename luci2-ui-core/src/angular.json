@@ -88,11 +88,18 @@
   "defaultProject": "luci-ng2",
   "schematics": {
     "@schematics/angular:component": {
-      "prefix": "app",
-      "styleext": "scss"
+      "prefix": "dyn",
+      "styleext": "scss",
+      "changeDetection": "OnPush",
+      "viewEncapsulation": "None",
+      "spec": false
     },
     "@schematics/angular:directive": {
       "prefix": "app"
+    },
+    "@schematics/angular:module": {
+      "flat": true,
+      "spec": false
     }
   }
 }
