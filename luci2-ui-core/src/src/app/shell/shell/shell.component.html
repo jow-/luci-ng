@@ -1,5 +1,5 @@
 <mat-toolbar class="app-bar mat-elevation-z6" color="primary">
-  <button mat-icon-button (click)="nav.open()" [style.display]="media.isMatched('(max-width: 599px)') ? 'block' : 'none'">
+  <button mat-icon-button (click)="nav.open()" [style.display]="isMediaSmall ? 'block' : 'none'">
     <mat-icon svgIcon="menu"></mat-icon>
 
   </button>
@@ -7,7 +7,7 @@
 
   <mat-sidenav-container class="app-content">
 
-    <mat-sidenav #nav [mode]="media.isMatched('(max-width: 599px)') ? 'over' : 'side'" [opened]="!media.isMatched('(max-width: 599px)')">
+    <mat-sidenav #nav [mode]="isMediaSmall ? 'over' : 'side'" [opened]="!isMediaSmall">
       <app-nav-menu [nodes]="menu"></app-nav-menu>
     </mat-sidenav>
 
