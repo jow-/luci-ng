@@ -6,7 +6,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
 import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
 import { JsonrpcService } from '../shared/jsonrpc.service';
@@ -22,12 +22,17 @@ export class UbusService implements ILogin {
   private _sid: string;
   private _dialogRef: MatDialogRef<LoginComponent>;
 
+  private _user: BehaviorSubject<string>;
+
   constructor(private _jsonrpc: JsonrpcService, private _dialog: MatDialog, private _snackbar: MatSnackBar) {
     this._jsonrpc.setUrl('/ubus');
 
     // reuse last saved session id
     this.sid = window.localStorage.getItem('ubus-sid');
 
+    this._user = new BehaviorSubject('');
+
+    // TODO: test if session is ok and get current user
   }
 
   set sid(sid: string) {
@@ -35,6 +40,9 @@ export class UbusService implements ILogin {
   }
   get sid(): string { return this._sid; }
 
+  get user(): Observable<string> {
+    return this._user.asObservable();
+  }
   list(params: any): Observable<Array<any>> {
     return this._jsonrpc.request('list', params);
   }
@@ -50,7 +58,7 @@ export class UbusService implements ILogin {
       // for errors throw corresponding error wrapped in IJsonrpcError
       map(r => {
         if (!Array.isArray(r)) throw { code: 0, message: 'Invalid response format', layer: 'js' };
-        if (r[0] !== 0) throw { code: r[0], layer: 'ubus', data: r[1] };
+        if (r[0] !== 0) throw { code: r[0], layer: 'ubus', data: r[1], message: r[0] };
         return r[1];
       }),
       debug('ubus pre retry'),
@@ -90,6 +98,7 @@ export class UbusService implements ILogin {
         // save new token on successful login
         this.sid = s && s.ubus_rpc_session;
         window.localStorage.setItem('ubus-sid', this.sid);
+        this._user.next(s && s.data && s.data.username);
         return this.sid;
       }),
       debug('login'));
