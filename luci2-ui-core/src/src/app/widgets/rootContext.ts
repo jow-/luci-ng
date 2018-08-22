@@ -20,6 +20,7 @@ export function rootContextFactory(ubus: UbusService, expr: ESpression) {
     ubus: ubus.call.bind(ubus),
     ubusList: ubus.list.bind(ubus),
     map: expr.mapFactory(),
-    reduce: expr.reduceFactory()
+    reduce: expr.reduceFactory(),
+    $user: ubus.user
   }, null, true);
 }
