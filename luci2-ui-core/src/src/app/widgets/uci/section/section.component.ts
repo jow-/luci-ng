@@ -6,7 +6,7 @@ import { UciModelService } from 'app/uci/uciModel.service';
 import { ConfigData } from 'app/uci/data/config';
 
 @Component({
-  selector: 'dyn-section',
+  selector: 'wdg-section',
   templateUrl: './section.component.html',
   styleUrls: ['./section.component.scss'],
   encapsulation: ViewEncapsulation.None,

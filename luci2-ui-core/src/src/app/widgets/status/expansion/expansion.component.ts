@@ -10,7 +10,7 @@ import { Component, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRe
 import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
 
 @Component({
-  selector: 'dyn-expansion',
+  selector: 'wdg-expansion',
   templateUrl: './expansion.component.html',
   styleUrls: ['./expansion.component.scss'],
   // tslint:disable-next-line:use-host-property-decorator

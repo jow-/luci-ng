@@ -9,7 +9,7 @@ import { Component, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRe
 import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
 
 @Component({
-  selector: 'dyn-code',
+  selector: 'wdg-config',
   templateUrl: './config.component.html',
   styleUrls: ['./config.component.scss'],
 
