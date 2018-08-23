@@ -5,6 +5,10 @@ import { map, switchMap } from 'rxjs/operators';
 import { UciModelService } from 'app/uci/uciModel.service';
 import { ConfigData } from 'app/uci/data/config';
 
+export interface ISectionWidgetDef {
+  sectionName: string;
+
+}
 @Component({
   selector: 'wdg-section',
   templateUrl: './section.component.html',
@@ -12,15 +16,13 @@ import { ConfigData } from 'app/uci/data/config';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UciSectionComponent extends AbstractWidget {
-
-  sectionName: string;
+export class UciSectionComponent extends AbstractWidget<ISectionWidgetDef> {
   config: ConfigData;
   section: any;
+
   constructor(cdr: ChangeDetectorRef, expr: Expressions, private _uciModel: UciModelService) {
     super(cdr, expr);
   }
-
   dynOnAfterBind() {
     this.bindings.sectionName = this.bindings.sectionName.pipe(
       switchMap(sec => {
@@ -34,6 +36,7 @@ export class UciSectionComponent extends AbstractWidget {
             map(c => {
               this.config = c;
               this.section = c.getSection(match[2]);
+              return sec;
             }));
         }
         return empty();
