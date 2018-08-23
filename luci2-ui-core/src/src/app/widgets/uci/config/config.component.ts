@@ -8,6 +8,10 @@
 import { Component, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
 
+
+export interface IConfigWidgetDef {
+  config: string;
+}
 @Component({
   selector: 'wdg-config',
   templateUrl: './config.component.html',
@@ -16,9 +20,9 @@ import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ConfigComponent extends AbstractWidget {
+export class ConfigComponent extends AbstractWidget<IConfigWidgetDef> {
 
-  config: string;
+
 
   constructor(cdr: ChangeDetectorRef, expr: Expressions) {
     super(cdr, expr);

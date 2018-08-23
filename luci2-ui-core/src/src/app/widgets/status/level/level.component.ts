@@ -9,6 +9,15 @@
 import { Component, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
 
+
+export interface ILevelWidgetDef {
+  value: number;
+  total: number;
+  icon: string;
+  unit: string;
+  title: string;
+  noGraph: boolean;
+}
 @Component({
   selector: 'wdg-level',
   templateUrl: './level.component.html',
@@ -17,14 +26,9 @@ import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LevelComponent extends AbstractWidget {
+export class LevelComponent extends AbstractWidget<ILevelWidgetDef> {
 
-  value: number;
-  total: number;
-  icon: string;
-  unit: string;
-  title: string;
-  noGraph: boolean;
+
 
 
   constructor(cdr: ChangeDetectorRef, expr: Expressions) {

@@ -6,11 +6,11 @@
  * https://opensource.org/licenses/MIT
  */
 
-import { ROOT_CONTEXT, Context, Expressions, ESpression } from 'reactive-json-form-ng';
+import { ROOT_EXPR_CONTEXT, Context, Expressions, ESpression } from 'reactive-json-form-ng';
 import { UbusService } from '../ubus/ubus.service';
 
 export const rootContextProvider = { // tslint:disable-line:naming-convention
-  provide: ROOT_CONTEXT,
+  provide: ROOT_EXPR_CONTEXT,
   useFactory: rootContextFactory,
   deps: [UbusService, Expressions]
 };

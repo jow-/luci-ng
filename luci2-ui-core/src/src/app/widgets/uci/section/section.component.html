@@ -1,8 +1,8 @@
 <form novalidate
       #uciForm="ngForm">
-
-    <uci-section *ngIf="section"
-                 [section]="section" [ngModelGroup]="section.name">
+  <div *ngIf="section"
+       [ngModelGroup]="section.name">
+    <uci-section [section]="section">
     </uci-section>
-
+  </div>
 </form>
