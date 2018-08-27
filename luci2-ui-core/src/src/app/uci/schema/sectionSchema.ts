@@ -2,8 +2,9 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
+import { IUciSectionData, IUciSectionSchema } from '../backend/section.interface';
+
 import { OptionSchema } from './optionSchema';
-import { IUciSectionSchema, IUciSectionData } from '../backend/section.interface';
 
 /**
  * SectionSchema: object that models an `uci section` schema information.
@@ -11,35 +12,32 @@ import { IUciSectionSchema, IUciSectionData } from '../backend/section.interface
  * It can be constructed from an explicit `schema` or implicitly from the uci data
  */
 export class SectionSchema {
-
   // General Info Properties
   type: string;
-  title: string;
+  title: string | undefined;
   description = '';
 
   // Name Rules
 
   anonymous = false;
-  pattern: string;
-  unique: boolean;
-  default: string;
+  pattern: string | undefined;
+  unique: boolean | undefined;
+  default: string | undefined;
 
   // Validations
 
   minLength = 0;
-  maxLength: number;
+  maxLength: number | undefined;
   freezed = false;
 
   options: Map<string, OptionSchema>;
 
-
-  constructor(type: string, schema: IUciSectionSchema, data?: IUciSectionData) {
+  constructor(type: string, schema?: IUciSectionSchema, data?: IUciSectionData) {
     this.type = type;
     this.options = new Map<string, OptionSchema>();
 
     // if we have a backend schema info use it to construct the object
     if (typeof schema === 'object') {
-
       this.title = schema.title || type;
       this.description = schema.description || '';
 
@@ -53,7 +51,6 @@ export class SectionSchema {
       /** Indicates if properties outside of the schema are allowed */
       this.freezed = !!schema.freezed;
 
-
       for (const prop in schema.properties) {
         if (schema.properties.hasOwnProperty(prop)) {
           this.options.set(prop, new OptionSchema(prop, schema.properties[prop]));
@@ -64,15 +61,13 @@ export class SectionSchema {
 
       this.anonymous = data['.anonymous'];
       this.default = type;
-
     }
 
     // if data has additional properties add them to the schema
-    this.updateFromData(data);
+    if (data) this.updateFromData(data);
   }
 
-
-  updateFromData(data: IUciSectionData) {
+  updateFromData(data: IUciSectionData): void {
     if (typeof data === 'object' && data['.type'] && !this.freezed) {
       for (const prop in data) {
         if (data.hasOwnProperty(prop) && prop.charAt(0) !== '.' && !this.options.has(prop)) {

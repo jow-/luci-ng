@@ -5,36 +5,42 @@
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { IUciAddSectionParam, IUciAddSectionRet, IUciDeleteParam, IUciSetParam } from './actions.interface';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+
 import { debug } from '../../shared/observable.debug';
 import { UbusService } from '../../ubus/ubus.service';
-import { IUciConfigData, IUciConfigSchema } from './config.interface';
 
-
+import {
+  IUciAddSectionParam,
+  IUciAddSectionRet,
+  IUciDeleteParam,
+  IUciSetParam,
+} from './actions.interface';
+import { IUciConfigData } from './config.interface';
 
 @Injectable()
 export class UciService {
-
-  constructor(private _ubus: UbusService, private _http: HttpClient) { }
+  constructor(private _ubus: UbusService, private _http: HttpClient) {}
 
   getConfig(config: string): Observable<[IUciConfigData, any]> {
-
     return forkJoin(
-      this._ubus.call<IUciConfigData>('uci', 'get', { config }).pipe(map(r => r && r.values || {})),
+      this._ubus
+        .call<IUciConfigData>('uci', 'get', { config })
+        .pipe(map(r => (r && r.values) || {})),
       this._http.get<{}>(`/schemas/${config}.json`).pipe(
         debug('schema get'),
-        catchError(() => of(<IUciConfigSchema>undefined)),
-        debug('schema'))
+        catchError(() => of({})),
+        debug('schema')
+      )
     ).pipe(debug('forkJoin UCI'));
-
   }
 
-  /** Adds a section and returns its name */
+  /** Adds a section and returns its name, or empty string on error */
   addSection(param: IUciAddSectionParam): Observable<string> {
-    return this._ubus.call<IUciAddSectionRet>('uci', 'add', param).pipe(
-      map(r => r && r.section || null));
+    return this._ubus
+      .call<IUciAddSectionRet>('uci', 'add', param)
+      .pipe(map(r => (r && r.section) || ''));
   }
 
   set(param: IUciSetParam): Observable<any> {
@@ -44,5 +50,4 @@ export class UciService {
   delete(param: IUciDeleteParam): Observable<any> {
     return this._ubus.call('uci', 'delete', param);
   }
-
 }

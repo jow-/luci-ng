@@ -3,32 +3,31 @@
  * Licensed under the MIT license.
  */
 
-
-import { Directive, } from '@angular/core';
+import { Directive } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
   selector: 'mat-chip-list[ngModel]',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: ChipArrayValueAccessorDirective,
-    multi: true
-  }],
-  exportAs: 'chipValueAccessor'
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: ChipArrayValueAccessorDirective,
+      multi: true,
+    },
+  ],
+  exportAs: 'chipValueAccessor',
 })
 export class ChipArrayValueAccessorDirective implements ControlValueAccessor {
-
   // tslint:disable-next-line:no-input-rename
   value: any;
 
-  constructor() { }
+  constructor() {}
 
-  onChange = (_: any) => { };
-  onTouched = () => { };
+  onChange = (_: any) => {};
+  onTouched = () => {};
 
-
-  writeValue(_obj: any): void { }
+  writeValue(_obj: any): void {}
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }
@@ -37,7 +36,5 @@ export class ChipArrayValueAccessorDirective implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState?(_isDisabled: boolean): void { }
-
-
+  setDisabledState?(_isDisabled: boolean): void {}
 }

@@ -5,5 +5,6 @@
     "end_with_newline": true,
     "wrap_attributes": "force-aligned",
     "brace_style": "collapse,preserve-inline",
-    "max_preserve_newlines": 2
+    "max_preserve_newlines": 2,
+    "indent_size": 2
 }

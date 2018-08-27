@@ -1,18 +1,46 @@
-
 // can be: xs sm md lg xl or gt-xs gt-sm ....
 @mixin media-query($bp) {
-
-  @if      $bp == xs { @media (max-width: $bp-xs) { @content; } }
-  @else if $bp == sm { @media (max-width: $bp-sm) { @content; } }
-  @else if $bp == md { @media (max-width: $bp-md) { @content; } }
-  @else if $bp == lg { @media (max-width: $bp-lg) { @content; } }
-  @else if $bp == xl { @media (max-width: $bp-xl) { @content; } }
-  @else if $bp == gt-xs { @media (min-width: $bp-xs) { @content; } }
-  @else if $bp == gt-sm { @media (min-width: $bp-sm) { @content; } }
-  @else if $bp == gt-md { @media (min-width: $bp-md) { @content; } }
-  @else if $bp == gt-lg { @media (min-width: $bp-lg) { @content; } }
-  @else if $bp == gt-xl { @media (min-width: $bp-xl) { @content; } }
-
+  @if $bp == xs {
+    @media (max-width: $bp-xs) {
+      @content;
+    }
+  } @else if $bp == sm {
+    @media (max-width: $bp-sm) {
+      @content;
+    }
+  } @else if $bp == md {
+    @media (max-width: $bp-md) {
+      @content;
+    }
+  } @else if $bp == lg {
+    @media (max-width: $bp-lg) {
+      @content;
+    }
+  } @else if $bp == xl {
+    @media (max-width: $bp-xl) {
+      @content;
+    }
+  } @else if $bp == gt-xs {
+    @media (min-width: $bp-xs) {
+      @content;
+    }
+  } @else if $bp == gt-sm {
+    @media (min-width: $bp-sm) {
+      @content;
+    }
+  } @else if $bp == gt-md {
+    @media (min-width: $bp-md) {
+      @content;
+    }
+  } @else if $bp == gt-lg {
+    @media (min-width: $bp-lg) {
+      @content;
+    }
+  } @else if $bp == gt-xl {
+    @media (min-width: $bp-xl) {
+      @content;
+    }
+  }
 }
 
 @mixin flex-container($dir, $align) {
@@ -22,9 +50,7 @@
 
   align-content: $align;
   align-items: $align;
-
 }
-
 
 @mixin rotate($degrees) {
   -moz-transform: rotate($degrees);
@@ -37,11 +63,11 @@
 }
 
 @mixin codeblock($bgcolor) {
-    background-color: $bgcolor;
-    border-radius: 5px;
-    padding: 20px;
-    margin: 0 auto; // was 24
-    border: 0.5px solid $lightgray;
+  background-color: $bgcolor;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 0 auto; // was 24
+  border: 0.5px solid $lightgray;
 }
 
 @mixin card($height, $width) {

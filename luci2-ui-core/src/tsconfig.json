@@ -11,15 +11,11 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitReturns": true,
+    "strict": true,
 
     "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2016",
-      "dom"
-    ]
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2016", "dom"]
   },
   "angularCompilerOptions": {
     "preserveWhitespaces": false,

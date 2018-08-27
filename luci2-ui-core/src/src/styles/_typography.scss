@@ -66,7 +66,12 @@ h1 {
   }
 }
 
-h1::after, h2, h3, h4, h5, h6 {
+h1::after,
+h2,
+h3,
+h4,
+h5,
+h6 {
   @media screen and (max-width: 600px) {
     margin: 8px 0;
   }
@@ -76,7 +81,13 @@ h1::after, h2, h3, h4, h5, h6 {
   margin-top: 0;
 }
 
-p, ol, ul, ol, li, input, a {
+p,
+ol,
+ul,
+ol,
+li,
+input,
+a {
   font-size: 14px;
   line-height: 24px;
   letter-spacing: 0.3px;
@@ -137,7 +148,9 @@ th {
   text-align: left;
 }
 
-p > code, li > code, table code {
+p > code,
+li > code,
+table code {
   font-family: $code-font;
   font-size: 85%;
   color: $darkgray;

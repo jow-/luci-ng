@@ -5,9 +5,13 @@
  * https://opensource.org/licenses/MIT
  */
 
-import { Component, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ViewEncapsulation,
+} from '@angular/core';
 import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
-
 
 export interface IConfigWidgetDef {
   config: string;
@@ -18,14 +22,10 @@ export interface IConfigWidgetDef {
   styleUrls: ['./config.component.scss'],
 
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigComponent extends AbstractWidget<IConfigWidgetDef> {
-
-
-
   constructor(cdr: ChangeDetectorRef, expr: Expressions) {
     super(cdr, expr);
   }
-
 }

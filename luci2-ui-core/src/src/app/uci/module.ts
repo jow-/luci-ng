@@ -4,18 +4,19 @@
  */
 
 import { NgModule } from '@angular/core';
-import { UciService } from './backend/uci.service';
-import { UciModelService } from './uciModel.service';
-import { UciFormComponent } from './components/uciForm/uciForm.component';
-import { UciConfigComponent } from './components/uciConfig/uciConfig.component';
-import { UciSectionComponent } from './components/uciSection/uciSection.component';
-import { UciOptionComponent } from './components/uciOption/uciOption.component';
+
 import { MaterialModule } from '../material.module';
-import { SchemaValidatorDirective } from './components/schemaValidator.directive';
+
+import { UciService } from './backend/uci.service';
 import { ChipArrayValueAccessorDirective } from './components/chipListValueAccessor.directive';
 import { ProvideParentFormDirective } from './components/provideParentForm.directive';
 import { ProvideParentFormGroupDirective } from './components/provideParentFormGroup.directive';
-
+import { SchemaValidatorDirective } from './components/schemaValidator.directive';
+import { UciConfigComponent } from './components/uciConfig/uciConfig.component';
+import { UciFormComponent } from './components/uciForm/uciForm.component';
+import { UciOptionComponent } from './components/uciOption/uciOption.component';
+import { UciSectionComponent } from './components/uciSection/uciSection.component';
+import { UciModelService } from './uciModel.service';
 
 /**
  * UciModel handles all UCI related code
@@ -32,9 +33,7 @@ import { ProvideParentFormGroupDirective } from './components/provideParentFormG
  */
 
 @NgModule({
-  imports: [
-    MaterialModule
-  ],
+  imports: [MaterialModule],
   declarations: [
     UciOptionComponent,
     UciSectionComponent,
@@ -44,14 +43,9 @@ import { ProvideParentFormGroupDirective } from './components/provideParentFormG
     SchemaValidatorDirective,
     ChipArrayValueAccessorDirective,
     ProvideParentFormDirective,
-    ProvideParentFormGroupDirective
+    ProvideParentFormGroupDirective,
   ],
   providers: [UciService, UciModelService],
-  exports: [
-    UciOptionComponent,
-    UciSectionComponent,
-    UciConfigComponent,
-    UciFormComponent
-  ],
+  exports: [UciOptionComponent, UciSectionComponent, UciConfigComponent, UciFormComponent],
 })
-export class UciModule { }
+export class UciModule {}

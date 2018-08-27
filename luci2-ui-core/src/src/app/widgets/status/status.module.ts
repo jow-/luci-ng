@@ -5,14 +5,11 @@
  * https://opensource.org/licenses/MIT
  */
 
-
 import { NgModule } from '@angular/core';
-import { MaterialModule } from 'reactive-json-form-ng';
-import { WidgetsCoreModule } from 'reactive-json-form-ng';
+import { MaterialModule, WidgetsCoreModule } from 'reactive-json-form-ng';
 
-import { LevelComponent } from './level/level.component';
 import { ExpansionComponent } from './expansion/expansion.component';
-
+import { LevelComponent } from './level/level.component';
 
 @NgModule({
   imports: [
@@ -22,13 +19,9 @@ import { ExpansionComponent } from './expansion/expansion.component';
       widgets: [
         { type: 'stat-level', component: LevelComponent },
         { type: 'stat-expand', component: ExpansionComponent },
-
-      ]
-    })
+      ],
+    }),
   ],
-  declarations: [
-    LevelComponent,
-    ExpansionComponent,
-  ]
+  declarations: [LevelComponent, ExpansionComponent],
 })
-export class StatusModule { }
+export class StatusModule {}

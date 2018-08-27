@@ -3,9 +3,7 @@
  * Licensed under the MIT license.
  */
 
-
 export class UciSelector {
-
   /**
    * Matchs an `option` selector in the form
    *
@@ -20,20 +18,20 @@ export class UciSelector {
    */
   private static _reOption = /^(?:(?:([\w]+)\.)?(?:([\w]+)|(?:@([\w]+)\[(.*)\]))\.)?([\w]+)$/;
   /**
- * Matchs a `section name` selector in the form
- *
- * (config.)@type[match]
- * @field 1: config
- * @field 2: sectionType
- * @field 3: match
- */
+   * Matchs a `section name` selector in the form
+   *
+   * (config.)@type[match]
+   * @field 1: config
+   * @field 2: sectionType
+   * @field 3: match
+   */
   private static _reType = /^(?:([\w]+)\.)?(?:@([\w]+)\[(.*)\])$/;
 
-  config: string;
-  sectionName: string;
-  sectionType: string;
-  match: string;
-  option: string;
+  config: string | undefined;
+  sectionName: string | undefined;
+  sectionType: string | undefined;
+  match: string | undefined;
+  option: string | undefined;
 
   invalid = false;
 
@@ -43,18 +41,19 @@ export class UciSelector {
     let match;
 
     // check for option selector
-    if (match = UciSelector._reOption.exec(text)) {
+    // tslint:disable-next-line:no-conditional-assignment
+    if ((match = UciSelector._reOption.exec(text))) {
       this.config = match[1];
       this.sectionName = match[2];
       this.sectionType = match[3];
       this.match = match[4];
       this.option = match[5];
 
-    } else if (match = UciSelector._reType.exec(text)) {
+      // tslint:disable-next-line:no-conditional-assignment
+    } else if ((match = UciSelector._reType.exec(text))) {
       this.config = match[1];
       this.sectionType = match[2];
       this.match = match[3];
-
     } else this.invalid = true;
 
     this.jsonPath = '$';
@@ -63,7 +62,5 @@ export class UciSelector {
     else if (this.sectionName) this.jsonPath += `.${this.sectionName}`;
     if (this.option) this.jsonPath += `.${this.option}`;
     else this.jsonPath += `['.name']`;
-
-
   }
 }

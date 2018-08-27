@@ -3,8 +3,14 @@
  * Licensed under the MIT license.
  */
 
-import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -15,23 +21,26 @@ import { IMenuItem } from '../menu/menu.interface';
   templateUrl: './shell.component.html',
   styleUrls: ['./shell.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShellComponent implements OnInit {
+export class ShellComponent {
+  @Input()
+  menu: IMenuItem | undefined;
 
-  @Input() menu: IMenuItem;
+  isMediaSmall = false;
+  constructor(
+    public media: BreakpointObserver,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer,
+    cdr: ChangeDetectorRef
+  ) {
+    iconRegistry.addSvgIconSet(
+      sanitizer.bypassSecurityTrustResourceUrl('./../../../assets/mdi.svg')
+    );
 
-  isMediaSmall: boolean;
-  constructor(public media: BreakpointObserver, iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, cdr: ChangeDetectorRef)  {
-    iconRegistry.addSvgIconSet(sanitizer.bypassSecurityTrustResourceUrl('./../../../assets/mdi.svg'));
-
-    media.observe('(max-width: 599px)').subscribe( isMatched => {
+    media.observe('(max-width: 599px)').subscribe(isMatched => {
       this.isMediaSmall = isMatched.matches;
       cdr.markForCheck();
     });
   }
-
-  ngOnInit() {
-  }
-
 }

@@ -35,14 +35,13 @@ export interface IUciOptionSchema {
    * Binding to get the list of valid entries from.
    *
    * To bind to UBUS calls use one of the following
-   * @property [ "ubusObject", "ubusMethod", { params }?, "jsonPath?"] : to bind to the direct response from ubus
+   * @example [ "ubusObject", "ubusMethod", { params }?, "jsonPath?"] : to bind to the direct response from ubus
    *
    * To bind to other UCI data:
-   * @property "uciSelector" direct binding
-   * @property "uciSelector | /regexPattern/" filtered binding
+   * @example "uciSelector" direct binding
+   * @example "uciSelector | /regexPattern/" filtered binding
    */
-  enumBinding?: [string, string, { [param: string]: any }, string ] | string;
-
+  enumBinding?: [string, string, { [param: string]: any }, string] | string;
 
   default?: any;
 
@@ -53,12 +52,12 @@ export interface IUciOptionSchema {
    * If any dependency is unmet the option is disabled
    *
    * They can be specified as:
-   * @property [ "selector", "selector2", "!selector3" ] : only check that options are present and not empty (can be negated)
-   * @property { selector: [ "value1", "value2", "!value3"] } each option included as a property is compared against an
+   * @example [ "selector", "selector2", "!selector3" ] : only check that options are present and not empty (can be negated)
+   * @example { selector: [ "value1", "value2", "!value3"] } each option included as a property is compared against an
    * array of valid values
    * To satisfy it must match any of the positive values AND ALL negatives
    */
   dependencies?: string[] | { [selector: string]: string[] };
 
-  properties?: { [propName: string]: IUciOptionSchema }
+  properties?: { [propName: string]: IUciOptionSchema };
 }

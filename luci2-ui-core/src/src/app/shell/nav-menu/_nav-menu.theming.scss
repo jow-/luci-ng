@@ -1,13 +1,11 @@
 @import '~@angular/material/theming';
 
 @mixin nav-menu-theme($theme) {
-
-  $primary:    map-get($theme, primary);
-  $accent:     map-get($theme, accent);
-  $warn:       map-get($theme, warn);
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
-
 
   .nav-menu-item {
     color: mat-color($foreground, secondary-text);
@@ -25,7 +23,6 @@
       color: mat-color($foreground, base);
     }
   }
-
 
   .heading {
     color: mat-color($foreground, text);

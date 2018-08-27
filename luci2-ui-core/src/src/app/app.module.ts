@@ -3,45 +3,46 @@
  * Licensed under the MIT license.
  */
 
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { RoutedWidgetComponent } from 'reactive-json-form-ng';
 
 import { AppComponent } from './app.component';
+import { MaterialModule } from './material.module';
 import { JsonrpcService } from './shared/jsonrpc.service';
+import { ViewsResolverService } from './shared/viewsresolver.service';
 import { MenuService } from './shell/menu/menu.service';
+import { MenuGuardService } from './shell/menu/menuguard.service';
 import { ShellModule } from './shell/shell.module';
 import { UbusService } from './ubus/ubus.service';
 import { UciModule } from './uci/module';
-import { MaterialModule } from './material.module';
 import { WidgetsModule } from './widgets';
-import { ViewsResolverService } from './shared/viewsresolver.service';
-import { MenuGuardService } from './shell/menu/menuguard.service';
-import { RoutedWidgetComponent } from 'reactive-json-form-ng';
-
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
     ShellModule,
-    RouterModule.forRoot([{
-      path: '*', component: RoutedWidgetComponent, resolve: ViewsResolverService,
-      canActivate: [MenuGuardService]
-    }]),
+    RouterModule.forRoot([
+      {
+        path: '*',
+        component: RoutedWidgetComponent,
+        resolve: ViewsResolverService,
+        canActivate: [MenuGuardService],
+      },
+    ]),
     WidgetsModule,
 
     UciModule,
-    MaterialModule
+    MaterialModule,
   ],
   providers: [JsonrpcService, UbusService, MenuService],
-  entryComponents: [ RoutedWidgetComponent ],
-  bootstrap: [AppComponent]
+  entryComponents: [RoutedWidgetComponent],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

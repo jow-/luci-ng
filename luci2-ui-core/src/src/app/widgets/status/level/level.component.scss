@@ -5,63 +5,59 @@
  * https://opensource.org/licenses/MIT
  */
 
- @import 'styles/_components.scss';
+@import 'styles/_components.scss';
 
- wdg-level {
+wdg-level {
+  .stats-card {
+    @include flex-container(row, center);
 
-   .stats-card {
-     @include flex-container(row, center);
+    min-height: 70px;
+    min-width: 200px;
 
-     min-height: 70px;
-     min-width: 200px;
+    padding-top: $unit * 1.5;
+    padding-bottom: $unit * 1.5;
 
-     padding-top: $unit * 1.5;
-     padding-bottom: $unit * 1.5;
+    margin-bottom: $unit * 2;
+    margin-right: $unit * 2;
 
-     margin-bottom: $unit * 2;
-     margin-right: $unit * 2;
+    .stats-icon-container {
+      flex: 0 0 auto;
+      margin-right: $unit * 2;
+      @include flex-container(row, center);
+      justify-content: center;
 
-     .stats-icon-container {
-       flex: 0 0 auto;
-       margin-right: $unit * 2;
-       @include flex-container(row, center);
-       justify-content: center;
+      min-width: $unit * 6;
+      min-height: $unit * 6;
+      border-radius: $unit * 6;
+      background-color: #aaa;
 
-       min-width: $unit* 6;
-       min-height: $unit* 6;
-       border-radius: $unit * 6;
-       background-color: #aaa;
+      .stats-icon {
+        width: $unit * 4;
+        height: $unit * 4;
 
-       .stats-icon {
-         width: $unit* 4;
-         height: $unit* 4;
+        color: white;
+      }
+    }
 
-         color: white;
+    .stats-content {
+      flex: 1 1 auto;
 
-       }
-     }
+      .stats-data {
+        margin: 0 0 $unit / 2;
+        color: #aaa;
+        font-size: $unit * 3.5;
+        font-weight: 400;
 
-     .stats-content {
-       flex: 1 1 auto;
-
-       .stats-data {
-         margin: 0 0 $unit / 2;
-         color: #aaa;
-         font-size: $unit * 3.5;
-         font-weight: 400;
-
-         .unit {
-           font-size: 0.6em;
-           text-transform: uppercase;
-         }
-
-       }
-       h5 {
-         margin: $unit / 2 0 0;
-         text-transform: capitalize;
-         color: #aaa;
-       }
-
-     }
-   }
- }
+        .unit {
+          font-size: 0.6em;
+          text-transform: uppercase;
+        }
+      }
+      h5 {
+        margin: $unit / 2 0 0;
+        text-transform: capitalize;
+        color: #aaa;
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@
  * Licensed under the MIT license.
  */
 
-import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
 import { IMenuNode } from '../shell.interface';
 
@@ -12,8 +12,9 @@ import { IMenuNode } from '../shell.interface';
   template: `<app-nav-item *ngFor="let node of nodes" [node]="node"></app-nav-item>`,
   styleUrls: ['./nav-menu.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavMenuComponent {
-  @Input() nodes: IMenuNode[];
+  @Input()
+  nodes: IMenuNode[] = [];
 }
