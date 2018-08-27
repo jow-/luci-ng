@@ -6,8 +6,8 @@
 export interface IJsonrpcRequest {
   jsonrpc: string;
   method: string;
-  params?: Array<any>|object;
-  id?: string|number|null;
+  params?: any[] | object;
+  id?: string | number | null;
 }
 
 export interface IJsonrpcError {
@@ -21,7 +21,7 @@ export interface IJsonrpcResponse {
   jsonrpc: string;
   result?: any;
   error?: IJsonrpcError;
-  id: string|number|null;
+  id: string | number | null;
 }
 
 export enum JsonrpcErrorCodes {
@@ -32,5 +32,5 @@ export enum JsonrpcErrorCodes {
   InternalError = -32603,
   AccessDenied = -32002,
   ServerErrorStart = -32099,
-  ServerErrorEnd = -32000
+  ServerErrorEnd = -32000,
 }

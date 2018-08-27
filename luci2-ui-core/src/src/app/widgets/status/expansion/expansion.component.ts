@@ -6,12 +6,12 @@
  */
 
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ViewEncapsulation,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef
-} from "@angular/core";
-import { AbstractWidget, Expressions } from "reactive-json-form-ng";
+} from '@angular/core';
+import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
 
 export interface IExpansionWidgetDef {
   gridRowOpen: string;
@@ -26,19 +26,19 @@ export interface IExpansionWidgetDef {
   noGraph: boolean;
 }
 @Component({
-  selector: "wdg-expansion",
-  templateUrl: "./expansion.component.html",
-  styleUrls: ["./expansion.component.scss"],
+  selector: 'wdg-expansion',
+  templateUrl: './expansion.component.html',
+  styleUrls: ['./expansion.component.scss'],
   // tslint:disable-next-line:use-host-property-decorator
   host: {
-    "[style.grid-column]": "options.gridCol",
-    "[style.grid-row]": "gridRow"
+    '[style.grid-column]': 'options.gridCol',
+    '[style.grid-row]': 'gridRow',
   },
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpansionComponent extends AbstractWidget<IExpansionWidgetDef> {
-  gridRow = "";
+  gridRow = '';
 
   constructor(cdr: ChangeDetectorRef, expr: Expressions) {
     super(cdr, expr);

@@ -3,23 +3,19 @@
  * Licensed under the MIT license.
  */
 
-import { ConfigData } from '../../data/config';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { ConfigData } from '../../data/config';
 
 @Component({
   selector: 'uci-config',
   templateUrl: './uciConfig.component.html',
   styleUrls: ['./uciConfig.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
-export class UciConfigComponent implements OnInit {
+export class UciConfigComponent {
+  @Input()
+  config!: ConfigData;
 
-  @Input() config: ConfigData;
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  constructor() {}
 }

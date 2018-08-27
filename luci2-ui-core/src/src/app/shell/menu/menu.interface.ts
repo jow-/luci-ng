@@ -11,10 +11,15 @@ export interface IMenuItem {
   link: string;
 
   [extra: string]: any;
-
-  childs?: IMenuItem[] | Object
 }
 
+export interface IMenuItemObj extends IMenuItem {
+  childs?: { [path: string]: IMenuItemObj };
+}
+
+export interface IMenuItemArr extends IMenuItem {
+  childs?: IMenuItemArr[];
+}
 export interface IMenu {
-  [key: string]: IMenuItem
+  [key: string]: IMenuItem;
 }

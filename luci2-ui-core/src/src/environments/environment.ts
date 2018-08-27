@@ -1,3 +1,10 @@
+/*!
+ * Copyright (c) 2018 Adrian Panella <ianchi74@outlook.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 // The file contents for the current environment will overwrite these during build.
 // The build system defaults to the dev environment which uses `environment.ts`, but if you do
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
@@ -5,9 +12,8 @@
 
 // tslint:disable-next-line:naming-convention
 export const environment = {
-  production: false
+  production: false,
 };
-
 
 // Reflect.metadata polyfill is only needed in the JIT/dev mode.
 //

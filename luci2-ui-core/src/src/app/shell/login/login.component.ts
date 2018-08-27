@@ -7,34 +7,34 @@ import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { IJsonrpcError } from '../../shared/jsonrpc.interface';
+
 import { ILogin } from './ILogin.interface';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent {
+  user = '';
+  password = '';
+  errorMessage: string | undefined;
 
-  user: string;
-  password: string;
-  errorMessage: string;
+  constructor(
+    private _dialogRef: MatDialogRef<LoginComponent>,
+    @Inject(MAT_DIALOG_DATA) private _loginService: ILogin
+  ) {}
 
-
-  constructor(private _dialogRef: MatDialogRef<LoginComponent>, @Inject(MAT_DIALOG_DATA) private _loginService: ILogin) { }
-
-  login() {
-
-    this._loginService.login(this.user, this.password)
-      .subscribe(
-        s => this._dialogRef.close(s),
-        (e: IJsonrpcError) => {
-          if (e.layer === 'ubus' && e.code === 6)
-            this.errorMessage = 'Invalid username/password';
-          else
-            this.errorMessage = `${e.layer} error ${e.code}: ${e.message}`;
-
-        });
+  login(): void {
+    this._loginService.login(this.user, this.password).subscribe(
+      s => this._dialogRef.close(s),
+      (e: IJsonrpcError) => {
+        this.errorMessage =
+          e.layer === 'ubus' && e.code === 6
+            ? 'Invalid username/password'
+            : `${e.layer} error ${e.code}: ${e.message}`;
+      }
+    );
   }
 }

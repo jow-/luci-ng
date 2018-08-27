@@ -3,7 +3,9 @@
  * Licensed under the MIT license.
  */
 
-
+interface IFormatDef {
+  [format: string]: RegExp | Array<string | RegExp>;
+}
 /**
  * Helper Class to validate named formats
  *
@@ -12,10 +14,8 @@
  * which means that it can be any of those formats
  */
 export class Format {
-
-
   /** List of named formats */
-  private static _formats = {
+  private static _formats: IFormatDef = {
     ipaddr: ['ipv4', 'ipv6'],
     ipv4: /^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
     // tslint:disable-next-line:max-line-length
@@ -37,28 +37,26 @@ export class Format {
     wepkey: /^[a-zA-Z0-9]{5}|[a-zA-Z0-9]{13}|[a-fA-F0-9]{10}|[a-fA-F0-9]{26}$/,
     uci_value: /^[\t\n\r\x20-\x7E]*$/,
     uci_name: /^[\w_]*$/,
-    uci_type: /^[\x20-\x7E]*$/
+    uci_type: /^[\x20-\x7E]*$/,
   };
 
-  format: string;
+  format: string | undefined;
 
   /** Creates a validator instance for the specified named `format` */
   constructor(format: string) {
-    if (format in Format._formats) {
-      this.format = format;
-    } else this.format = null;
+    this.format = format in Format._formats ? format : undefined;
   }
 
-  /** Validates `value` against the registered format.
+  /**
+   * Validates `value` against the registered format.
    * Inexistent named format allways validate to true
    */
   validate(value: string): boolean {
     if (!this.format) return true;
     return this._validateItem(Format._formats[this.format], value);
-
   }
 
-  toString(): string {
+  toString(): string | undefined {
     return this.format;
   }
 

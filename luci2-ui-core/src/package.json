@@ -7,7 +7,13 @@
     "start": "ng serve --aot",
     "build": "ng build --prod",
     "test": "ng test",
-    "lint": "ng lint --type-check --format stylish && stylelint \"src/**/*.scss\" --config .stylelintrc"
+    "lint": "ng lint --type-check && prettier -l \"src/**/*.{ts,scss}\" && stylelint \"src/**/*.scss\" --config .stylelintrc",
+    "precise-commits": "precise-commits"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run precise-commits --whitelist \"*.{ts,scss,css,html}\""
+    }
   },
   "private": true,
   "dependencies": {

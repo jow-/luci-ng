@@ -4,19 +4,18 @@
  */
 
 import { NgModule } from '@angular/core';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 
-import { MenuService } from './menu/menu.service';
-import { LoginComponent } from './login/login.component';
-import { NavItemComponent } from './nav-menu/nav-item.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { ShellComponent } from './shell/shell.component';
 import { MaterialModule } from '../material.module';
 import { UciModule } from '../uci/module';
 import { WidgetsModule } from '../widgets';
 
+import { LoginComponent } from './login/login.component';
+import { MenuService } from './menu/menu.service';
+import { NavItemComponent } from './nav-menu/nav-item.component';
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { ShellComponent } from './shell/shell.component';
 
 /**
  * ShellModule
@@ -25,7 +24,7 @@ import { WidgetsModule } from '../widgets';
  * Menu navigation - Breadcrumbs - Top buttons bar - Log in services, etc
  * It is intended to be agnostic of a specific application and serve as a generic template
  *
-*/
+ */
 @NgModule({
   imports: [
     RouterModule,
@@ -35,22 +34,11 @@ import { WidgetsModule } from '../widgets';
     WidgetsModule,
 
     MaterialModule,
-    UciModule
+    UciModule,
   ],
-  declarations: [
-    ShellComponent,
-    NavMenuComponent,
-    NavItemComponent,
-    LoginComponent
-  ],
-  exports: [
-    ShellComponent,
-  ],
-  providers: [
-    MenuService
-  ],
-  entryComponents: [LoginComponent]
+  declarations: [ShellComponent, NavMenuComponent, NavItemComponent, LoginComponent],
+  exports: [ShellComponent],
+  providers: [MenuService],
+  entryComponents: [LoginComponent],
 })
-export class ShellModule {
-}
-
+export class ShellModule {}

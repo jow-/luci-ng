@@ -6,5 +6,5 @@
 import { Observable } from 'rxjs';
 
 export interface ILogin {
-  login(username: string, password: string): Observable<any>
+  login(username: string, password: string): Observable<any>;
 }

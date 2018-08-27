@@ -3,7 +3,13 @@
  * Licensed under the MIT license.
  */
 
-import { Component, Input, OnChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import { IMenuNode } from '../shell.interface';
 
@@ -11,31 +17,33 @@ import { IMenuNode } from '../shell.interface';
   selector: 'app-nav-item',
   templateUrl: 'nav-item.component.html',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavItemComponent implements OnChanges {
-  @Input() level = 1;
-  @Input() node: IMenuNode;
+  @Input()
+  level = 1;
+  @Input()
+  node!: IMenuNode;
 
   isExpanded = false;
-  classes: {[index: string]: boolean };
-  nodeChilds: IMenuNode[];
+  classes: { [index: string]: boolean } = {};
+  nodeChilds: IMenuNode[] = [];
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.nodeChilds = (this.node && this.node.childs) || [];
 
     this.setClasses();
   }
 
-  setClasses() {
+  setClasses(): void {
     this.classes = {
-      ['level-' + this.level]: true,
+      [`level-${this.level}`]: true,
       collapsed: !this.isExpanded,
       expanded: this.isExpanded,
     };
   }
 
-  headerClicked() {
+  headerClicked(): void {
     this.isExpanded = !this.isExpanded;
     this.setClasses();
   }

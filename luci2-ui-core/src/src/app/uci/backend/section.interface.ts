@@ -2,17 +2,16 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { IUciOptionSchema } from './option.interface';
 import { SectionData } from '../data/section';
 
-
+import { IUciOptionSchema } from './option.interface';
 
 /**
  * Option Schema used by UCI backend
  */
 export interface IUciSectionSchema {
-
-  /** Sections are always `object` jsonschema type
+  /**
+   * Sections are always `object` jsonschema type
    * The actual `uci` section type is defined by the property name holding this object
    */
   type: string;
@@ -48,8 +47,6 @@ export interface IUciSectionSchema {
 export interface IUciPropertiesSchema {
   [property: string]: IUciOptionSchema;
 }
-
-
 
 export interface IUciSectionData {
   '.section'?: SectionData;

@@ -1,14 +1,8 @@
-
 @import './../../../styles/_components.scss';
 
-
-
 app-login {
-
-
-  @include media-query (sm) {
+  @include media-query(sm) {
     height: 100vh;
     width: 100vw;
-  };
-
+  }
 }

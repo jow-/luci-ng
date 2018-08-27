@@ -4,23 +4,23 @@
  */
 
 import { Directive, Input } from '@angular/core';
-import { NG_VALIDATORS, AbstractControl, Validator } from '@angular/forms';
+import { AbstractControl, NG_VALIDATORS, Validator } from '@angular/forms';
+
 import { OptionSchema } from '../schema/optionSchema';
 
 @Directive({
   selector: '[uciSchema]',
-  providers: [{provide: NG_VALIDATORS, useExisting: SchemaValidatorDirective, multi: true}]
+  providers: [{ provide: NG_VALIDATORS, useExisting: SchemaValidatorDirective, multi: true }],
 })
 export class SchemaValidatorDirective implements Validator {
+  @Input()
+  uciSchema!: OptionSchema;
+  constructor() {}
 
-  @Input() uciSchema: OptionSchema;
-  constructor() { }
-
-  validate(control: AbstractControl): {[key: string]: any} {
+  validate(control: AbstractControl): { [key: string]: any } | null {
     const valid = this.uciSchema.validate(control.value);
     const errorMsg = this.uciSchema.errorMsg;
 
-    return valid ? null : { uciSchema: {errorMsg: errorMsg}};
-
+    return valid ? null : { uciSchema: { errorMsg } };
   }
 }

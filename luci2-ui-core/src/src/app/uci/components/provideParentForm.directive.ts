@@ -9,6 +9,6 @@ import { ControlContainer, NgForm } from '@angular/forms';
 @Directive({
   // tslint:disable-next-line:directive-selector
   selector: '[provideParentForm]',
-  providers: [{provide: ControlContainer, useExisting: NgForm}]
+  providers: [{ provide: ControlContainer, useExisting: NgForm }],
 })
 export class ProvideParentFormDirective {}

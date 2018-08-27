@@ -5,10 +5,13 @@
  * https://opensource.org/licenses/MIT
  */
 
-
-import { Component, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ViewEncapsulation,
+} from '@angular/core';
 import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
-
 
 export interface ILevelWidgetDef {
   value: number;
@@ -24,16 +27,10 @@ export interface ILevelWidgetDef {
   styleUrls: ['./level.component.scss'],
   exportAs: 'data',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LevelComponent extends AbstractWidget<ILevelWidgetDef> {
-
-
-
-
   constructor(cdr: ChangeDetectorRef, expr: Expressions) {
     super(cdr, expr);
   }
-
-
 }

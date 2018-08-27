@@ -5,9 +5,14 @@
 
 import { NgModule } from '@angular/core';
 import {
-  MaterialModule, WidgetsCoreModule, FormFieldWidgetsModule, CommonWidgetsModule,
-  ESpression, Expressions
+  CommonWidgetsModule,
+  ESpression,
+  Expressions,
+  FormFieldWidgetsModule,
+  MaterialModule,
+  WidgetsCoreModule,
 } from 'reactive-json-form-ng';
+
 import { rootContextProvider } from './rootContext';
 import { StatusModule } from './status/status.module';
 import { UciWidgetsModule } from './uci/uci.module';
@@ -21,18 +26,15 @@ import { UciWidgetsModule } from './uci/uci.module';
     FormFieldWidgetsModule,
     UciWidgetsModule,
   ],
-  declarations: [
-  ],
-  exports: [
-    WidgetsCoreModule,
-  ],
+  declarations: [],
+  exports: [WidgetsCoreModule],
 
   providers: [
     {
       provide: Expressions,
-      useClass: ESpression
+      useClass: ESpression,
     },
-    rootContextProvider
-  ]
+    rootContextProvider,
+  ],
 })
-export class WidgetsModule { }
+export class WidgetsModule {}

@@ -3,15 +3,15 @@
  * Licensed under the MIT license.
  */
 
+import { IUciConfigData, IUciConfigSchema } from '../backend/config.interface';
+
 import { SectionSchema } from './sectionSchema';
-import { IUciConfigSchema, IUciConfigData } from '../backend/config.interface';
 
 /**
  * Config: object that models an `uci config file` schema information.
  * It can be constructed from an explicit `schema` or implicitly from the uci data
  */
 export class ConfigSchema {
-
   name: string;
   title: string;
   description = '';
@@ -19,7 +19,6 @@ export class ConfigSchema {
   sections: Map<string, SectionSchema>;
 
   constructor(name: string, schema?: IUciConfigSchema, data?: IUciConfigData) {
-
     this.sections = new Map<string, SectionSchema>();
     this.name = this.title = name;
     if (typeof schema === 'object' && schema.type === 'object') {
@@ -31,18 +30,16 @@ export class ConfigSchema {
           this.sections.set(sec, new SectionSchema(sec, schema.properties[sec]));
         }
     }
-    this.updateFromData(data);
-
+    if (data) this.updateFromData(data);
   }
 
-  updateFromData(data: IUciConfigData) {
+  updateFromData(data: IUciConfigData): void {
     if (typeof data === 'object') {
       for (const sec in data)
         if (data.hasOwnProperty(sec) && data[sec]['.type']) {
           if (this.sections.has(data[sec]['.type']))
-            this.sections.get(data[sec]['.type']).updateFromData(data[sec]);
-          else
-            this.sections.set(sec, new SectionSchema(sec, undefined, data[sec]));
+            this.sections.get(data[sec]['.type'])!.updateFromData(data[sec]);
+          else this.sections.set(sec, new SectionSchema(sec, undefined, data[sec]));
         }
     }
   }

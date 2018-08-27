@@ -3,45 +3,51 @@
  * Licensed under the MIT license.
  */
 
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewEncapsulation,
+} from '@angular/core';
+
 import { ConfigData } from '../../data/config';
 import { UciModelService } from '../../uciModel.service';
-
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'uci-form',
   templateUrl: './uciForm.component.html',
   styleUrls: ['./uciForm.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class UciFormComponent implements OnInit, OnChanges {
-  @Input() configName: string;
+  @Input()
+  configName!: string;
 
-  public isLoaded = false;
-  public config: ConfigData;
+  isLoaded = false;
+  config: ConfigData | undefined;
 
-  constructor(public uciModel: UciModelService) { }
+  constructor(public uciModel: UciModelService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.load();
   }
-  ngOnChanges(changes: SimpleChanges) {
-    if (!changes.configName.firstChange)
-      this.load();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes.configName.firstChange) this.load();
   }
 
-  load() {
+  load(): void {
     this.isLoaded = false;
     if (this.configName) {
-      this.uciModel.loadConfig(this.configName)
-        .subscribe(c => { this.isLoaded = true; this.config = c; });
-
+      this.uciModel.loadConfig(this.configName).subscribe(c => {
+        this.isLoaded = true;
+        this.config = c;
+      });
     }
-
   }
 
-  save() {
+  save(): void {
     this.uciModel.save();
   }
-
 }

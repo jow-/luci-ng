@@ -3,24 +3,18 @@
  * Licensed under the MIT license.
  */
 
-import { SectionData } from '../../data/section';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { SectionData } from '../../data/section';
 
 @Component({
   selector: 'uci-section',
   templateUrl: './uciSection.component.html',
   styleUrls: ['./uciSection.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false
+  preserveWhitespaces: false,
 })
-export class UciSectionComponent implements OnInit {
-
-  @Input() section: SectionData;
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class UciSectionComponent {
+  @Input()
+  section!: SectionData;
 }

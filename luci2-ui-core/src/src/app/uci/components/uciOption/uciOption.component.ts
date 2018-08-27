@@ -3,14 +3,13 @@
  * Licensed under the MIT license.
  */
 
-import { OptionData } from '../../data/option';
-import { UciDependency } from '../../schema/dependency';
-
-import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatChipInputEvent } from '@angular/material/chips';
 
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { UbusService } from '../../../ubus/ubus.service';
+import { OptionData } from '../../data/option';
+import { UciDependency } from '../../schema/dependency';
 import { UciModelService } from '../../uciModel.service';
 
 /**
@@ -21,56 +20,59 @@ import { UciModelService } from '../../uciModel.service';
   templateUrl: './uciOption.component.html',
   styleUrls: ['./uciOption.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false
+  preserveWhitespaces: false,
 })
 export class UciOptionComponent implements OnInit {
-
-  @Input() option: OptionData;
+  @Input()
+  option!: OptionData;
 
   separatorKeysCodes = [ENTER, COMMA];
 
   listInput = '';
 
-  listEnum: string[];
+  listEnum: string[] | undefined;
 
-  acOptions: string[];
+  acOptions: string[] | undefined;
 
-
-  dependencies: [UciDependency, boolean][];
+  dependencies: Array<[UciDependency, boolean]> | undefined;
   dependenciesState = false;
 
+  constructor(
+    private _ubus: UbusService,
+    private _model: UciModelService,
+    private _ref: ChangeDetectorRef
+  ) {}
 
-  constructor(private _ubus: UbusService, private _model: UciModelService, private _ref: ChangeDetectorRef) { }
-
-  ngOnInit() {
-
+  ngOnInit(): void {
     if (this.option.schema.ubusBinding) {
       this.listEnum = this.acOptions = [];
-      this.option.schema.ubusBinding.bind(this.option, this._model, this._ubus)
-        .subscribe(
-        data => {
-          this.listEnum = this.acOptions = (this.option.schema.enum || []).concat(Array.isArray(data) ? data : []);
-          this._ref.markForCheck();
-        });
+      this.option.schema.ubusBinding.bind(this.option, this._model, this._ubus).subscribe(data => {
+        this.listEnum = this.acOptions = (this.option.schema.enum || []).concat(
+          Array.isArray(data) ? data : []
+        );
+        this._ref.markForCheck();
+      });
     } else if (this.option.schema.uciBinding) {
       this.listEnum = this.acOptions = [];
 
-      this._model.bindSelector(this.option.schema.uciBinding, this.option, true).subscribe(
-        data => {
-          this.listEnum = this.acOptions = (this.option.schema.enum || []).concat(Array.isArray(data) ? data : []);
-          this._ref.markForCheck();
-        });
-    } else if (this.option.schema.enum)
-      this.listEnum = this.acOptions = this.option.schema.enum;
+      this._model.bindSelector(this.option.schema.uciBinding, this.option, true).subscribe(data => {
+        this.listEnum = this.acOptions = (this.option.schema.enum || []).concat(
+          Array.isArray(data) ? data : []
+        );
+        this._ref.markForCheck();
+      });
+    } else if (this.option.schema.enum) this.listEnum = this.acOptions = this.option.schema.enum;
 
     this.setupDependencies();
   }
 
-  setupDependencies() {
-    let depData: OptionData;
+  setupDependencies(): void {
+    let depData: OptionData | undefined;
 
-    if (!this.option.schema.dependencies) { this.dependenciesState = true; return; }
-
+    if (!this.option.schema.dependencies) {
+      this.dependenciesState = true;
+      return;
+    }
 
     this.dependencies = [];
 
@@ -80,29 +82,27 @@ export class UciOptionComponent implements OnInit {
       depData = this.option.section.getOption(key);
 
       if (depData) {
-
-        const dependency: [UciDependency, boolean] = [new UciDependency(depData, this.option.schema.dependencies[key]), null];
-        dependency[0].asObservable().subscribe(
-          state => {
-            let global: boolean;
-            if (state !== dependency[1]) {
-              dependency[1] = state;
-              global = this.dependencies.reduce((acum, val) => acum && val[1], true);
-              if (this.dependenciesState !== global) {
-                this.dependenciesState = global;
-                this._ref.markForCheck();
-              }
+        const dependency: [UciDependency, boolean] = [
+          new UciDependency(depData, this.option.schema.dependencies[key]),
+          false,
+        ];
+        dependency[0].asObservable().subscribe(state => {
+          let global: boolean;
+          if (state !== dependency[1]) {
+            dependency[1] = state;
+            global = this.dependencies!.reduce((acum, val) => acum && val[1], true);
+            if (this.dependenciesState !== global) {
+              this.dependenciesState = global;
+              this._ref.markForCheck();
             }
-          });
+          }
+        });
 
         this.dependencies.push(dependency);
-
       }
-
     }
 
     this.dependenciesState = this.dependencies.reduce((acum, val) => acum && val[1], true);
-
   }
   addChip(event: MatChipInputEvent, valueAccessor: any): void {
     const input = event.input;
@@ -120,7 +120,6 @@ export class UciOptionComponent implements OnInit {
     if (input) {
       this.listInput = input.value = '';
     }
-
   }
 
   removeChip(index: number, valueAccessor: any): void {
@@ -133,8 +132,8 @@ export class UciOptionComponent implements OnInit {
     }
   }
 
-  filterAutocomplete(text) {
-    this.acOptions = this.listEnum.filter(data => data.toLowerCase().indexOf(text) >= 0);
+  filterAutocomplete(text: string): void {
+    this.acOptions =
+      (this.listEnum && this.listEnum.filter(data => data.toLowerCase().indexOf(text) >= 0)) || [];
   }
-
 }

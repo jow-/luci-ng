@@ -4,15 +4,13 @@
  */
 
 export interface IUbusAcls {
-  'access-group': { group: string[]}
-
-
+  'access-group': { group: string[] };
 }
 
 export interface IUbusSession {
-  acls: IUbusAcls
-  data: {username: string}
-  expires: number
-  timeout: number
-  ubus_rpc_session: string
+  acls: IUbusAcls;
+  data: { username: string };
+  expires: number;
+  timeout: number;
+  ubus_rpc_session: string;
 }

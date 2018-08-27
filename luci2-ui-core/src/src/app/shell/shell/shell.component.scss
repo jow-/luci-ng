@@ -1,12 +1,9 @@
 @import './../../../styles/_components.scss';
 
-
 app-shell {
-
   flex: 1 1 auto;
 
   @include flex-container(column, stretch);
-
 }
 
 .app-bar {
@@ -19,23 +16,20 @@ app-shell {
   min-height: 100%;
 }
 
-
 .footer {
   flex: 0 1 auto;
-
 }
 
 mat-sidenav-container.app-content {
   overflow: hidden;
   flex: 1 1 auto;
 
-   display: flex;
-   flex-direction: column;
-
+  display: flex;
+  flex-direction: column;
 }
 
 mat-sidenav {
-	width: $bp-xs * 0.66;
-	min-width: $bp-xs * 0.33;
-	max-width: $bp-xs * 0.8;
+  width: $bp-xs * 0.66;
+  min-width: $bp-xs * 0.33;
+  max-width: $bp-xs * 0.8;
 }

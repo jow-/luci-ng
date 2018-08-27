@@ -1,11 +1,11 @@
 @import './../../../styles/_components.scss';
 
-
 app-nav-menu {
   display: block;
   margin: 0 auto;
   font-size: 13px;
-  ul, a {
+  ul,
+  a {
     padding: 0;
     margin: 0;
   }
@@ -47,8 +47,6 @@ app-nav-menu {
   }
 }
 
-
-
 button.nav-menu-item {
   border: none;
   background-color: transparent;
@@ -70,7 +68,6 @@ button.nav-menu-item {
   @include rotate(-90deg);
   margin: $unit / 2;
 }
-
 
 .heading-children.expanded {
   visibility: visible;

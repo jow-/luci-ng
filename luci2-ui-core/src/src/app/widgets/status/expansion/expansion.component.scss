@@ -5,10 +5,9 @@
  * https://opensource.org/licenses/MIT
  */
 
- @import 'styles/_components.scss';
+@import 'styles/_components.scss';
 
- wdg-expansion {
-
+wdg-expansion {
   .expansion-card {
     margin-bottom: $unit * 2;
     margin-right: $unit * 2;
@@ -19,58 +18,52 @@
     min-width: 200px;
   }
 
-   .expansion-card-header {
-     @include flex-container(row, center);
+  .expansion-card-header {
+    @include flex-container(row, center);
 
+    flex: 1 1 100%;
 
-     flex: 1 1 100%;
+    padding-top: $unit * 1.5;
+    padding-bottom: $unit * 1.5;
 
-     padding-top: $unit * 1.5;
-     padding-bottom: $unit * 1.5;
+    .expansion-icon-container {
+      flex: 0 0 auto;
+      margin-right: $unit * 2;
+      @include flex-container(row, center);
+      justify-content: center;
 
+      min-width: $unit * 6;
+      min-height: $unit * 6;
+      border-radius: $unit * 6;
+      background-color: #aaa;
 
+      .expansion-icon {
+        width: $unit * 4;
+        height: $unit * 4;
 
-     .expansion-icon-container {
-       flex: 0 0 auto;
-       margin-right: $unit * 2;
-       @include flex-container(row, center);
-       justify-content: center;
+        color: white;
+      }
+    }
 
-       min-width: $unit* 6;
-       min-height: $unit* 6;
-       border-radius: $unit * 6;
-       background-color: #aaa;
+    .expansion-content {
+      flex: 1 1 auto;
 
-       .expansion-icon {
-         width: $unit* 4;
-         height: $unit* 4;
+      .expansion-data {
+        margin: 0 0 $unit / 2;
+        color: #aaa;
+        font-size: $unit * 3.5;
+        font-weight: 400;
 
-         color: white;
-
-       }
-     }
-
-     .expansion-content {
-       flex: 1 1 auto;
-
-       .expansion-data {
-         margin: 0 0 $unit / 2;
-         color: #aaa;
-         font-size: $unit * 3.5;
-         font-weight: 400;
-
-         .unit {
-           font-size: 0.6em;
-           text-transform: uppercase;
-         }
-
-       }
-       h5 {
-         margin: $unit / 2 0 0;
-         text-transform: capitalize;
-         color: #aaa;
-       }
-
-     }
-   }
- }
+        .unit {
+          font-size: 0.6em;
+          text-transform: uppercase;
+        }
+      }
+      h5 {
+        margin: $unit / 2 0 0;
+        text-transform: capitalize;
+        color: #aaa;
+      }
+    }
+  }
+}
