@@ -9,7 +9,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { debug } from '../../shared/observable.debug';
-import { UbusService } from '../../ubus/ubus.service';
+import { UbusService } from '../../shared/ubus.service';
 
 import {
   IUciAddSectionParam,
@@ -19,7 +19,9 @@ import {
 } from './actions.interface';
 import { IUciConfigData } from './config.interface';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class UciService {
   constructor(private _ubus: UbusService, private _http: HttpClient) {}
 

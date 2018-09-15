@@ -17,8 +17,7 @@ import { ViewsResolverService } from './shared/viewsresolver.service';
 import { MenuService } from './shell/menu/menu.service';
 import { MenuGuardService } from './shell/menu/menuguard.service';
 import { ShellModule } from './shell/shell.module';
-import { UbusService } from './ubus/ubus.service';
-import { UciModule } from './uci/module';
+import { UbusService } from './shared/ubus.service';
 import { WidgetsModule } from './widgets';
 
 @NgModule({

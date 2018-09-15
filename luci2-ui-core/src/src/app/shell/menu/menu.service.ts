@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ViewsResolverService } from '../../shared/viewsresolver.service';
-import { UbusService } from '../../ubus/ubus.service';
+import { UbusService } from '../../shared/ubus.service';
 
 import { IMenu, IMenuItem, IMenuItemArr, IMenuItemObj } from './menu.interface';
 
