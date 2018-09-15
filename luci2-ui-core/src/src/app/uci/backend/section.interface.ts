@@ -2,7 +2,6 @@
  * Copyright (c) 2017 Adrian Panella <ianchi74@outlook.com>, contributors.
  * Licensed under the MIT license.
  */
-import { SectionData } from '../data/section';
 
 import { IUciOptionSchema } from './option.interface';
 
@@ -49,7 +48,6 @@ export interface IUciPropertiesSchema {
 }
 
 export interface IUciSectionData {
-  '.section'?: SectionData;
   '.anonymous': boolean;
   '.type': string;
   '.name': string;

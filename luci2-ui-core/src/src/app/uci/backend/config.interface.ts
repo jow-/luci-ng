@@ -3,8 +3,6 @@
  * Licensed under the MIT license.
  */
 
-import { ConfigData } from '../data/config';
-
 import { IUciSectionData, IUciSectionSchema } from './section.interface';
 
 /**
@@ -25,7 +23,5 @@ export interface IUciConfigSchema {
 }
 
 export interface IUciConfigData {
-  '.config'?: ConfigData;
-
-  [section: string]: IUciSectionData | any;
+  [section: string]: IUciSectionData;
 }
