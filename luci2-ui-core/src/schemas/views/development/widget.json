@@ -1,23 +1,28 @@
 {
-  "type": "form",
+  "widget": "form",
+  "bind": "$model",
 
-  "content": [{
-      "type": "input",
-      "bind": "$model.password",
+  "content": [
+    {
+      "widget": "input",
+      "bind": "$model.widget",
       "options": {
-        "title": "Password",
-        "description": "Enter password",
+        "title": "Widget",
+        "description": "Enter widget definition",
         "required": true
       }
     },
     {
-      "type": "input",
-      "bind": "$model.repassword",
-      "validate": "$value && $value == $model.password",
+      "widget": "button",
+      "bind": "$model.update",
       "options": {
-        "title": "Repeat Password",
-        "description": "Re-enter password"
+        "title": "Update",
+        "click": "JSON.parse($model.widget)"
       }
+    },
+    {
+      "widget": "dynamic",
+      "options": { "widget=": "$model.update" }
     }
   ]
 }

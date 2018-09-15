@@ -1,16 +1,15 @@
 {
-  "type": "tabs",
+  "widget": "tabs",
 
   "options": {
     "tabLabels": ["Installed", "Available"]
   },
-  "content": [{
-      "type": "table",
-      "context": {
-        "data=": "ubus('luci2.opkg', 'list_installed')"
-      },
+  "content": [
+    {
+      "widget": "table",
+      "onInit": "data = ubus('luci2.opkg', 'list_installed')",
       "options": {
-        "colKeys": ["0","1"],
+        "colKeys": ["0", "1"],
         "colHeaders": ["Package", "Version"],
         "dataSource=": "data.packages",
         "filterBy": [1],
@@ -21,9 +20,7 @@
             "action": "ubus('luci2.opkg','remove', { package: $data[0]})"
           }
         ]
-
       }
     }
-
   ]
 }

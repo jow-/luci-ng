@@ -1,9 +1,6 @@
 {
-  "type": "table",
-  "context": {
-    "log=": "ubus('luci2.system', 'dmesg')",
-    "re=": "/^(?:\\[([ .0-9]*)\\])?\\s*(.*)$/i"
-  },
+  "widget": "table",
+  "onInit": "log=ubus('luci2.system', 'dmesg'), re=/^(?:\\[([ .0-9]*)\\])?\\s*(.*)$/i",
   "options": {
     "title": "Kernel Log",
     "icon": "sd",

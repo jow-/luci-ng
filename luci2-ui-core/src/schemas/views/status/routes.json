@@ -1,45 +1,36 @@
 {
-  "type": "tabs",
+  "widget": "tabs",
 
   "options": {
     "tabLabels": ["IPv4 Routes", "IPv6 Routes", "ARP Table"]
   },
-  "content": [{
-      "type": "table",
-      "context": {
-        "data=": "ubus('luci2.network', 'routes')"
-      },
+  "content": [
+    {
+      "widget": "table",
+      "onInit": "data = ubus('luci2.network', 'routes')",
       "options": {
         "colKeys": ["target", "nexthop", "metric", "device"],
         "colHeaders": ["Target", "Gateway", "Metric", "Interface"],
         "dataSource=": "data.routes"
       }
-
     },
     {
-      "type": "table",
-      "context": {
-        "data=": "ubus('luci2.network', 'routes6')"
-      },
+      "widget": "table",
+      "onInit": "data = ubus('luci2.network', 'routes6')",
       "options": {
         "colKeys": ["target", "source", "nexthop", "metric", "device"],
         "colHeaders": ["Target", "Source", "Gateway", "Metric", "Interface"],
         "dataSource=": "data.routes"
       }
-
     },
     {
-      "type": "table",
-      "context": {
-        "data=": "ubus('luci2.network', 'arp_table')"
-      },
+      "widget": "table",
+      "onInit": "data = ubus('luci2.network', 'arp_table')",
       "options": {
         "colKeys": ["ipaddr", "macaddr", "device"],
         "colHeaders": ["IP Address", "MAC Address", "Device"],
         "dataSource=": "data.entries"
       }
-
     }
-
   ]
 }
