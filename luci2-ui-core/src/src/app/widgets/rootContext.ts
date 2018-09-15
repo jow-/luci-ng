@@ -7,16 +7,17 @@
 
 import { Context, ESpression, Expressions, ROOT_EXPR_CONTEXT } from 'reactive-json-form-ng';
 
-import { UbusService } from '../ubus/ubus.service';
+import { UbusService } from '../shared/ubus.service';
+import { UciModel2 } from '../uci/uci';
 
 export const rootContextProvider = {
   // tslint:disable-line:naming-convention
   provide: ROOT_EXPR_CONTEXT,
   useFactory: rootContextFactory,
-  deps: [UbusService, Expressions],
+  deps: [UbusService, Expressions, UciModel2],
 };
 
-export function rootContextFactory(ubus: UbusService, expr: ESpression): Context {
+export function rootContextFactory(ubus: UbusService, expr: ESpression, uci: UciModel2): Context {
   return Context.create(
     undefined,
     undefined,
@@ -25,6 +26,7 @@ export function rootContextFactory(ubus: UbusService, expr: ESpression): Context
       ubusList: ubus.list.bind(ubus),
       map: expr.mapFactory(),
       reduce: expr.reduceFactory(),
+      uci,
       $user: ubus.user,
     },
     undefined,
