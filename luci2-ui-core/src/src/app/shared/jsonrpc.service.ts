@@ -28,7 +28,9 @@ export class JsonrpcRequest implements IJsonrpcRequest {
  * It adds retry interceptors for http errors and jsonrpc errors
  */
 // tslint:disable-next-line:max-classes-per-file
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class JsonrpcService {
   private static _headers = new HttpHeaders({
     Accept: 'application/json',

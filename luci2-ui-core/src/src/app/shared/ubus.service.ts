@@ -9,13 +9,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
 
-import { JsonrpcErrorCodes } from '../shared/jsonrpc.interface';
-import { JsonrpcService } from '../shared/jsonrpc.service';
-import { debug } from '../shared/observable.debug';
+import { JsonrpcErrorCodes } from './jsonrpc.interface';
+import { JsonrpcService } from './jsonrpc.service';
+import { debug } from './observable.debug';
 import { ILogin } from '../shell/login/ILogin.interface';
 import { LoginComponent } from '../shell/login/login.component';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class UbusService implements ILogin {
   // TODO: check acls befor calling
   private _sid: string | undefined;
