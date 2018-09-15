@@ -11,7 +11,6 @@ import { RouterModule } from '@angular/router';
 import { RoutedWidgetComponent } from 'reactive-json-form-ng';
 
 import { AppComponent } from './app.component';
-import { MaterialModule } from './material.module';
 import { JsonrpcService } from './shared/jsonrpc.service';
 import { ViewsResolverService } from './shared/viewsresolver.service';
 import { MenuService } from './shell/menu/menu.service';
@@ -36,9 +35,6 @@ import { WidgetsModule } from './widgets';
       },
     ]),
     WidgetsModule,
-
-    UciModule,
-    MaterialModule,
   ],
   providers: [JsonrpcService, UbusService, MenuService],
   entryComponents: [RoutedWidgetComponent],

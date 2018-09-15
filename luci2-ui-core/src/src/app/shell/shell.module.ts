@@ -5,10 +5,9 @@
 
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSidenavModule } from '@angular/material';
 import { RouterModule } from '@angular/router';
 
-import { MaterialModule } from '../material.module';
-import { UciModule } from '../uci/module';
 import { WidgetsModule } from '../widgets';
 
 import { LoginComponent } from './login/login.component';
@@ -16,6 +15,8 @@ import { MenuService } from './menu/menu.service';
 import { NavItemComponent } from './nav-menu/nav-item.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ShellComponent } from './shell/shell.component';
+import { MaterialModule } from 'reactive-json-form-ng';
+import { FormsModule } from '@angular/forms';
 
 /**
  * ShellModule
@@ -29,12 +30,11 @@ import { ShellComponent } from './shell/shell.component';
   imports: [
     RouterModule,
     BrowserAnimationsModule,
+    FormsModule,
     RouterModule,
-
     WidgetsModule,
-
     MaterialModule,
-    UciModule,
+    MatSidenavModule,
   ],
   declarations: [ShellComponent, NavMenuComponent, NavItemComponent, LoginComponent],
   exports: [ShellComponent],
