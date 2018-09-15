@@ -1,9 +1,10 @@
 {
-  "type": "form",
+  "widget": "form",
+  "bind": "$model",
 
   "content": [
     {
-      "type": "autocomplete",
+      "widget": "autocomplete",
       "bind": "$model.service",
       "options": {
         "title": "Service",
@@ -12,7 +13,7 @@
       }
     },
     {
-      "type": "autocomplete",
+      "widget": "autocomplete",
       "bind": "$model.method",
       "options": {
         "title": "Method",
@@ -21,7 +22,7 @@
       }
     },
     {
-      "type": "input",
+      "widget": "input",
       "bind": "$model.params",
       "options": {
         "title": "Method",
@@ -29,23 +30,23 @@
       }
     },
     {
-    "type": "button",
-    "bind": "$model.refresh",
-    "options": {
-      "title": "Execute",
-      "click": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {})"
+      "widget": "button",
+      "bind": "$model.refresh",
+      "options": {
+        "title": "Execute",
+        "click": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {})"
       }
     },
     {
-    "type": "code",
-    "options": {
-      "text=": "`ubus('${$model.service}', '${$model.method}', ${JSON.stringify(JSON.parse($model.params.trim()) || {})})`"
+      "widget": "code",
+      "options": {
+        "text=": "`ubus('${$model.service}', '${$model.method}', ${JSON.stringify(JSON.parse($model.params.trim()) || {})})`"
       }
     },
     {
-    "type": "code",
-    "options": {
-      "text=": "JSON.stringify($model.refresh, null, 4)"
+      "widget": "code",
+      "options": {
+        "text=": "JSON.stringify($model.refresh, null, 4)"
       }
     }
   ]

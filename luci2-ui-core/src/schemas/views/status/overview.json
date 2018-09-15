@@ -1,13 +1,12 @@
 {
-  "type": "grid-container",
+  "widget": "grid-container",
   "options": {
     "direction": "row"
   },
-  "content": [{
-      "type": "stat-expand",
-      "context": {
-        "board=": "ubus('system','board')"
-      },
+  "content": [
+    {
+      "widget": "stat-expand",
+      "waitFor": "board = ubus('system','board')",
       "options": {
         "gridCol": "span 2",
         "gridRowOpen": "span 3",
@@ -18,12 +17,12 @@
         "noGraph": true
       },
       "content": {
-        "type": "table",
+        "widget": "table",
         "options": {
-
           "colKeys": ["title", "value"],
           "colHeaders": false,
-          "dataSource": [{
+          "dataSource": [
+            {
               "title": "Hostname",
               "value=": "board.hostname"
             },
@@ -44,10 +43,8 @@
       }
     },
     {
-      "type": "stat-expand",
-      "context": {
-        "info=": "ubus('system','info')"
-      },
+      "widget": "stat-expand",
+      "waitFor": "info = ubus('system','info')",
       "options": {
         "title": "Uptime",
         "icon": "clock-fast",
@@ -58,10 +55,8 @@
       }
     },
     {
-      "type": "stat-expand",
-      "context": {
-        "info=": "ubus('system','info')"
-      },
+      "widget": "stat-expand",
+      "waitFor": "info = ubus('system','info')",
       "options": {
         "title": "Memory",
         "icon": "memory",
@@ -72,10 +67,8 @@
       }
     },
     {
-      "type": "stat-expand",
-      "context": {
-        "info=": "ubus('system','info')"
-      },
+      "widget": "stat-expand",
+      "waitFor": "info = ubus('system','info')",
       "options": {
         "title": "Load",
         "icon": "chip",
@@ -85,12 +78,9 @@
       }
     },
 
-
     {
-      "type": "stat-expand",
-      "context": {
-        "leases=": "ubus('luci2.network', 'dhcp_leases')"
-      },
+      "widget": "stat-expand",
+      "waitFor": "leases = ubus('luci2.network', 'dhcp_leases')",
       "options": {
         "title": "DHCP Leases",
         "value=": "leases.leases.length",
@@ -102,7 +92,7 @@
         "gridRowOpen": "span 5"
       },
       "content": {
-        "type": "table",
+        "widget": "table",
         "options": {
           "colKeys": ["hostname", "ipaddr", "macaddr", "expires"],
           "colKeys.xs": ["hostname", "ipaddr"],
@@ -115,13 +105,10 @@
         }
       },
       "details": {}
-
     },
     {
-      "type": "stat-expand",
-      "context": {
-        "leases=": "ubus('luci2.network', 'dhcp6_leases')"
-      },
+      "widget": "stat-expand",
+      "waitFor": "leases = ubus('luci2.network', 'dhcp6_leases')",
       "options": {
         "title": "DHCPv6 Leases",
         "value=": "leases.leases.length",
@@ -133,7 +120,7 @@
         "gridRowOpen": "span 5"
       },
       "content": {
-        "type": "table",
+        "widget": "table",
         "options": {
           "colKeys": ["hostname", "ipaddr", "macaddr", "expires"],
           "colKeys.xs": ["hostname", "ipaddr"],
@@ -145,14 +132,11 @@
         }
       },
       "details": {}
-
     },
 
     {
-      "type": "stat-expand",
-      "context": {
-        "disk=": "ubus('luci2.system', 'diskfree')"
-      },
+      "widget": "stat-expand",
+      "waitFor": "disk = ubus('luci2.system', 'diskfree')",
 
       "options": {
         "title": "Free Disk",
@@ -165,10 +149,8 @@
     },
 
     {
-      "type": "stat-expand",
-      "context": {
-        "conntrack=": "ubus('luci2.network', 'conntrack_count')"
-      },
+      "widget": "stat-expand",
+      "waitFor": "conntrack = ubus('luci2.network', 'conntrack_count')",
 
       "options": {
         "title": "Connection Tracking",

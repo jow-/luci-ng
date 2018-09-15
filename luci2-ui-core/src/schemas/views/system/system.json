@@ -1,0 +1,26 @@
+{
+  "widget": "tabs",
+
+  "waitFor": "uci.loadConfig('system')",
+
+  "options": {
+    "tabLabels": ["General", "Time Sync", "Logging"]
+  },
+
+  "content": [
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('system', 'system')",
+        "bind": "uci.configs.system['@system']"
+      }
+    },
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('system', 'timeserver')",
+        "bind": "uci.configs.system['@timeserver']"
+      }
+    }
+  ]
+}

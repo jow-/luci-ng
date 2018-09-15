@@ -4,36 +4,46 @@
   "title": "Basic System configurations",
   "description": "Settings that apply to the most basic operation of the system, such as the hostname, the time zone, and how and where to write logging information to",
   "properties": {
-    "system": {
+    "@system": {
       "title": "",
       "description": "General System options",
-      "type": "object",
-      "anonymous": true,
-      "properties": {
-        "hostname": {
-          "title": "Hostname for this system",
-          "description": "Avoid points, even if they are within quotes. For example ' my.hostname ' will show only the ' my ' part",
-          "type": "string",
-          "format": "hostname",
-          "default": "lede",
-          "required": true
-        },
-        "timezone": {
-          "title": "Time Zone",
-          "description": "The time zone that date and time should be rendered in by default.",
-          "type": "string",
-          "default": "UTC"
-        },
-        "zonename": {
-          "title": "Time zone name for zoneinfo",
-          "description": "Only useful when using glibc and zoneinfo! (LIBC_USE_EGLIBC, PACKAGE_zoneinfo-*) The time zone that date and time should be rendered in by default.",
-          "type": "string",
-          "examples": [
-            "Europe/Brussels"
-          ]
-        },
+      "type": "array",
+      "items": {
         "type": "object",
+        "anonymous": true,
+        "ui": {
+          "fieldsets": {
+            "default": 1,
+            "sets": [
+              {
+                "title": "General",
+                "fields": ["hostname", "timezone", "zonename"]
+              },
+              { "title": "Log" }
+            ]
+          }
+        },
         "properties": {
+          "hostname": {
+            "title": "Hostname for this system",
+            "description": "Avoid points, even if they are within quotes. For example ' my.hostname ' will show only the ' my ' part",
+            "type": "string",
+            "format": "hostname",
+            "default": "lede",
+            "required": true
+          },
+          "timezone": {
+            "title": "Time Zone",
+            "description": "The time zone that date and time should be rendered in by default.",
+            "type": "string",
+            "default": "UTC"
+          },
+          "zonename": {
+            "title": "Time zone name for zoneinfo",
+            "description": "Only useful when using glibc and zoneinfo! (LIBC_USE_EGLIBC, PACKAGE_zoneinfo-*) The time zone that date and time should be rendered in by default.",
+            "type": "string",
+            "examples": ["Europe/Brussels"]
+          },
           "buffersize": {
             "title": "Buffersize",
             "description": "Size of the kernel message buffer",
@@ -70,9 +80,7 @@
           "log_file": {
             "title": "Log file",
             "description": "File to write log messages to (type file). The default is to not write a log in a file.",
-            "examples": [
-              "/var/log/messages"
-            ],
+            "examples": ["/var/log/messages"],
             "type": "string",
             "format": "path"
           },
@@ -99,10 +107,7 @@
             "title": "Protocol",
             "description": "Sets the protocol to use for the connection",
             "type": "string",
-            "enum": [
-              "tcp",
-              "udp"
-            ],
+            "enum": ["tcp", "udp"],
             "default": "udp"
           },
           "log_remote": {
@@ -127,132 +132,128 @@
             "title": "Log type",
             "description": "Either circular or file.",
             "type": "string",
-            "enum": [
-              "circular",
-              "file"
-            ],
+            "enum": ["circular", "file"],
             "default": "circular"
           }
         }
       }
     },
-    "timeserver": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "title": "Enable Client",
-          "type": "boolean"
-        },
-        "enable_server": {
-          "title": "Enable Server",
-          "description": "Enables the time server on this device, ntpd will answer with the time of the router. (busybox-ntpd listens to UDP 123 by default)",
-          "type": "boolean",
-          "default": false
-        },
-        "server": {
-          "title": "NTP Servers",
-          "description": "Pool of NTP servers to poll the time from. If empty, ntpd disables client mode, and system time won't be set automatically.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "hostname"
+    "@timeserver": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "title": "Enable Client",
+            "type": "boolean"
           },
-          "dependencies": [
-            "enabled"
-          ]
+          "enable_server": {
+            "title": "Enable Server",
+            "description": "Enables the time server on this device, ntpd will answer with the time of the router. (busybox-ntpd listens to UDP 123 by default)",
+            "type": "boolean",
+            "default": false
+          },
+          "server": {
+            "title": "NTP Servers",
+            "description": "Pool of NTP servers to poll the time from. If empty, ntpd disables client mode, and system time won't be set automatically.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "hostname"
+            },
+            "dependencies": ["enabled"]
+          }
         }
       }
     },
-    "led": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "title": "Led name",
-          "description": "",
-          "type": "string"
-        },
-        "sysfs": {
-          "title": "Sysfs entry",
-          "description": "Entry of the led in the /sys/class/leds directory",
-          "type": "string",
-          "format": "path",
-          "enumBinding": [
-            "luci2.system",
-            "led_list",
-            {},
-            "$.leds[*].name"
-          ],
-          "required": true
-        },
-        "default": {
-          "title": "Default state",
-          "description": "LED state before trigger",
-          "type": "boolean",
-          "enum": ["1", "0"]
-        },
-        "trigger": {
-          "title": "Trigger",
-          "description": "Event that controls the led activation",
-          "type": "string",
-          "enumBinding": [
-            "luci2.system",
-            "led_list",
-            {},
-            "$.leds[?(@.name=='${sysfs}')].triggers[*]"
-          ]
-        },
-        "delayon": {
-          "title": "Delay ON",
-          "description": "How long (ms) the LED should be on",
-          "type": "integer",
-          "required": true,
-          "minimum": 0,
-          "dependencies": { "trigger": ["timer"]}
-        },
-        "delayoff": {
-          "title": "Delay OFF",
-          "description": "How long (ms) the LED should be off",
-          "type": "integer",
-          "required": true,
-          "minimum": 0,
-          "dependencies": { "trigger": ["timer"]}
-        },
-        "dev": {
-          "title": "Device",
-          "description": "Name of the network/usb device which status should be reflected",
-          "type": "string",
-          "required": true,
-          "dependencies": { "trigger": ["netdev", "usbdev", "morse"]},
-          "enumBinding": ["luci2.network", "device_list", {}, "$.devices[*].device"]
-        },
-        "mode": {
-          "title": "Mode",
-          "description": "One or more of link, tx, or rx, seperated by spaces",
-          "type": "string",
-          "required": true,
-          "enum": ["link", "tx", "rx"],
-          "dependencies": { "trigger": ["netdev"]}
-        },
-        "interval": {
-          "title": "Interval",
-          "description": "Interval in ms when device is active",
-          "type": "integer",
-          "required": true,
-          "minimum": 0,
-          "dependencies": { "trigger": ["usbdev"]}
-        },
-        "delay": {
-          "title": "Delay",
-          "description": "Dit length in milliseconds",
-          "type": "integer",
-          "minimum": 0,
-          "dependencies": { "trigger": ["morse"]}
-        },
-        "message": {
-          "title": "Message",
-          "description": "The message to signal",
-          "type": "string",
-          "dependencies": { "trigger": ["morse"]}
+    "@led": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Led name",
+            "description": "",
+            "type": "string"
+          },
+          "sysfs": {
+            "title": "Sysfs entry",
+            "description": "Entry of the led in the /sys/class/leds directory",
+            "type": "string",
+            "format": "path",
+            "enumBinding": ["luci2.system", "led_list", {}, "$.leds[*].name"],
+            "required": true
+          },
+          "default": {
+            "title": "Default state",
+            "description": "LED state before trigger",
+            "type": "boolean",
+            "enum": ["1", "0"]
+          },
+          "trigger": {
+            "title": "Trigger",
+            "description": "Event that controls the led activation",
+            "type": "string",
+            "enumBinding": [
+              "luci2.system",
+              "led_list",
+              {},
+              "$.leds[?(@.name=='${sysfs}')].triggers[*]"
+            ]
+          },
+          "delayon": {
+            "title": "Delay ON",
+            "description": "How long (ms) the LED should be on",
+            "type": "integer",
+            "required": true,
+            "minimum": 0,
+            "dependencies": { "trigger": ["timer"] }
+          },
+          "delayoff": {
+            "title": "Delay OFF",
+            "description": "How long (ms) the LED should be off",
+            "type": "integer",
+            "required": true,
+            "minimum": 0,
+            "dependencies": { "trigger": ["timer"] }
+          },
+          "dev": {
+            "title": "Device",
+            "description": "Name of the network/usb device which status should be reflected",
+            "type": "string",
+            "required": true,
+            "dependencies": { "trigger": ["netdev", "usbdev", "morse"] },
+            "enumBinding": ["luci2.network", "device_list", {}, "$.devices[*].device"]
+          },
+          "mode": {
+            "title": "Mode",
+            "description": "One or more of link, tx, or rx, seperated by spaces",
+            "type": "string",
+            "required": true,
+            "enum": ["link", "tx", "rx"],
+            "dependencies": { "trigger": ["netdev"] }
+          },
+          "interval": {
+            "title": "Interval",
+            "description": "Interval in ms when device is active",
+            "type": "integer",
+            "required": true,
+            "minimum": 0,
+            "dependencies": { "trigger": ["usbdev"] }
+          },
+          "delay": {
+            "title": "Delay",
+            "description": "Dit length in milliseconds",
+            "type": "integer",
+            "minimum": 0,
+            "dependencies": { "trigger": ["morse"] }
+          },
+          "message": {
+            "title": "Message",
+            "description": "The message to signal",
+            "type": "string",
+            "dependencies": { "trigger": ["morse"] }
+          }
         }
       }
     }
