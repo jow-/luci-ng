@@ -15,19 +15,12 @@ import {
 
 import { rootContextProvider } from './rootContext';
 import { StatusModule } from './status/status.module';
-import { UciWidgetsModule } from './uci/uci.module';
 
 /** Module containing all Widget components */
 @NgModule({
-  imports: [
-    MaterialModule,
-    StatusModule,
-    CommonWidgetsModule,
-    FormFieldWidgetsModule,
-    UciWidgetsModule,
-  ],
+  imports: [MaterialModule, StatusModule, CommonWidgetsModule, FormFieldWidgetsModule],
   declarations: [],
-  exports: [WidgetsCoreModule],
+  exports: [WidgetsCoreModule, MaterialModule],
 
   providers: [
     {
