@@ -1,0 +1,449 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "title": "Basic System configurations",
+  "description": "Settings that apply to the most basic operation of the system, such as the hostname, the time zone, and how and where to write logging information to",
+  "properties": {
+    "@dnsmasq": {
+      "title": "dnsmasq",
+      "description": "General dnsmasq and DHCP server options",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "add_local_domain": {
+            "type": "boolean",
+            "title": "Add Local Domain",
+            "description": "Add the local domain as search directive in resolv.conf.",
+            "default": true
+          },
+
+          "add_local_hostname": {
+            "type": "boolean",
+            "title": "Add Local Hostname",
+            "description": "Add A and PTR records automatically for the local hostname.",
+            "default": true
+          },
+
+          "addnhosts": {
+            "title": "Additional host files",
+            "description": "Additional host files to read for serving DNS responses.",
+            "type": "array",
+            "items": { "type": "string", "format": "path" }
+          },
+
+          "authoritative": {
+            "type": "boolean",
+            "title": "Authoritative",
+            "description": "Force dnsmasq into authoritative mode. This speeds up DHCP leasing. Used if this is the only server on the network."
+          },
+          "bogusnxdomain": {
+            "title": "Bogus NXDOMAIN",
+            "description": "IP addresses to convert into NXDOMAIN responses (to counteract “helpful” upstream DNS servers that never return NXDOMAIN).",
+            "type": "array",
+            "items": { "type": "string", "format": "ip" }
+          },
+          "boguspriv": {
+            "type": "boolean",
+            "title": "Bogus private reverse lookups",
+            "description": "Reject reverse lookups to private IP ranges where no corresponding entry exists in /etc/hosts.",
+            "default": true
+          },
+          "cachelocal": {
+            "type": "boolean",
+            "title": "Cache Local",
+            "description": "When set to 0, use each network interface's dns address in the local  /etc/resolv.conf. Normally, only the loopback address is used, and all queries go through dnsmasq.",
+            "default": true
+          },
+          "cachesize": {
+            "type": "integer",
+            "title": "Cache Size [# names]",
+            "description": "Size of dnsmasq query cache.",
+            "default": 150,
+            "minimum": 0
+          },
+          "dbus": {
+            "type": "boolean",
+            "title": "DBus",
+            "description": "Enable DBus messaging for dnsmasq. Standard builds of dnsmasq on OpenWRT do not include DBus support!."
+          },
+          "dhcp_boot": {
+            "type": "boolean",
+            "title": "BOOTP options",
+            "description": "Append additional BOOTP options (see --dhcp-boot in man pages)."
+          },
+          "dhcphostsfile": {
+            "type": "string",
+            "format": "path",
+            "title": "External hosts file",
+            "description": "Read DHCP host information from the specified file."
+          },
+          "dhcpleasemax": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Maximum leases",
+            "description": "Maximum number of DHCP leases. Defaults to 1000"
+          },
+          "dnsforwardmax": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Maximum queries",
+            "description": "Maximum number of concurrent DNS queries. Defaults to 150."
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "description": "DNS domain handed out to DHCP clients."
+          },
+          "domainneeded": {
+            "type": "boolean",
+            "title": "Domain needed",
+            "description": "Tells dnsmasq never to forward queries for plain names, without dots or domain parts, to upstream nameservers. If the name is not known from /etc/hosts or DHCP then a not found answer is returned"
+          },
+          "dnssec": {
+            "type": "boolean",
+            "title": "DNSSEC",
+            "description": "Validate DNS replies and cache DNSSEC data. Requires the dnsmasq-full package!."
+          },
+
+          "dnsseccheckunsigned": {
+            "type": "boolean",
+            "title": "Check unsiged replies",
+            "description": "Check the zones of unsigned replies to ensure that unsigned replies are allowed in those zones. This protects against an attacker forging unsigned replies for signed DNS zones, but is slower and requires that the nameservers upstream of dnsmasq are DNSSEC-capable. Requires the dnsmasq-full package!."
+          },
+          "ednspacket_max": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "EDNS max packet size",
+            "description": "Specify the largest EDNS.0 UDP packet which is supported by the DNS forwarder. Defaults to 4096."
+          },
+          "enable_tftp": {
+            "type": "boolean",
+            "title": "Enable TFTP Server",
+            "description": "Enable the builtin TFTP server."
+          },
+          "expandhosts": {
+            "type": "boolean",
+            "title": "Expand hosts",
+            "description": "Add local domain suffix to names served from hosts files."
+          },
+
+          "filterwin2k": {
+            "type": "boolean",
+            "title": "Filter useless",
+            "description": "Do not forward requests that cannot be answered by public name servers"
+          },
+          "fqdn": {
+            "type": "boolean",
+            "title": "Full qualified domain name",
+            "description": "Do not resolve unqualifed local hostnames.",
+            "depends=": "$model.domain"
+          },
+          "interface": {
+            "type": "array",
+            "title": "Listen Interfaces",
+            "description": "Limit listening to these interfaces, and loopback.",
+            "items": { "type": "string", "format": "iface" }
+          },
+          "leasefile": {
+            "type": "string",
+            "format": "path",
+            "title": "leasefile",
+            "description": "Store DHCP leases in this file"
+          },
+          "local": {
+            "type": "string",
+            "title": "Local server",
+            "description": "Local domain specification. Names matching this domain are never forwarded and are resolved from DHCP or hosts files only."
+          },
+          "localise_queries": {
+            "type": "boolean",
+            "title": "Localise queries",
+            "description": "Choose IP address to match the incoming interface if multiple addresses are assigned to a host name in /etc/hosts."
+          },
+          "localservice": {
+            "type": "boolean",
+            "title": "Local Service Only",
+            "description": "Accept DNS queries only from hosts whose address is on a local subnet"
+          },
+          "logqueries": {
+            "type": "boolean",
+            "title": "Log queries",
+            "description": "Write received DNS requests to syslog"
+          },
+          "nodaemon": {
+            "type": "boolean",
+            "title": "Debug mode",
+            "description": "Don't daemonize the dnsmasq process. Logs to stderr as well as syslog."
+          },
+          "nohosts": {
+            "type": "boolean",
+            "title": "Ignore Hosts file",
+            "description": "Don't read DNSnames from /etc/hosts"
+          },
+          "nonegcache": {
+            "type": "boolean",
+            "title": "No negative cache",
+            "description": "Do not cache negative replies, e.g. for not existing domains"
+          },
+          "noresolv": {
+            "type": "boolean",
+            "title": "Ignore resolve file",
+            "description": "Don't read upstream servers from /etc/resolv.conf"
+          },
+          "notinterface": {
+            "type": "array",
+            "title": "Exclude interfaces",
+            "description": "Prevent listening on these interfaces.",
+            "items": {
+              "type": "string",
+              "format": "iface"
+            },
+            "depends=": "$model.nonwildcard"
+          },
+          "nonwildcard": {
+            "type": "boolean",
+            "title": "Non-wildcard",
+            "description": "Bind only to specific interfaces rather than wildcard address."
+          },
+          "port": {
+            "type": "integer",
+            "title": "DNS Server port",
+            "description": "Listening port for DNSqueries, disables DNSserver functionality if set to 0",
+            "minimum": 0,
+            "maximum": 65535
+          },
+          "queryport": {
+            "type": "integer",
+            "title": "DNS query port",
+            "description": "Use a fixed port for outbound DNS queries",
+            "minimum": 0,
+            "maximum": 65535
+          },
+          "readethers": {
+            "type": "boolean",
+            "title": "Use static lease file",
+            "description": "Read static lease entries from /etc/ethers, re-read on SIGHUP"
+          },
+          "rebind_protection": {
+            "type": "boolean",
+            "default": true,
+            "title": "Rebind Protection",
+            "description": "Enables DNS rebind attack protection by discarding upstream RFC1918 responses"
+          },
+          "rebind_localhost": {
+            "type": "boolean",
+            "title": "Allow localhost",
+            "description": "Allows upstream 127.0.0.0/8 responses, required for DNS based blacklist services",
+            "depends=": "$model.rebind_protection"
+          },
+          "rebind_domain": {
+            "type": "array",
+            "title": "Domain whitelist",
+            "description": "List of domains to allow RFC1918 responses for.",
+            "depends=": "$model.rebind_protection",
+            "items": { "type": "string", "format": "host" }
+          },
+          "resolvfile": {
+            "type": "string",
+            "format": "path",
+            "default": "/tmp/resolv.conf.auto",
+            "title": "Resolve file",
+            "description": "Local alternative resolv file",
+            "depends=": "!$model.noresolv"
+          },
+          "server": {
+            "type": "array",
+            "title": "DNS forwardings",
+            "description": "List of DNS servers to forward requests to.",
+            "items": { "type": "string" }
+          },
+          "strictorder": {
+            "type": "boolean",
+            "title": "Strict order",
+            "description": "Obey order of DNSservers in /etc/resolv.conf"
+          },
+          "tftp_root": {
+            "type": "string",
+            "format": "path",
+            "title": "TFTP server root directory",
+            "description": "Specifies the TFTProot directory",
+            "dependes=": "$model.enable_tftp"
+          }
+        }
+      }
+    },
+
+    "@dhcp": {
+      "title": "DHCP Server",
+      "description": "specify per interface lease pools and settings for serving DHCP requests",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "interface": {
+            "type": "string",
+            "format": "iface",
+            "title": "Logical interface",
+            "description": "Specifies the interface associated with this DHCP address pool.",
+            "enum=": "ubus('uci', 'get', {config:'network',type:'interface'} , `$.values[?(@['.name']!='loopback')]['.name']`)",
+            "required": true
+          },
+          "networkid": {
+            "type": "string",
+            "title": "networkid",
+            "description": "The dhcp functionality defined in the dhcp section is limited to the interface indicated here through its network-id. In case omitted the system tries to know the network-id via the 'interface' setting in this dhcp section, through consultation of /etc/config/network. Some IDs get assigned dynamically, are not provided by network, but still can be set here."
+          },
+          "ignore": {
+            "type": "boolean",
+            "title": "Ignore interface",
+            "description": "Disable DHCP for this interface"
+          },
+
+          "dhcp_option": {
+            "type": "array",
+            "title": "DHCP-Options",
+            "description": "Define additional DHCP options to advertise to clients.",
+            "items": { "type": "string" }
+          },
+          "dynamicdhcp": {
+            "type": "boolean",
+            "default": true,
+            "title": "Dynamic DHCP",
+            "description": "Dynamically allocate client addresses, if disable only clients with static leases are served"
+          },
+          "force": {
+            "type": "boolean",
+            "title": "Force",
+            "description": "Force DHCP on this network even if another server is detected."
+          },
+
+          "dhcpv6": {
+            "type": "string",
+            "title": "DHCPv6-Service",
+            "description": "Specifies DHCPv6 server mode. Empty to disable",
+            "enum": ["server", "realy", "hybrid"]
+          },
+
+          "ra": {
+            "type": "string",
+            "title": "Router Advertisement-Service",
+            "description": "Specifies Router Advertisements mode. Empty to disable",
+            "enum": ["server", "realy", "hybrid"]
+          },
+          "ndp": {
+            "type": "string",
+            "title": "NDP-Proxy",
+            "description": "Specifies NDP mode. Empty to disabled",
+            "enum": ["relay", "hybrid"]
+          },
+
+          "start": {
+            "type": "integer",
+            "default": 100,
+            "title": "Start",
+            "description": "Lowest leased address as offset from the network address."
+          },
+          "limit": {
+            "type": "integer",
+            "default": 150,
+            "title": "Limit",
+            "description": "Maximum number of leased addresses."
+          },
+          "leasetime": {
+            "type": "string",
+            "default": "12h",
+            "title": "Lease time",
+            "description": "Expiry time of leased addresses, minimum is 2 minutes. (example 12h or 30m)"
+          }
+        }
+      }
+    },
+
+    "@host": {
+      "title": "Custom Domains",
+      "description": "Define a custom domain name and the corresponding PTR record",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "enable": { "type": "boolean", "title": "Enable entry", "default": true },
+          "name": {
+            "type": "string",
+            "format": "hostname",
+            "title": "Hostname",
+            "description": "Optional hostname to assign."
+          },
+          "ip": {
+            "type": "string",
+            "format": "ip4addr",
+            "title": "IPv4 Address",
+            "description": "'ignore' or the IP address to be used for this host."
+          },
+          "hostid": {
+            "type": "string",
+            "title": "IPv6 Suffix",
+            "description": "The IPv6 interface identifier (address suffix) as hexadecimal number (max. 8 chars)",
+            "maxLength": 8,
+            "pattern": "[0-9a-fA-F]*"
+          },
+          "mac": {
+            "type": "string",
+            "format": "macaddr",
+            "title": "MAC Address",
+            "description": "The hardware address(es) of this host, separated by commas."
+          },
+          "duid": {
+            "type": "string",
+            "default": "DHCP Unique Identifier",
+            "description": "The DHCPv6-DUID of this host."
+          },
+          "tag": {
+            "type": "string",
+            "title": "Tag",
+            "description": "Set the given tag for matching hosts."
+          },
+          "dns": {
+            "type": "boolean",
+            "title": "DNS entry",
+            "description": "Add static forward and reverse DNS entries for this host."
+          },
+
+          "broadcast": {
+            "type": "boolean",
+            "title": "Broadcast",
+            "description": "Force broadcast DHCP response."
+          },
+          "leasetime": {
+            "type": "string",
+            "title": "Lease Time",
+            "description": "Host-specific lease time, e.g. 2m, 3h, 5d. Note: introduced by r48801 in trunk"
+          }
+        }
+      }
+    },
+
+    "@domain": {
+      "title": "Custom Domains",
+      "description": "Define a custom domain name and the corresponding PTR record",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "hostname",
+            "title": "Hostname",
+            "required": true
+          },
+          "ip": {
+            "type": "string",
+            "format": "ipaddr",
+            "title": "IP address",
+            "required": true
+          }
+        }
+      }
+    }
+  }
+}

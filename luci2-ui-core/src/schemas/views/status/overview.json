@@ -1,5 +1,6 @@
 {
   "widget": "grid-container",
+  "onInit": "info = ubus('system','info', 1000)",
   "options": {
     "direction": "row"
   },
@@ -44,7 +45,7 @@
     },
     {
       "widget": "stat-expand",
-      "waitFor": "info = ubus('system','info')",
+      "waitFor": "info",
       "options": {
         "title": "Uptime",
         "icon": "clock-fast",
@@ -56,7 +57,7 @@
     },
     {
       "widget": "stat-expand",
-      "waitFor": "info = ubus('system','info')",
+      "waitFor": "info",
       "options": {
         "title": "Memory",
         "icon": "memory",
@@ -68,7 +69,7 @@
     },
     {
       "widget": "stat-expand",
-      "waitFor": "info = ubus('system','info')",
+      "waitFor": "info",
       "options": {
         "title": "Load",
         "icon": "chip",
@@ -80,7 +81,7 @@
 
     {
       "widget": "stat-expand",
-      "waitFor": "leases = ubus('luci2.network', 'dhcp_leases')",
+      "waitFor": "leases = ubus('luci2.network', 'dhcp_leases',  5000)",
       "options": {
         "title": "DHCP Leases",
         "value=": "leases.leases.length",
@@ -108,7 +109,7 @@
     },
     {
       "widget": "stat-expand",
-      "waitFor": "leases = ubus('luci2.network', 'dhcp6_leases')",
+      "waitFor": "leases = ubus('luci2.network', 'dhcp6_leases',  5000)",
       "options": {
         "title": "DHCPv6 Leases",
         "value=": "leases.leases.length",
@@ -136,7 +137,7 @@
 
     {
       "widget": "stat-expand",
-      "waitFor": "disk = ubus('luci2.system', 'diskfree')",
+      "waitFor": "disk = ubus('luci2.system', 'diskfree',  5000)",
 
       "options": {
         "title": "Free Disk",
@@ -150,7 +151,7 @@
 
     {
       "widget": "stat-expand",
-      "waitFor": "conntrack = ubus('luci2.network', 'conntrack_count')",
+      "waitFor": "conntrack = ubus('luci2.network', 'conntrack_count',  2000)",
 
       "options": {
         "title": "Connection Tracking",

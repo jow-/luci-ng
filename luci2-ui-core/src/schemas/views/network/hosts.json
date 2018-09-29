@@ -1,0 +1,38 @@
+{
+  "widget": "tabs",
+
+  "options": {
+    "tabLabels": ["General", "Interfaces", "Static Leases", "Hostnames"]
+  },
+
+  "content": [
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('dhcp','@dnsmasq')",
+        "bind": "uci.configs.dhcp['@dnsmasq']"
+      }
+    },
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('dhcp','@dhcp')",
+        "bind": "uci.configs.dhcp['@dhcp']"
+      }
+    },
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('dhcp','@host')",
+        "bind": "uci.configs.dhcp['@host']"
+      }
+    },
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('dhcp','@domain')",
+        "bind": "uci.configs.dhcp['@domain']"
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "widget": "tabs",
+
+  "options": {
+    "tabLabels": ["Global", "Interfaces", "Devices"]
+  },
+
+  "content": [
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('network','@global')",
+        "bind": "uci.configs.network['@global']"
+      }
+    },
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('network','@interface')",
+        "bind": "uci.configs.network['@interface']"
+      }
+    },
+    {
+      "widget": "schema-form",
+      "options": {
+        "schema=": "uci.getSchema('network','@device')",
+        "bind": "uci.configs.network['@device']"
+      }
+    }
+  ]
+}

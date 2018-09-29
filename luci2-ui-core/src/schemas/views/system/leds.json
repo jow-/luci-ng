@@ -1,0 +1,7 @@
+{
+  "widget": "schema-form",
+  "options": {
+    "schema=": "uci.getSchema('system', 'led')",
+    "bind": "uci.configs.system['@led']"
+  }
+}

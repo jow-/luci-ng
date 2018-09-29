@@ -1,6 +1,6 @@
 {
   "widget": "table",
-  "onInit": "data = ubus('luci2.system', 'process_list')",
+  "onInit": "data = ubus('luci2.system', 'process_list', 2000)",
   "options": {
     "title": "Running Processes",
     "dataSource=": "data.processes",
