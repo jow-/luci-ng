@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "title": "General Network configurations",
+  "properties": {
+    "@globals": {
+      "title": "Global network options",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ula_prefix": {
+            "type": "string",
+            "format": "ip6addr",
+            "title": "IPv6 ULA-Prefix"
+          }
+        }
+      }
+    },
+
+    "@interface": {
+      "type": "array",
+      "title": "Interfaces",
+      "description": "Logical networks configuration",
+      "items": {
+        "type": "object",
+        "properties": {
+          "disabled": {
+            "type": "boolean",
+            "title": "Disabled",
+            "description": "enable or disable the interface section"
+          },
+          "type": {
+            "type": "boolean",
+            "title": "Bridge interfaces",
+            "description": "Creates a bridge over specified interface(s)",
+            "convert": { "toUCI": "$data ? 'bridge' : undefined", "fromUCI": "$data === 'bridge'" },
+            "depends=": "['static', 'dhcp', 'none'].includes($model.proto)"
+          },
+          "stp": {
+            "type": "boolean",
+            "title": "STP",
+            "description": "Enables the Spanning Tree Protocol",
+            "depends=": "$model.type"
+          },
+          "igmp_snooping": {
+            "type": "boolean",
+            "title": "IGMP snooping",
+            "description": "Enables IGMP snooping on this bridge",
+            "depends=": "$model.type"
+          },
+          "ifname": {
+            "type": "string",
+            "title": "Interface name",
+            "description": "Physical interface name to assign to this section, list of interfaces if type bridge is set."
+          },
+
+          "bridge_empty": {
+            "type": "boolean",
+            "title": "Allow empty",
+            "description": "Enables creating empty bridges",
+            "depends=": "$model.type"
+          },
+
+          "protocol": {
+            "type": "string",
+            "title": "Protocol"
+          },
+
+          "auto": {
+            "type": "boolean",
+            "title": "Bring up on boot",
+            "description": "Specifies whether to bring up interface on boot"
+          },
+          "force_link": {
+            "type": "boolean",
+            "title": "Force link",
+            "description": "Set interface properties regardless of the link carrier (If set, carrier sense events do not invoke hotplug handlers)."
+          },
+          "delegate": { "type": "boolean", "title": "Use builtin IPv6-management" }
+        }
+      }
+    },
+
+    "@route": {
+      "title": "Static IPv4 routes",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "interface": {
+            "type": "string",
+            "title": "Interface",
+            "description": "Specifies the logical interface name of the parent (or master) interface this route belongs to; must refer to one of the defined interface sections"
+          },
+          "target": {
+            "type": "string",
+            "format": "ip4addr",
+            "title": "Target",
+            "description": "Network address"
+          },
+          "netmask": {
+            "type": "string",
+            "format": "ip4addr",
+            "title": "Netmask",
+            "description": "Route netmask. If omitted, 255.255.255.255 is assumed which makes target a host address"
+          },
+          "gateway": {
+            "type": "string",
+            "format": "ip4addr",
+            "title": "Gateway",
+            "description": "Network gateway. If omitted, the gateway from the parent interface is taken; if set to 0.0.0.0 no gateway will be specified for the route"
+          },
+          "metric": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "title": "Metric",
+            "description": "Specifies the route metric to use"
+          },
+          "mtu": {
+            "type": "integer",
+            "minimum": 64,
+            "maximum": 9000,
+            "title": "MTU",
+            "description": "Defines a specific MTU for this route"
+          },
+          "table": {
+            "type": "string",
+            "title": "Routing table",
+            "description": "Defines the table ID to use for the route. The ID can be either a numeric table index ranging from 0 to 65535 or a symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
+          },
+          "source": {
+            "type": "string",
+            "format": "ip4addr",
+            "title": "Source Address",
+            "description": "The preferred source address when sending to destinations covered by the target"
+          },
+          "onlink": {
+            "type": "boolean",
+            "title": "",
+            "description": "When enabled gateway is on link even if the gateway does not match any interface prefix (Barrier Breaker and later only)"
+          },
+          "type": {
+            "type": "string",
+            "title": "Route type",
+            "enum": [
+              "local",
+              "broadcast",
+              "multicast",
+              "unreachable",
+              "prohibit",
+              "blackhole",
+              "anycast"
+            ]
+          }
+        }
+      }
+    },
+
+    "@route6": {
+      "title": "Static IPvg routes",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "interface": {
+            "type": "string",
+            "title": "Interface",
+            "description": "Specifies the logical interface name of the parent (or master) interface this route belongs to; must refer to one of the defined interface sections"
+          },
+          "target": {
+            "type": "string",
+            "format": "ip6addr",
+            "title": "Target",
+            "description": "Network address"
+          },
+          "gateway": {
+            "type": "string",
+            "format": "ip6addr",
+            "title": "Gateway",
+            "description": "Network gateway. If omitted, the gateway from the parent interface is taken; if set to 0.0.0.0 no gateway will be specified for the route"
+          },
+          "metric": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "title": "Metric",
+            "description": "Specifies the route metric to use"
+          },
+          "mtu": {
+            "type": "integer",
+            "minimum": 64,
+            "maximum": 9000,
+            "title": "MTU",
+            "description": "Defines a specific MTU for this route"
+          },
+          "table": {
+            "type": "string",
+            "title": "Routing table",
+            "description": "Defines the table ID to use for the route. The ID can be either a numeric table index ranging from 0 to 65535 or a symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
+          },
+          "source": {
+            "type": "string",
+            "format": "ip4addr",
+            "title": "Source Address",
+            "description": "The preferred source address when sending to destinations covered by the target"
+          },
+          "onlink": {
+            "type": "boolean",
+            "title": "",
+            "description": "When enabled gateway is on link even if the gateway does not match any interface prefix (Barrier Breaker and later only)"
+          },
+          "type": {
+            "type": "string",
+            "title": "Route type",
+            "enum": [
+              "local",
+              "broadcast",
+              "multicast",
+              "unreachable",
+              "prohibit",
+              "blackhole",
+              "anycast"
+            ]
+          }
+        }
+      }
+    },
+
+    "@switch": {
+      "title": "Switch configuration",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          ".name": { "type": "string" },
+
+          "enable_vlan": { "type": "boolean", "title": "Enable VLAN functionality" },
+          "enable_learning": { "type": "boolean", "title": "Enable learning and aging" },
+          "max_length": { "type": "boolean", "title": "Enable Jumbo Frame passthrough" },
+          "enable_mirror_rx": {
+            "type": "boolean",
+            "title": "Enable mirroring of incoming packets"
+          },
+          "enable_mirror_tx": {
+            "type": "boolean",
+            "title": "Enable mirroring of outgoing packets"
+          },
+          "mirror_source_port": {
+            "type": "string",
+            "title": "Mirror source port",
+            "depends=": "$model.enable_mirror_tx || $model.enable_mirror_rx"
+          },
+          "mirror_monitor_port": {
+            "type": "string",
+            "title": "Mirror monitor port",
+            "depends=": "$model.enable_mirror_tx || $model.enable_mirror_rx"
+          }
+        }
+      }
+    },
+
+    "@switch_vlan": {
+      "title": "Switch vlan configuration",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "device": { "type": "string", "title": "Device", "required": true },
+          "vlan": { "type": "integer", "title": "VLAN ID", "minimum": 0, "required": true },
+          "ports": { "type": "string", "title": "Ports" }
+        }
+      }
+    },
+
+    "@switch_port": {
+      "title": "Switch port configuration",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "device": { "type": "string", "title": "Device", "required": true },
+          "pvid": { "type": "integer", "title": "Default VLAN ID", "minimum": 0, "required": true },
+          "port": { "type": "integer", "title": "Port Number", "minimum": 0, "required": true }
+        }
+      }
+    },
+
+    "@device": {
+      "title": "Device configuration",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "title": "VLAN Type", "enum": ["8021q", "8021ad"] },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of device, i.e. eth0.5 or vlan5"
+          },
+          "ifname": {
+            "type": "string",
+            "title": "Parent interface",
+            "description": "Name of parent/base interface, i.e. eth0"
+          },
+          "vid": { "type": "integer", "title": "Default VLAN ID", "minimum": 0 },
+          "macaddr": { "type": "string", "title": "MAC Address" }
+        }
+      }
+    }
+  }
+}

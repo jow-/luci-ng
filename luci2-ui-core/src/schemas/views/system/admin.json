@@ -15,15 +15,20 @@
           "bind": "$model.password",
           "options": {
             "title": "Password",
-            "required": true
+            "inputType": "password",
+            "required": true,
+            "validate=": "$value === $model.repassword",
+            "minLength": 8
           }
         },
         {
           "widget": "input",
           "bind": "$model.repassword",
-          "validate": "$value === $model.password",
           "options": {
-            "title": "Reenter Password"
+            "title": "Confirmation",
+            "inputType": "password",
+            "required": true,
+            "validate=": "$value === $model.password"
           }
         },
         {
@@ -31,7 +36,8 @@
           "bind": "$model.click",
           "options": {
             "title": "Save",
-            "click": "ubus()"
+            "click": "ubus('luci2.system', 'password_set', {user:$user,password: $model.password} )",
+            "disabled=": "!$form.valid"
           }
         }
       ]
@@ -46,6 +52,8 @@
     {
       "widget": "table",
       "options": {
+        "title": "Title",
+        "description": "Manage authorized keys for passwordless root logins",
         "dataSource=": "map(ubus('luci2.system', 'sshkeys_get').keys, 'm=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec($value),{row: $value, key: m[4], type: m[1], hash: m[2], ending: m[3]}')",
         "colKeys": ["key", "type", "ending"],
         "colHeaders": ["Remote", "Type", "Hash End"]

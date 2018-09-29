@@ -30,17 +30,25 @@
       }
     },
     {
+      "widget": "input",
+      "bind": "$model.path",
+      "options": {
+        "title": "jsonPath filter",
+        "description=": "Transformation to apply to result"
+      }
+    },
+    {
       "widget": "button",
       "bind": "$model.refresh",
       "options": {
         "title": "Execute",
-        "click": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {})"
+        "click": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {}, $model.path)"
       }
     },
     {
       "widget": "code",
       "options": {
-        "text=": "`ubus('${$model.service}', '${$model.method}', ${JSON.stringify(JSON.parse($model.params.trim()) || {})})`"
+        "text=": "`ubus('${$model.service}', '${$model.method}', ${JSON.stringify(JSON.parse($model.params.trim()) || {})} ${$model.path ? `, '${$model.path}'` : ''})`"
       }
     },
     {

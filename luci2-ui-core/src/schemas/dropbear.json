@@ -11,6 +11,15 @@
       "anonymous": true,
       "items": {
         "type": "object",
+        "ui": {
+          "fieldsets": {
+            "default": 1,
+            "sets": [
+              { "title": "Main", "fields": ["enable", "Interface", "Port"] },
+              { "title": "Advanced" }
+            ]
+          }
+        },
         "properties": {
           "enable": {
             "title": "Enable",
@@ -22,19 +31,15 @@
             "title": "Interface",
             "description": "Listen only on the specified interface, if unspecified, on all.",
             "type": "string",
-            "enumBinding": "network.@interface[?(@['.name']!='loopback')]"
+            "enum=": "ubus('uci', 'get', {config:'network',type:'interface'} , `$.values[?(@['.name']!='loopback')]['.name']`)"
           },
           "Port": {
             "title": "Port",
             "description": "Port number to listen on.",
-            "type": "number",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
             "default": 22
-          },
-          "GatewayPorts": {
-            "title": "Gateway Ports",
-            "description": "Allow remote hosts to connect to forwarded ports.",
-            "type": "boolean",
-            "default": false
           },
           "PasswordAuth": {
             "title": "Password Authentication",
@@ -42,18 +47,25 @@
             "type": "boolean",
             "default": true
           },
-          "RootPasswordAuth": {
-            "title": "Enable Root with Password",
-            "description": "Disable authenticating as Root with passwords",
-            "type": "boolean",
-            "default": true
-          },
           "RootLogin": {
             "title": "Enable Root",
-            "description": "Disable SSH logins as Root",
+            "description": "Allow login as Root",
             "type": "boolean",
             "default": true
           },
+          "RootPasswordAuth": {
+            "title": "Enable Root with Password",
+            "description": "Allow login as Root with password",
+            "type": "boolean",
+            "default": true
+          },
+          "GatewayPorts": {
+            "title": "Gateway Ports",
+            "description": "Allow remote hosts to connect to forwarded ports.",
+            "type": "boolean",
+            "default": false
+          },
+
           "rsakeyfile": {
             "title": "RSA key File",
             "description": "Path to RSA file.",
@@ -100,9 +112,17 @@
           },
           "mdns": {
             "title": "mDNS",
-            "description": "Whether to annouce the service via mDNS (a.k.a. Bonjour / zero-configuration networking).",
+            "description": "Annouce the service via mDNS (a.k.a. Bonjour).",
             "default": true,
             "type": "boolean"
+          },
+          "RecvWindowSize": {
+            "type": "integer",
+            "title": "Receive Window Buffer Size",
+            "description": "Per-channel receive window buffer size. 0 to use default.",
+            "minimum": 0,
+            "maximum": 1048576,
+            "default": 0
           }
         }
       }

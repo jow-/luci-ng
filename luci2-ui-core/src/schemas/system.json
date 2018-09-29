@@ -13,23 +13,44 @@
         "anonymous": true,
         "ui": {
           "fieldsets": {
-            "default": 1,
+            "default": 4,
             "sets": [
               {
                 "title": "General",
                 "fields": ["hostname", "timezone", "zonename"]
               },
-              { "title": "Log" }
+              {
+                "title": "Log",
+                "fields": ["log_buffer_size", "conloglevel", "buffersize"]
+              },
+              {
+                "title": "File Logging",
+                "fields": ["log_file", "log_size"]
+              },
+
+              {
+                "title": "Remote Logging",
+                "fields": [
+                  "log_remote",
+                  "log_ip",
+                  "log_port",
+                  "log_proto",
+                  "log_hostname",
+                  "log_trailer_null",
+                  "log_prefix"
+                ]
+              },
+              { "title": "Other" }
             ]
           }
         },
         "properties": {
           "hostname": {
             "title": "Hostname for this system",
-            "description": "Avoid points, even if they are within quotes. For example ' my.hostname ' will show only the ' my ' part",
+            "description": "",
             "type": "string",
             "format": "hostname",
-            "default": "lede",
+            "default": "OpenWrt",
             "required": true
           },
           "timezone": {
@@ -40,18 +61,18 @@
           },
           "zonename": {
             "title": "Time zone name for zoneinfo",
-            "description": "Only useful when using glibc and zoneinfo! (LIBC_USE_EGLIBC, PACKAGE_zoneinfo-*) The time zone that date and time should be rendered in by default.",
+            "description": "Only useful when using glibc and zoneinfo (overrides timezone).",
             "type": "string",
             "examples": ["Europe/Brussels"]
           },
           "buffersize": {
-            "title": "Buffersize",
+            "title": "Kernel log Buffersize",
             "description": "Size of the kernel message buffer",
             "type": "integer"
           },
           "conloglevel": {
-            "title": "Console log level",
-            "description": "Number between 1-8. The maximum log level for kernel messages to be logged to the console. Only messages with a level lower than this will be printed to the console. Higher level messages have lower log level number. Highest level messages are ones with log level 0. If you want more verbous messages in console put conloglevel to 8 if you want less messages lower conloglevel to 4 or even less.",
+            "title": "Kernel log level",
+            "description": "Maximum log level for kernel messages to be logged to the console.",
             "type": "integer",
             "minimum": 1,
             "maximum": 8,
@@ -59,23 +80,18 @@
           },
           "cronloglevel": {
             "title": "Cron log level",
-            "description": "The minimul level for cron messages to be logged to syslog. 0 will print all debug messages, 8 will log command executions, and 9 or higher will only log error messages.",
+            "description": "Combination of bit flags. 1: log start of job, 2: log end of job, 4: log failed jobs, 8: log pid of all jobs.",
             "type": "integer",
             "default": 5,
-            "minimum": 0
-          },
-          "klogconloglevel": {
-            "title": "Console Kernel log level",
-            "description": "The maximum log level for kernel messages to be logged to the console. Only messages with a level lower than this will be printed to the console. Identical to 'Console log level' and will override it.",
-            "type": "integer",
-            "default": 7
+            "minimum": 0,
+            "maximum": 15
           },
           "log_buffer_size": {
             "title": "System log buffer size [kB]",
-            "description": "Size of the log buffer of the new procd based system log, that is output by the logread command.",
+            "description": "Use log_size if no set.",
             "type": "integer",
             "minimum": 0,
-            "default": 16
+            "default": 64
           },
           "log_file": {
             "title": "Log file",
@@ -86,7 +102,7 @@
           },
           "log_ip": {
             "title": "Remote Syslog Server IP",
-            "description": "IP address of a syslog server to which the log messages should be sent in addition to the local destination.",
+            "description": "Log messages to server in addition to the local destination.",
             "type": "string",
             "format": "ipv4"
           },
@@ -134,6 +150,11 @@
             "type": "string",
             "enum": ["circular", "file"],
             "default": "circular"
+          },
+          "log_hostname": {
+            "title": "Hostname for log",
+            "type": "string",
+            "format": "host"
           }
         }
       }
@@ -144,14 +165,16 @@
         "type": "object",
         "properties": {
           "enabled": {
-            "title": "Enable Client",
-            "type": "boolean"
+            "title": "Enabled",
+            "type": "boolean",
+            "default": true
           },
           "enable_server": {
             "title": "Enable Server",
-            "description": "Enables the time server on this device, ntpd will answer with the time of the router. (busybox-ntpd listens to UDP 123 by default)",
+            "description": "Busybox-ntpd server will answer with the time of the router (it listens to UDP 123).",
             "type": "boolean",
-            "default": false
+            "default": false,
+            "depends=": "$model.enabled"
           },
           "server": {
             "title": "NTP Servers",
@@ -161,13 +184,17 @@
               "type": "string",
               "format": "hostname"
             },
-            "dependencies": ["enabled"]
+            "depends=": "$model.enabled"
           }
         }
       }
     },
     "@led": {
       "type": "array",
+      "ui": {
+        "onInit": "leds = ubus('luci2.system','led_list').leds"
+      },
+
       "items": {
         "type": "object",
         "properties": {
@@ -181,25 +208,20 @@
             "description": "Entry of the led in the /sys/class/leds directory",
             "type": "string",
             "format": "path",
-            "enumBinding": ["luci2.system", "led_list", {}, "$.leds[*].name"],
+            "enum=": "jsonPath(leds, '$[*].name')",
             "required": true
           },
           "default": {
             "title": "Default state",
             "description": "LED state before trigger",
-            "type": "boolean",
-            "enum": ["1", "0"]
+            "type": "boolean"
           },
           "trigger": {
             "title": "Trigger",
             "description": "Event that controls the led activation",
             "type": "string",
-            "enumBinding": [
-              "luci2.system",
-              "led_list",
-              {},
-              "$.leds[?(@.name=='${sysfs}')].triggers[*]"
-            ]
+            "enum=": "jsonPath(leds, `$[?(@.name=='${$model.sysfs}')].triggers[*]`)",
+            "default": "none"
           },
           "delayon": {
             "title": "Delay ON",
@@ -207,7 +229,7 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "dependencies": { "trigger": ["timer"] }
+            "depends=": "$model.trigger === 'timer'"
           },
           "delayoff": {
             "title": "Delay OFF",
@@ -215,15 +237,15 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "dependencies": { "trigger": ["timer"] }
+            "depends=": "$model.trigger === 'timer'"
           },
           "dev": {
             "title": "Device",
             "description": "Name of the network/usb device which status should be reflected",
             "type": "string",
             "required": true,
-            "dependencies": { "trigger": ["netdev", "usbdev", "morse"] },
-            "enumBinding": ["luci2.network", "device_list", {}, "$.devices[*].device"]
+            "depends=": "['netdev', 'usbdev', 'morse'].indexOf($model.trigger)>=0",
+            "enum=": "ubus('luci2.network', 'device_list', '$.devices[*].device')"
           },
           "mode": {
             "title": "Mode",
@@ -231,7 +253,8 @@
             "type": "string",
             "required": true,
             "enum": ["link", "tx", "rx"],
-            "dependencies": { "trigger": ["netdev"] }
+            "depends=": "$model.trigger === 'netdev'",
+            "default": "link"
           },
           "interval": {
             "title": "Interval",
@@ -239,20 +262,33 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "dependencies": { "trigger": ["usbdev"] }
+            "depends=": "$model.trigger === 'usbdev'",
+            "default": 50
           },
           "delay": {
             "title": "Delay",
             "description": "Dit length in milliseconds",
             "type": "integer",
             "minimum": 0,
-            "dependencies": { "trigger": ["morse"] }
+            "depends=": "$model.trigger === 'morse'",
+            "default": 150
           },
           "message": {
             "title": "Message",
             "description": "The message to signal",
             "type": "string",
-            "dependencies": { "trigger": ["morse"] }
+            "depends=": "$model.trigger === 'morse'"
+          },
+          "gpio": {
+            "title": "GPIO",
+            "type": "integer",
+            "default": 0,
+            "depends=": "$model.trigger === 'gpio'"
+          },
+          "inverted": {
+            "title": "Inverted",
+            "type": "boolean",
+            "depends=": "$model.trigger === 'gpio'"
           }
         }
       }
