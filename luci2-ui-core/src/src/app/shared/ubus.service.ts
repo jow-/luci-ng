@@ -7,8 +7,17 @@ import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
-
+import {
+  catchError,
+  map,
+  mergeMap,
+  retryWhen,
+  tap,
+  repeatWhen,
+  delay,
+  shareReplay,
+} from 'rxjs/operators';
+import { JsonPath } from 'espression-jsonpath';
 import { JsonrpcErrorCodes } from './jsonrpc.interface';
 import { JsonrpcService } from './jsonrpc.service';
 import { debug } from './observable.debug';
@@ -24,6 +33,8 @@ export class UbusService implements ILogin {
   private _dialogRef: MatDialogRef<LoginComponent> | undefined;
 
   private _user: BehaviorSubject<string>;
+
+  private _jsPath = new JsonPath();
 
   constructor(
     private _jsonrpc: JsonrpcService,
@@ -71,7 +82,6 @@ export class UbusService implements ILogin {
         if (r[0] !== 0) throw { code: r[0], layer: 'ubus', data: r[1], message: r[0] };
         return r[1];
       }),
-      debug('ubus pre retry'),
       // if there is "accessDenied" login and retry
       retryWhen(o =>
         o.pipe(
@@ -130,5 +140,38 @@ export class UbusService implements ILogin {
       }),
       debug('login')
     );
+  }
+
+  callFactory() {
+    return (
+      service: string,
+      method: string,
+      params?: object | string | number,
+      jsPathFilter?: string | number,
+      repeatDelay?: number
+    ) => {
+      if (typeof jsPathFilter === 'number') {
+        repeatDelay = jsPathFilter;
+        jsPathFilter = undefined;
+      }
+
+      if (typeof params === 'string') {
+        jsPathFilter = params;
+        params = undefined;
+      } else if (typeof params === 'number') {
+        repeatDelay = params;
+        params = undefined;
+        jsPathFilter = undefined;
+      }
+
+      let result = this.call(service, method, params, true);
+
+      if (repeatDelay && typeof repeatDelay === 'number')
+        result = result.pipe(repeatWhen(o => o.pipe(delay(<number>repeatDelay))));
+      if (jsPathFilter && typeof jsPathFilter === 'string')
+        result = result.pipe(map(res => this._jsPath.query(res, <string>jsPathFilter).values));
+
+      return result.pipe(shareReplay(1));
+    };
   }
 }
