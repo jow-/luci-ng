@@ -9,8 +9,8 @@ import { RoutedWidgetComponent } from 'reactive-json-form-ng';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ViewsResolverService } from '../../shared/viewsresolver.service';
 import { UbusService } from '../../shared/ubus.service';
+import { ViewsResolverService } from '../../shared/viewsresolver.service';
 
 import { IMenu, IMenuItem, IMenuItemArr, IMenuItemObj } from './menu.interface';
 

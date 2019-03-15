@@ -6,23 +6,25 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { JsonPath } from 'espression-jsonpath';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import {
   catchError,
+  delay,
   map,
   mergeMap,
-  retryWhen,
-  tap,
   repeatWhen,
-  delay,
+  retryWhen,
   shareReplay,
+  tap,
 } from 'rxjs/operators';
-import { JsonPath } from 'espression-jsonpath';
+
+import { ILogin } from '../shell/login/ILogin.interface';
+import { LoginComponent } from '../shell/login/login.component';
+
 import { JsonrpcErrorCodes } from './jsonrpc.interface';
 import { JsonrpcService } from './jsonrpc.service';
 import { debug } from './observable.debug';
-import { ILogin } from '../shell/login/ILogin.interface';
-import { LoginComponent } from '../shell/login/login.component';
 
 @Injectable({
   providedIn: 'root',
@@ -85,14 +87,13 @@ export class UbusService implements ILogin {
       // if there is "accessDenied" login and retry
       retryWhen(o =>
         o.pipe(
-          mergeMap(
-            e =>
-              autologin && e.layer === 'jsonrpc' && e.code === JsonrpcErrorCodes.AccessDenied
-                ? this.loginDialog().pipe(
-                    tap(() => (jsonrpcParams[0] = this.sid)),
-                    debug('loginDialog')
-                  )
-                : throwError(e)
+          mergeMap(e =>
+            autologin && e.layer === 'jsonrpc' && e.code === JsonrpcErrorCodes.AccessDenied
+              ? this.loginDialog().pipe(
+                  tap(() => (jsonrpcParams[0] = this.sid)),
+                  debug('loginDialog')
+                )
+              : throwError(e)
           )
         )
       ),
@@ -142,7 +143,13 @@ export class UbusService implements ILogin {
     );
   }
 
-  callFactory() {
+  callFactory(): (
+    service: string,
+    method: string,
+    params?: object | string | number,
+    jsPathFilter?: string | number,
+    repeatDelay?: number
+  ) => Observable<{}> {
     return (
       service: string,
       method: string,

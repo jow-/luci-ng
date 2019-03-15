@@ -5,11 +5,11 @@
  * https://opensource.org/licenses/MIT
  */
 
+import { JsonPath } from 'espression-jsonpath';
 import { Context, ESpression, Expressions, ROOT_EXPR_CONTEXT } from 'reactive-json-form-ng';
 
 import { UbusService } from '../shared/ubus.service';
 import { UciModel2 } from '../uci/uci';
-import { JsonPath } from 'espression-jsonpath';
 
 export const rootContextProvider = {
   // tslint:disable-line:naming-convention
@@ -30,7 +30,7 @@ export function rootContextFactory(ubus: UbusService, expr: ESpression, uci: Uci
       reduce: expr.reduceFactory(),
       uci,
       $user: ubus.user,
-      jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values
+      jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values,
     },
     undefined,
     true

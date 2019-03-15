@@ -4,13 +4,20 @@
 
 <form #loginForm="ngForm" mat-dialog-content novalidate (submit)="login()">
   <mat-form-field>
-    <input matInput placeholder="User" [(ngModel)]="user" name="user" required>
+    <input matInput placeholder="User" [(ngModel)]="user" name="user" required />
   </mat-form-field>
   <mat-form-field>
-    <input type="password" matInput placeholder="Password" [(ngModel)]="password" name="password" required>
+    <input
+      type="password"
+      matInput
+      placeholder="Password"
+      [(ngModel)]="password"
+      name="password"
+      required
+    />
   </mat-form-field>
 
-  <div *ngIf="errorMessage" class="mat-input-error">{{errorMessage}}</div>
+  <div *ngIf="errorMessage" class="mat-input-error">{{ errorMessage }}</div>
 
   <div mat-dialog-actions>
     <button mat-button type="submit" [disabled]="!loginForm.form.valid">Login</button>
