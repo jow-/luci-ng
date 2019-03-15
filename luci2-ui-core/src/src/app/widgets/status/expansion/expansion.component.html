@@ -1,39 +1,39 @@
-<mat-expansion-panel class="expansion-card"
-                     hideToggle
-                     [disabled]="!content.length"
-                     (closed)="gridRow = options.gridRowClosed || 'auto'"
-                     (opened)="gridRow = options.gridRowOpen || 'auto'">
-  <mat-expansion-panel-header [collapsedHeight]="'95px'"
-                              [expandedHeight]="'95px'">
+<mat-expansion-panel
+  class="expansion-card"
+  hideToggle
+  [disabled]="!content.length"
+  (closed)="gridRow = options.gridRowClosed || 'auto'"
+  (opened)="gridRow = options.gridRowOpen || 'auto'"
+>
+  <mat-expansion-panel-header [collapsedHeight]="'95px'" [expandedHeight]="'95px'">
     <div class="expansion-card-header">
-      <div *ngIf="options.icon"
-           class="expansion-icon-container">
-        <mat-icon [svgIcon]="options.icon"
-                  class="expansion-icon"></mat-icon>
+      <div *ngIf="options.icon" class="expansion-icon-container">
+        <mat-icon [svgIcon]="options.icon" class="expansion-icon"></mat-icon>
       </div>
-
 
       <div class="expansion-content">
         <div class="expansion-data">
-          <span>{{options.value | format:options.format}}</span>
-          <span *ngIf="options.total">/{{options.total | format:options.format}}</span>
-          <span class="unit">{{options.unit}}</span>
+          <span>{{ options.value | format: options.format }}</span>
+          <span *ngIf="options.total">/{{ options.total | format: options.format }}</span>
+          <span class="unit">{{ options.unit }}</span>
         </div>
-        <mat-progress-bar *ngIf="!options.noGraph"
-                          mode="determinate"
-                          color="primary"
-                          [value]="options.value/options.total*100"
-                          class="expansion-bar"></mat-progress-bar>
-        <h5>{{options.title}}</h5>
+        <mat-progress-bar
+          *ngIf="!options.noGraph"
+          mode="determinate"
+          color="primary"
+          [value]="(options.value / options.total) * 100"
+          class="expansion-bar"
+        ></mat-progress-bar>
+        <h5>{{ options.title }}</h5>
       </div>
     </div>
   </mat-expansion-panel-header>
 
   <ng-template matExpansionPanelContent>
-    <ng-container *ngFor="let widgetDef of content"
-                  [wdgWidget]="widgetDef"
-                  [parentContext]="context"></ng-container>
-
+    <ng-container
+      *ngFor="let widgetDef of content"
+      [wdgWidget]="widgetDef"
+      [parentContext]="context"
+    ></ng-container>
   </ng-template>
-
 </mat-expansion-panel>

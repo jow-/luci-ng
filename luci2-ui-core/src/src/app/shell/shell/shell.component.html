@@ -1,22 +1,18 @@
 <mat-toolbar class="app-bar mat-elevation-z6" color="primary">
   <button mat-icon-button (click)="nav.open()" [style.display]="isMediaSmall ? 'block' : 'none'">
     <mat-icon svgIcon="menu"></mat-icon>
-
   </button>
 </mat-toolbar>
 
-  <mat-sidenav-container class="app-content">
+<mat-sidenav-container class="app-content">
+  <mat-sidenav #nav [mode]="isMediaSmall ? 'over' : 'side'" [opened]="!isMediaSmall">
+    <app-nav-menu [nodes]="menu"></app-nav-menu>
+  </mat-sidenav>
 
-    <mat-sidenav #nav [mode]="isMediaSmall ? 'over' : 'side'" [opened]="!isMediaSmall">
-      <app-nav-menu [nodes]="menu"></app-nav-menu>
-    </mat-sidenav>
-
-    <div class="main-content">
+  <div class="main-content">
     <ng-content select="[shell-content]"></ng-content>
-
-    </div>
-    <div class="footer">
+  </div>
+  <div class="footer">
     footer
-    </div>
-
-  </mat-sidenav-container>
+  </div>
+</mat-sidenav-container>

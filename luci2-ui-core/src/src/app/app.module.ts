@@ -12,11 +12,11 @@ import { RoutedWidgetComponent } from 'reactive-json-form-ng';
 
 import { AppComponent } from './app.component';
 import { JsonrpcService } from './shared/jsonrpc.service';
+import { UbusService } from './shared/ubus.service';
 import { ViewsResolverService } from './shared/viewsresolver.service';
 import { MenuService } from './shell/menu/menu.service';
 import { MenuGuardService } from './shell/menu/menuguard.service';
 import { ShellModule } from './shell/shell.module';
-import { UbusService } from './shared/ubus.service';
 import { WidgetsModule } from './widgets';
 
 @NgModule({

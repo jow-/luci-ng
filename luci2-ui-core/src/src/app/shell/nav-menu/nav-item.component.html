@@ -1,21 +1,39 @@
 <div *ngIf="!node.childs">
-  <a [routerLink]="node.link" [ngClass]="classes" title="{{node.tooltip}}"
-    class="nav-menu-item" routerLinkActive="selected">
-    {{node.title}}
+  <a
+    [routerLink]="node.link"
+    [ngClass]="classes"
+    title="{{ node.tooltip }}"
+    class="nav-menu-item"
+    routerLinkActive="selected"
+  >
+    {{ node.title }}
   </a>
 </div>
 
 <div *ngIf="node.childs">
-  <a *ngIf="node.link != null" [routerLink]="node.link" [ngClass]="classes" title="{{node.tooltip}}"
-    (click)="headerClicked()" class="nav-menu-item heading" routerLinkActive="selected">
-    {{node.title}}
+  <a
+    *ngIf="node.link != null"
+    [routerLink]="node.link"
+    [ngClass]="classes"
+    title="{{ node.tooltip }}"
+    (click)="headerClicked()"
+    class="nav-menu-item heading"
+    routerLinkActive="selected"
+  >
+    {{ node.title }}
     <mat-icon class="rotating-icon" svgIcon="chevron-down"></mat-icon>
   </a>
 
-  <button *ngIf="node.link == null" type="button" [ngClass]="classes" title="{{node.tooltip}}"
-    (click)="headerClicked()" class="nav-menu-item heading"
-    [attr.aria-pressed]="isExpanded">
-    {{node.title}}
+  <button
+    *ngIf="node.link == null"
+    type="button"
+    [ngClass]="classes"
+    title="{{ node.tooltip }}"
+    (click)="headerClicked()"
+    class="nav-menu-item heading"
+    [attr.aria-pressed]="isExpanded"
+  >
+    {{ node.title }}
     <mat-icon class="rotating-icon" svgIcon="chevron-down"></mat-icon>
   </button>
 

@@ -4,9 +4,11 @@
  */
 
 import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
+import { MaterialModule } from 'reactive-json-form-ng';
 
 import { WidgetsModule } from '../widgets';
 
@@ -15,8 +17,6 @@ import { MenuService } from './menu/menu.service';
 import { NavItemComponent } from './nav-menu/nav-item.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ShellComponent } from './shell/shell.component';
-import { MaterialModule } from 'reactive-json-form-ng';
-import { FormsModule } from '@angular/forms';
 
 /**
  * ShellModule

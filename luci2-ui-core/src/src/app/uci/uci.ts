@@ -5,14 +5,15 @@
  * https://opensource.org/licenses/MIT
  */
 
-import { Observable, of } from 'rxjs';
-import { UciService } from './backend/uci.service';
-import { IUciConfigData } from './backend/config.interface';
-import { map } from 'rxjs/operators';
-import { IUciSectionData } from './backend/section.interface';
+import { Injectable } from '@angular/core';
 import { RxObject } from 'espression-rx';
 import { IMap, ISchema, ISchemaObject } from 'reactive-json-form-ng';
-import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { IUciConfigData } from './backend/config.interface';
+import { IUciSectionData } from './backend/section.interface';
+import { UciService } from './backend/uci.service';
 
 export type RxConfig = IMap<IUciSectionData | IUciSectionData[]>;
 
@@ -36,8 +37,9 @@ export class UciModel2 {
     );
   }
 
-  reactiveConfig(rawConfigData: IUciConfigData) {
+  reactiveConfig(rawConfigData: IUciConfigData): IMap<IUciSectionData[]> {
     const config: IMap<IUciSectionData[]> = {};
+    // tslint:disable-next-line: forin
     for (const prop in rawConfigData) {
       let type = rawConfigData[prop]['.type'];
       if (!type) continue;
@@ -52,6 +54,7 @@ export class UciModel2 {
         // check if a type or a named section is being requested
         if (prop && prop.charAt(0) !== '@') {
           let result: IUciSectionData | undefined;
+          // tslint:disable-next-line: forin
           for (const type in target) {
             result = target[type].find(sec => sec['.name'] === prop);
             if (result) return result;
@@ -62,7 +65,7 @@ export class UciModel2 {
     });
   }
 
-  getSchema(config: string, type?: string) {
+  getSchema(config: string, type?: string): Observable<ISchema | undefined> {
     return this.loadConfig(config).pipe(
       map(() => {
         if (!(config in this.schemas)) return undefined;
