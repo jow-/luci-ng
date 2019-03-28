@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JsonPath } from 'espression-jsonpath';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import {
   catchError,
   delay,
@@ -82,7 +82,7 @@ export class UbusService implements ILogin {
       map(r => {
         if (!Array.isArray(r)) throw { code: 0, message: 'Invalid response format', layer: 'js' };
         if (r[0] !== 0) throw { code: r[0], layer: 'ubus', data: r[1], message: r[0] };
-        return r[1];
+        return r.length > 1 ? r[1] : null;
       }),
       // if there is "accessDenied" login and retry
       retryWhen(o =>
@@ -101,7 +101,7 @@ export class UbusService implements ILogin {
         this._snackbar.open(`Error calling ${service} ${method}: ${e.message}`, 'close', {
           duration: 5000,
         });
-        throw e;
+        return throwError(e);
       }),
 
       debug('ubus')
@@ -148,14 +148,16 @@ export class UbusService implements ILogin {
     method: string,
     params?: object | string | number,
     jsPathFilter?: string | number,
-    repeatDelay?: number
+    repeatDelay?: number,
+    errorVal?: any
   ) => Observable<{}> {
     return (
       service: string,
       method: string,
       params?: object | string | number,
       jsPathFilter?: string | number,
-      repeatDelay?: number
+      repeatDelay?: number,
+      errorVal?: any
     ) => {
       if (typeof jsPathFilter === 'number') {
         repeatDelay = jsPathFilter;
@@ -178,7 +180,11 @@ export class UbusService implements ILogin {
       if (jsPathFilter && typeof jsPathFilter === 'string')
         result = result.pipe(map(res => this._jsPath.query(res, <string>jsPathFilter).values));
 
-      return result.pipe(shareReplay(1));
+      return result.pipe(
+        catchError(() => of(errorVal)),
+        debug('ubus()'),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
     };
   }
 }
