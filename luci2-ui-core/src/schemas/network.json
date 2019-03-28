@@ -24,6 +24,7 @@
       "description": "Logical networks configuration",
       "items": {
         "type": "object",
+        "ui": { "options": { "title=": "$data['.name']" } },
         "properties": {
           "disabled": {
             "type": "boolean",
@@ -233,6 +234,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "ui": { "options": { "title=": "$data['.name']" } },
         "properties": {
           ".name": { "type": "string" },
 
@@ -292,6 +294,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "ui": { "options": { "title=": "$data['.name']" } },
         "properties": {
           "type": { "type": "string", "title": "VLAN Type", "enum": ["8021q", "8021ad"] },
           "name": {

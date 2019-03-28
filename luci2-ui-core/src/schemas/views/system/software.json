@@ -1,8 +1,8 @@
 {
-  "widget": "tabs",
+  "widget": "set-subpage",
 
   "options": {
-    "tabLabels": ["Installed", "Available"]
+    "title": "Installed Programs"
   },
   "content": [
     {

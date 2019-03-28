@@ -280,6 +280,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "ui": { "options": { "title=": "$data['.name']" } },
         "properties": {
           "interface": {
             "type": "string",

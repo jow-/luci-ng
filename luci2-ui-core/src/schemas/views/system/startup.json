@@ -1,17 +1,18 @@
 {
-  "widget": "tabs",
+  "widget": "set-subpage",
 
   "options": {
-    "tabLabels": ["Init Scripts", "Local Startup"]
+    "title": "Init Scripts"
   },
   "content": [
     {
       "widget": "table",
       "onInit": "data = ubus('luci2.system', 'init_list')",
       "options": {
-        "colKeys": ["start", "stop", "name", "enabled"],
-        "colHeaders": ["Start Priority", "Stop Priority", "Name", "Enabled"],
+        "colKeys": ["start", "stop", "name"],
+        "colHeaders": ["Start Priority", "Stop Priority", "Name"],
         "dataSource=": "data.initscripts",
+        "disableSort": false,
         "filterBy": true,
         "actions": [
           {

@@ -1,26 +1,307 @@
 {
-  "widget": "tabs",
-
-  "waitFor": "uci.loadConfig('system')",
-
-  "options": {
-    "tabLabels": ["General", "Time Sync", "Logging"]
-  },
-
+  "widget": "set-page",
+  "waitFor": "_system = uci.loadConfig('system') , data=RxObject({})",
   "content": [
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('system', 'system')",
-        "bind": "uci.configs.system['@system']"
-      }
+      "widget": "set-section",
+      "options": { "title": "General" },
+      "content": [
+        {
+          "widget": "set-input",
+          "bind": "uci.configs.system['@system'][0].hostname",
+          "options": { "title": "Hostname" }
+        }
+      ]
     },
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('system', 'timeserver')",
-        "bind": "uci.configs.system['@timeserver']"
-      }
+      "widget": "set-section",
+      "options": { "title": "Time & Date" },
+      "content": [
+        {
+          "widget": "set-input",
+          "bind": "uci.configs.system['@system'][0].timezone",
+          "options": {
+            "title": "Timezone",
+            "description": "The TZ that date and time should be rendered in by default",
+            "required": true
+          }
+        },
+        {
+          "widget": "set-button",
+          "bind": "data.set_time",
+          "onInit": "a = new Date(ubus('system', 'info', 5000).localtime * 1000)",
+          "options": {
+            "title": "Local Time",
+            "description=": "a.toDateString() + ' ' + a.toLocaleTimeString()",
+            "buttonTitle": "Sync with Browser"
+          }
+        },
+
+        {
+          "widget": "set-expansion",
+          "showIf": "ubus('file','stat', {path: '/usr/sbin/ntpd'})",
+          "onInit": "_timeserver = uci.configs.system['@timeserver'][0]",
+          "options": {
+            "title": "Time Synchronization",
+            "description=": "`NTP is ${data.ntp ? 'enabled': 'disabled'}`"
+          },
+
+          "content": [
+            {
+              "widget": "set-toggle",
+              "bind": "_timeserver.enabled",
+              "options": { "title": "Use NTP", "description": "Enable use of time server" }
+            },
+            {
+              "widget": "set-input",
+              "bind": "_timeserver.server",
+              "displayIf": "_timeserver.enabled",
+              "options": {
+                "title": "Servers",
+                "description": "NTP candidates",
+                "required": true
+              }
+            },
+            {
+              "widget": "set-toggle",
+              "bind": "_timeserver.ntp_server",
+              "displayIf": "_timeserver.enabled",
+              "options": { "title": "NTP Server", "description": "Provide local NTP server" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Administration" },
+      "content": [
+        {
+          "widget": "set-popup",
+          "options": {
+            "title": "Password",
+            "description": "Changes the administrator password for accessing the device",
+            "popupTitle": "Change Password"
+          },
+          "content": [
+            {
+              "widget": "input",
+              "bind": "data.pss1",
+              "options": { "title": "New password" }
+            },
+            {
+              "widget": "input",
+              "bind": "data.pss2",
+              "options": { "title": "Retype password" }
+            }
+          ]
+        },
+        {
+          "widget": "set-expansion",
+          "waitFor": "uci.loadConfig('dropbear')",
+          "options": {
+            "title": "SSH Access",
+            "description=": "`${uci.configs.dropbear['@dropbear'].length} instances`"
+          },
+          "content": [
+            {
+              "widget": "set-rowarray",
+              "bind": "uci.configs.dropbear['@dropbear']",
+              "options": { "newRow": "{}" },
+
+              "content": [
+                {
+                  "widget": "set-expansion",
+
+                  "options": {
+                    "title=": "`Port ${$data.Port} [${$data.Interface.join('-') || '*'}]`"
+                  },
+
+                  "content": [
+                    {
+                      "widget": "set-input",
+                      "bind": "$data.Port",
+                      "options": { "title": "Port" }
+                    },
+                    {
+                      "widget": "set-popup",
+                      "options": {
+                        "title": "Interface",
+                        "description=": "`${$data.Interface.join('-') || '*'}`",
+                        "popupTitle": "Select Interfaces"
+                      }
+                    },
+                    {
+                      "widget": "set-expansion",
+                      "options": { "title": "Advanced" }
+                    }
+                  ]
+                }
+              ]
+            },
+
+            {
+              "widget": "set-expansion",
+              "options": { "title": "SSH Keys", "description": "Manage authorization keys" }
+            }
+          ]
+        },
+
+        {
+          "widget": "set-button",
+          "options": {
+            "title": "Restart Device",
+            "buttonTitle": "Reboot",
+            "click": "ubus('luci2.system', 'reboot')"
+          }
+        },
+        {
+          "widget": "set-button",
+          "options": {
+            "title": "Firmware",
+            "description": "Flash new firmware image",
+            "buttonTitle": "Flash"
+          }
+        },
+        {
+          "widget": "set-button",
+          "options": {
+            "title": "Backup",
+            "description": "Download a tar archive of the current configuration files",
+            "buttonTitle": "Generate"
+          }
+        },
+        {
+          "widget": "set-button",
+          "options": {
+            "title": "Restore",
+            "description": "Upload a previously generated backup archive",
+            "buttonTitle": "Upload"
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Programs & Tasks" },
+      "content": [
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Startup",
+            "description": "Manage installed init scripts",
+            "link": "system/startup"
+          }
+        },
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Software",
+            "description": "Install & manage programs",
+            "link": "system/software"
+          }
+        },
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Scheduled Tasks",
+            "description": "Manage Crontab tasks",
+            "link": "system/schedule"
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-sectiongroup",
+      "options": { "title": "Advanced" },
+      "content": [
+        {
+          "widget": "set-section",
+          "options": { "title": "Logging" },
+          "content": [
+            {
+              "widget": "set-expansion",
+              "options": { "title": "System Log", "description": "Enable use of time server" },
+              "content": []
+            },
+            {
+              "widget": "set-expansion",
+              "options": {
+                "title": "Kernel Log",
+                "expanded": true
+              },
+              "content": [
+                {
+                  "widget": "set-input",
+                  "bind": "uci.configs.system['@system'][0].buffersize",
+                  "options": {
+                    "title": "Buffersize",
+                    "description": "Size of the kernel message buffer"
+                  }
+                },
+                {
+                  "widget": "set-slider",
+                  "bind": "uci.configs.system['@system'][0].conloglevel",
+                  "options": {
+                    "title": "Log Level",
+                    "description": "Maximum log level for kernel messages to be logged to the console",
+                    "min": 1,
+                    "max": 8
+                  }
+                }
+              ]
+            },
+            {
+              "widget": "set-slider",
+              "bind": "uci.configs.system['@system'][0].cronloglevel",
+              "options": { "title": "Cron log level", "min": 0, "max": 15 }
+            }
+          ]
+        },
+        {
+          "widget": "set-section",
+          "options": { "title": "Leds" },
+          "content": [
+            {
+              "widget": "set-toggle",
+              "bind": "data.tog1",
+              "options": { "title": "Use NTP", "description": "Enable use of time server" }
+            },
+            {
+              "widget": "set-input",
+              "bind": "data.tog2",
+              "options": {
+                "title": "Input text box",
+                "description": "Description for row 2",
+                "required": true
+              }
+            },
+            {
+              "widget": "set-expansion",
+              "options": {
+                "title": "Expanding section",
+                "description=": "'NTP is ' + (data.togl ? 'enabled' : 'disabled')"
+              },
+              "content": [
+                {
+                  "widget": "set-toggle",
+                  "bind": "data.tog1",
+                  "options": { "title": "Use NTP", "description": "Enable use of time server" }
+                },
+                {
+                  "widget": "set-input",
+                  "bind": "data.tog2",
+                  "options": {
+                    "title": "Input text box",
+                    "description": "Description for row 2",
+                    "required": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
