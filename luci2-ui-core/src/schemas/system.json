@@ -13,21 +13,24 @@
         "anonymous": true,
         "ui": {
           "fieldsets": {
-            "default": 4,
+            "default": 5,
             "sets": [
               {
                 "title": "General",
                 "fields": ["hostname", "timezone", "zonename"]
               },
               {
-                "title": "Log",
-                "fields": ["log_buffer_size", "conloglevel", "buffersize"]
+                "title": "Kernel Log",
+                "fields": ["conloglevel", "buffersize"]
+              },
+              {
+                "title": "System Log",
+                "fields": ["log_buffer_size"]
               },
               {
                 "title": "File Logging",
                 "fields": ["log_file", "log_size"]
               },
-
               {
                 "title": "Remote Logging",
                 "fields": [
@@ -63,7 +66,8 @@
             "title": "Time zone name for zoneinfo",
             "description": "Only useful when using glibc and zoneinfo (overrides timezone).",
             "type": "string",
-            "examples": ["Europe/Brussels"]
+            "examples": ["Europe/Brussels"],
+            "depends=": "ubus('file', 'stat', {path:'/usr/share/zoneinfo'})"
           },
           "buffersize": {
             "title": "Kernel log Buffersize",
@@ -104,7 +108,9 @@
             "title": "Remote Syslog Server IP",
             "description": "Log messages to server in addition to the local destination.",
             "type": "string",
-            "format": "ipv4"
+            "format": "ipv4",
+            "depends=": "$model.log_remote",
+            "required=": "!!$model.log_remote"
           },
           "log_port": {
             "title": "Remote Port",
@@ -112,19 +118,22 @@
             "type": "integer",
             "default": 514,
             "minimum": 1,
-            "maximum": 65535
+            "maximum": 65535,
+            "depends=": "$model.log_remote"
           },
           "log_prefix": {
             "title": "Log prefix (remote)",
             "description": "Adds a prefix to all log messages send over network",
-            "type": "string"
+            "type": "string",
+            "depends=": "$model.log_remote"
           },
           "log_proto": {
             "title": "Protocol",
             "description": "Sets the protocol to use for the connection",
             "type": "string",
             "enum": ["tcp", "udp"],
-            "default": "udp"
+            "default": "udp",
+            "depends=": "$model.log_remote"
           },
           "log_remote": {
             "title": "Enable remote logging",
@@ -142,19 +151,14 @@
             "title": "Trailer null",
             "description": "Use \\0 instead of \\n as trailer when using TCP.",
             "type": "boolean",
-            "default": false
-          },
-          "log_type": {
-            "title": "Log type",
-            "description": "Either circular or file.",
-            "type": "string",
-            "enum": ["circular", "file"],
-            "default": "circular"
+            "default": false,
+            "depends=": "$model.log_proto=='tcp'"
           },
           "log_hostname": {
             "title": "Hostname for log",
             "type": "string",
-            "format": "host"
+            "format": "host",
+            "depends=": "$model.log_remote"
           }
         }
       }
@@ -167,7 +171,8 @@
           "enabled": {
             "title": "Enabled",
             "type": "boolean",
-            "default": true
+            "default": true,
+            "depends=": "ubus('file','stat', {path: '/usr/sbin/ntpd'})"
           },
           "enable_server": {
             "title": "Enable Server",
@@ -185,6 +190,22 @@
               "format": "hostname"
             },
             "depends=": "$model.enabled"
+          },
+          "use_dhcp": {
+            "title": "Use DHCP",
+            "description": "Get NTP servers from DHCP.",
+            "type": "boolean",
+            "default": false,
+            "depends=": "$model.enabled"
+          },
+          "dhcp_interface": {
+            "title": "Use DHCP Interface",
+            "description": "Get NTP servers from DHCP.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "depends=": "$model.use_dhcp"
           }
         }
       }

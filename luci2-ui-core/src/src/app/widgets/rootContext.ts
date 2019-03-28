@@ -6,6 +6,7 @@
  */
 
 import { JsonPath } from 'espression-jsonpath';
+import { RxObject } from 'espression-rx';
 import { Context, ESpression, Expressions, ROOT_EXPR_CONTEXT } from 'reactive-json-form-ng';
 
 import { UbusService } from '../shared/ubus.service';
@@ -31,6 +32,8 @@ export function rootContextFactory(ubus: UbusService, expr: ESpression, uci: Uci
       uci,
       $user: ubus.user,
       jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values,
+      RxObject,
+      $tmp: RxObject({}),
     },
     undefined,
     true

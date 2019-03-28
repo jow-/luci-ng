@@ -1,6 +1,6 @@
 {
   "/ubus": {
-    "target": "http://lede.lan/ubus",
+    "target": "http://192.168.20.100/ubus",
     "secure": false
   }
 }
