@@ -10,6 +10,7 @@ import {
   Expressions,
   FormFieldWidgetsModule,
   MaterialModule,
+  SettingsWidgetsModule,
   WidgetsCoreModule,
 } from 'reactive-json-form-ng';
 
@@ -18,7 +19,13 @@ import { StatusModule } from './status/status.module';
 
 /** Module containing all Widget components */
 @NgModule({
-  imports: [MaterialModule, StatusModule, CommonWidgetsModule, FormFieldWidgetsModule],
+  imports: [
+    MaterialModule,
+    StatusModule,
+    CommonWidgetsModule,
+    FormFieldWidgetsModule,
+    SettingsWidgetsModule,
+  ],
   declarations: [],
   exports: [WidgetsCoreModule, MaterialModule],
 

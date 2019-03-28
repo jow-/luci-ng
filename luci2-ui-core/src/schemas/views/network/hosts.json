@@ -1,38 +1,58 @@
 {
-  "widget": "tabs",
-
-  "options": {
-    "tabLabels": ["General", "Interfaces", "Static Leases", "Hostnames"]
-  },
+  "widget": "set-page",
 
   "content": [
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('dhcp','@dnsmasq')",
-        "bind": "uci.configs.dhcp['@dnsmasq']"
-      }
+      "widget": "set-section",
+      "options": { "title": "DNS Server" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('dhcp','@dnsmasq').items",
+            "bind": "uci.configs.dhcp['@dnsmasq'][0]"
+          }
+        }
+      ]
     },
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('dhcp','@dhcp')",
-        "bind": "uci.configs.dhcp['@dhcp']"
-      }
+      "widget": "set-section",
+      "options": { "title": "DHCP Interfaces" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('dhcp','@dhcp')",
+            "bind": "uci.configs.dhcp['@dhcp']"
+          }
+        }
+      ]
     },
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('dhcp','@host')",
-        "bind": "uci.configs.dhcp['@host']"
-      }
+      "widget": "set-section",
+      "options": { "title": "Hostnames" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('dhcp','@host')",
+            "bind": "uci.configs.dhcp['@host']"
+          }
+        }
+      ]
     },
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('dhcp','@domain')",
-        "bind": "uci.configs.dhcp['@domain']"
-      }
+      "widget": "set-section",
+      "options": { "title": "Custom Domains" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('dhcp','@domain')",
+            "bind": "uci.configs.dhcp['@domain']"
+          }
+        }
+      ]
     }
   ]
 }

@@ -1,24 +1,32 @@
 {
-  "widget": "tabs",
-
-  "options": {
-    "tabLabels": ["IPv4", "IPv6"]
-  },
+  "widget": "set-page",
 
   "content": [
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@route')",
-        "bind": "uci.configs.network['@route']"
-      }
+      "widget": "set-section",
+      "options": { "title": "IPv4" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('network','@route')",
+            "bind": "uci.configs.network['@route']"
+          }
+        }
+      ]
     },
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@route6')",
-        "bind": "uci.configs.network['@route6']"
-      }
+      "widget": "set-section",
+      "options": { "title": "IPv6" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('network','@route6')",
+            "bind": "uci.configs.network['@route6']"
+          }
+        }
+      ]
     }
   ]
 }

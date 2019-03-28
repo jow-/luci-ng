@@ -1,31 +1,46 @@
 {
-  "widget": "tabs",
-
-  "options": {
-    "tabLabels": ["Global", "Interfaces", "Devices"]
-  },
+  "widget": "set-page",
+  "waitFor": "uci.loadConfig('network')",
 
   "content": [
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@global')",
-        "bind": "uci.configs.network['@global']"
-      }
+      "widget": "set-section",
+      "options": { "title": "Global" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('network','@globals').items",
+            "bind": "uci.configs.network['@globals'][0]"
+          }
+        }
+      ]
     },
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@interface')",
-        "bind": "uci.configs.network['@interface']"
-      }
+      "widget": "set-section",
+      "options": { "title": "Interfaces" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('network','@interface')",
+            "bind": "uci.configs.network['@interface']"
+          }
+        }
+      ]
     },
     {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@device')",
-        "bind": "uci.configs.network['@device']"
-      }
+      "widget": "set-section",
+      "options": { "title": "Devices" },
+      "content": [
+        {
+          "widget": "schema-form",
+          "options": {
+            "schema=": "uci.getSchema('network','@device')",
+            "bind": "uci.configs.network['@device']"
+          }
+        }
+      ]
     }
   ]
 }
