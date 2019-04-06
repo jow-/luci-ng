@@ -39,11 +39,11 @@
 
         {
           "widget": "set-expansion",
-          "showIf": "ubus('file','stat', {path: '/usr/sbin/ntpd'})",
+          "displayIf": "ubus('file','stat', {path: '/usr/sbin/ntpd'})",
           "onInit": "_timeserver = uci.configs.system['@timeserver'][0]",
           "options": {
             "title": "Time Synchronization",
-            "description=": "`NTP is ${data.ntp ? 'enabled': 'disabled'}`"
+            "description=": "`NTP is ${_timeserver.enabled ? 'enabled': 'disabled'}`"
           },
 
           "content": [
@@ -53,13 +53,13 @@
               "options": { "title": "Use NTP", "description": "Enable use of time server" }
             },
             {
-              "widget": "set-input",
+              "widget": "set-list",
               "bind": "_timeserver.server",
               "displayIf": "_timeserver.enabled",
               "options": {
                 "title": "Servers",
                 "description": "NTP candidates",
-                "required": true
+                "newRow": "' '"
               }
             },
             {
@@ -87,12 +87,12 @@
             {
               "widget": "input",
               "bind": "data.pss1",
-              "options": { "title": "New password" }
+              "options": { "title": "New password", "inputType": "password" }
             },
             {
               "widget": "input",
               "bind": "data.pss2",
-              "options": { "title": "Retype password" }
+              "options": { "title": "Retype password", "inputType": "password" }
             }
           ]
         },
@@ -221,8 +221,97 @@
           "content": [
             {
               "widget": "set-expansion",
-              "options": { "title": "System Log", "description": "Enable use of time server" },
-              "content": []
+              "options": { "title": "System Log" },
+              "content": [
+                {
+                  "widget": "set-input",
+                  "bind": "uci.configs.system['@system'][0].log_buffer_size",
+                  "options": {
+                    "title": "Buffersize",
+                    "description": "System log in memory buffer size [kB]"
+                  }
+                },
+                {
+                  "widget": "set-expansion",
+                  "options": {
+                    "title": "File Log",
+                    "description=": "uci.configs.system['@system'][0].log_file ? `Logging to ${uci.configs.system['@system'][0].log_file}` : 'Disabled'"
+                  },
+                  "content": [
+                    {
+                      "widget": "set-input",
+                      "bind": "uci.configs.system['@system'][0].log_file",
+                      "options": {
+                        "title": "Log file",
+                        "description": "File to write log messages to."
+                      }
+                    },
+                    {
+                      "widget": "set-input",
+                      "bind": "uci.configs.system['@system'][0].log_size",
+                      "options": {
+                        "title": "Buffersize",
+                        "description": "Size of the file buffer in KiB [kB]"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "set-toggle",
+                  "bind": "uci.configs.system['@system'][0].log_remote",
+                  "options": {
+                    "title": "Remote Logging",
+                    "description": "Log messages to server in addition to the local destination."
+                  },
+                  "content": [
+                    {
+                      "widget": "set-input",
+                      "bind": "uci.configs.system['@system'][0].log_ip",
+                      "options": {
+                        "title": "Remote Syslog Server IP"
+                      }
+                    },
+                    {
+                      "widget": "set-input",
+                      "bind": "uci.configs.system['@system'][0].log_port",
+                      "options": {
+                        "title": "Remote Port"
+                      }
+                    },
+                    {
+                      "widget": "set-input",
+                      "bind": "uci.configs.system['@system'][0].log_proto",
+                      "options": {
+                        "title": "Protocol",
+                        "description": "Sets the protocol to use for the connection"
+                      }
+                    },
+                    {
+                      "widget": "set-input",
+                      "bind": "uci.configs.system['@system'][0].log_hostname",
+                      "options": {
+                        "title": "Hostname for log"
+                      }
+                    },
+                    {
+                      "widget": "set-toggle",
+                      "bind": "uci.configs.system['@system'][0].log_trailer_null",
+                      "options": {
+                        "title": "Trailer null",
+                        "description": "Use \\0 instead of \\n as trailer when using TCP."
+                      }
+                    },
+                    {
+                      "widget": "set-input",
+                      "bind": "uci.configs.system['@system'][0].log_prefix",
+                      "options": {
+                        "title": "Log prefix",
+                        "description": "Adds a prefix to all log messages send over network"
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "widget": "set-expansion",
@@ -261,43 +350,14 @@
         {
           "widget": "set-section",
           "options": { "title": "Leds" },
+          "displayIf": "ubus('file', 'list', {path:'/sys/class/leds'} ).entries.length",
           "content": [
             {
-              "widget": "set-toggle",
-              "bind": "data.tog1",
-              "options": { "title": "Use NTP", "description": "Enable use of time server" }
-            },
-            {
-              "widget": "set-input",
-              "bind": "data.tog2",
+              "widget": "schema-form",
               "options": {
-                "title": "Input text box",
-                "description": "Description for row 2",
-                "required": true
+                "schema=": "uci.getSchema('system','@led')",
+                "bind": "uci.configs.system['@led']"
               }
-            },
-            {
-              "widget": "set-expansion",
-              "options": {
-                "title": "Expanding section",
-                "description=": "'NTP is ' + (data.togl ? 'enabled' : 'disabled')"
-              },
-              "content": [
-                {
-                  "widget": "set-toggle",
-                  "bind": "data.tog1",
-                  "options": { "title": "Use NTP", "description": "Enable use of time server" }
-                },
-                {
-                  "widget": "set-input",
-                  "bind": "data.tog2",
-                  "options": {
-                    "title": "Input text box",
-                    "description": "Description for row 2",
-                    "required": true
-                  }
-                }
-              ]
             }
           ]
         }
