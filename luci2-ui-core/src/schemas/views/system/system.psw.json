@@ -1,0 +1,40 @@
+{
+  "widget": "form",
+  "bind": "$tmp",
+  "content": [
+    {
+      "widget": "input",
+      "bind": "data.pss1",
+      "options": {
+        "title": "New password",
+        "type": "string",
+        "inputType": "password",
+        "minLength": 5,
+        "required": true
+      }
+    },
+    {
+      "widget": "input",
+      "bind": "data.pss2",
+      "options": {
+        "title": "Retype password",
+        "inputType": "password",
+        "const=": "data.pss1",
+        "required": true
+      }
+    },
+    {
+      "widget": "button",
+      "options": {
+        "title": "Cancel"
+      }
+    },
+    {
+      "widget": "button",
+      "options": {
+        "title": "Change",
+        "disabled=": "!$form.valid"
+      }
+    }
+  ]
+}
