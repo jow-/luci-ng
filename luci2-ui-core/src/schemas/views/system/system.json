@@ -16,61 +16,7 @@
     {
       "widget": "set-section",
       "options": { "title": "Time & Date" },
-      "content": [
-        {
-          "widget": "set-input",
-          "bind": "uci.configs.system['@system'][0].timezone",
-          "options": {
-            "title": "Timezone",
-            "description": "The TZ that date and time should be rendered in by default",
-            "required": true
-          }
-        },
-        {
-          "widget": "set-button",
-          "bind": "data.set_time",
-          "onInit": "a = new Date(ubus('system', 'info', 5000).localtime * 1000)",
-          "options": {
-            "title": "Local Time",
-            "description=": "a.toDateString() + ' ' + a.toLocaleTimeString()",
-            "buttonTitle": "Sync with Browser"
-          }
-        },
-
-        {
-          "widget": "set-expansion",
-          "displayIf": "ubus('file','stat', {path: '/usr/sbin/ntpd'})",
-          "onInit": "_timeserver = uci.configs.system['@timeserver'][0]",
-          "options": {
-            "title": "Time Synchronization",
-            "description=": "`NTP is ${_timeserver.enabled ? 'enabled': 'disabled'}`"
-          },
-
-          "content": [
-            {
-              "widget": "set-toggle",
-              "bind": "_timeserver.enabled",
-              "options": { "title": "Use NTP", "description": "Enable use of time server" }
-            },
-            {
-              "widget": "set-list",
-              "bind": "_timeserver.server",
-              "displayIf": "_timeserver.enabled",
-              "options": {
-                "title": "Servers",
-                "description": "NTP candidates",
-                "newRow": "' '"
-              }
-            },
-            {
-              "widget": "set-toggle",
-              "bind": "_timeserver.ntp_server",
-              "displayIf": "_timeserver.enabled",
-              "options": { "title": "NTP Server", "description": "Provide local NTP server" }
-            }
-          ]
-        }
-      ]
+      "content": "load('views/system/system.time.json')"
     },
     {
       "widget": "set-section",
@@ -83,18 +29,7 @@
             "description": "Changes the administrator password for accessing the device",
             "popupTitle": "Change Password"
           },
-          "content": [
-            {
-              "widget": "input",
-              "bind": "data.pss1",
-              "options": { "title": "New password", "inputType": "password" }
-            },
-            {
-              "widget": "input",
-              "bind": "data.pss2",
-              "options": { "title": "Retype password", "inputType": "password" }
-            }
-          ]
+          "content": "load('views/system/system.psw.json')"
         },
         {
           "widget": "set-expansion",
