@@ -747,7 +747,7 @@ rpc_luci2_password_set(struct ubus_context *ctx, struct ubus_object *obj,
 	if (!tb[RPC_P_USER] || !tb[RPC_P_PASSWORD])
 		return UBUS_STATUS_INVALID_ARGUMENT;
 
-	if (stat("/usr/bin/passwd", &s))
+	if (stat("/bin/passwd", &s))
 		return UBUS_STATUS_NOT_FOUND;
 
 	if (!(s.st_mode & S_IXUSR))
@@ -779,7 +779,7 @@ rpc_luci2_password_set(struct ubus_context *ctx, struct ubus_object *obj,
 
 		chdir("/");
 
-		if (execl("/usr/bin/passwd", "/usr/bin/passwd",
+		if (execl("/bin/passwd", "/bin/passwd",
 		          blobmsg_data(tb[RPC_P_USER]), NULL))
 			return rpc_errno_status();
 
