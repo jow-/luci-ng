@@ -1,10 +1,10 @@
 {
   "widget": "form",
-  "bind": "$tmp",
+  "bind": "model",
   "content": [
     {
       "widget": "input",
-      "bind": "data.pss1",
+      "bind": "model.pss1",
       "options": {
         "title": "New password",
         "type": "string",
@@ -15,25 +15,27 @@
     },
     {
       "widget": "input",
-      "bind": "data.pss2",
+      "bind": "model.pss2",
       "options": {
         "title": "Retype password",
         "inputType": "password",
-        "const=": "data.pss1",
+        "const=": "model.pss1",
         "required": true
       }
     },
     {
       "widget": "button",
       "options": {
-        "title": "Cancel"
+        "title": "Cancel",
+        "click": "$dlg.close()"
       }
     },
     {
       "widget": "button",
       "options": {
         "title": "Change",
-        "disabled=": "!$form.valid"
+        "disabled=": "!$form.valid",
+        "click": "ubus('luci2.system', 'password_set', {user:$user, password: model.pss1}) === null && $dlg.close() && snackbar('Password successfully changed')"
       }
     }
   ]
