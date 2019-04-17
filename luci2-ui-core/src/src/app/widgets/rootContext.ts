@@ -13,6 +13,7 @@ import { Context, ESpression, Expressions, ROOT_EXPR_CONTEXT } from 'reactive-js
 import { of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
+import { CgiService } from '../shared/cgi.service';
 import { UbusService } from '../shared/ubus.service';
 import { UciModel2 } from '../uci/uci';
 
@@ -20,7 +21,7 @@ export const rootContextProvider = {
   // tslint:disable-line:naming-convention
   provide: ROOT_EXPR_CONTEXT,
   useFactory: rootContextFactory,
-  deps: [UbusService, Expressions, UciModel2, HttpClient, MatSnackBar],
+  deps: [UbusService, Expressions, UciModel2, HttpClient, MatSnackBar, CgiService],
 };
 
 export function rootContextFactory(
@@ -28,7 +29,8 @@ export function rootContextFactory(
   expr: ESpression,
   uci: UciModel2,
   http: HttpClient,
-  snackbar: MatSnackBar
+  snackbar: MatSnackBar,
+  cgi: CgiService
 ): Context {
   const jsonPath = new JsonPath();
   return Context.create(
@@ -40,6 +42,7 @@ export function rootContextFactory(
       map: expr.mapFactory(),
       reduce: expr.reduceFactory(),
       uci,
+      cgi,
       $user: ubus.user,
       jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values,
       load: (url: string) => http.get(url).pipe(catchError(() => of(undefined))),

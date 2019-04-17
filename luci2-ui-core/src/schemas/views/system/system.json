@@ -103,7 +103,9 @@
           "options": {
             "title": "Backup",
             "description": "Download a tar archive of the current configuration files",
-            "buttonTitle": "Generate"
+            "buttonTitle": "Generate",
+            "click": "$tmp.loading=true, cgi.backup() || ($tmp.loading=false)",
+            "spinner=": "$tmp.loading"
           }
         },
         {
