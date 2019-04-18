@@ -1,0 +1,26 @@
+{
+  "widget": "set-subpage",
+
+  "options": {
+    "title": "Backup Configuration"
+  },
+  "content": [
+    { "widget": "set-expansion", "options": { "title": "Files to include" } },
+    {
+      "widget": "set-expansion",
+      "options": { "title": "Generated list" },
+      "content": [
+        {
+          "widget": "table",
+          "onInit": "data = ubus('luci2.system', 'backup_list')",
+          "options": {
+            "colKeys": ["0"],
+            "colHeaders": ["File"],
+            "dataSource=": "map(data.files, '[$value]')",
+            "filterBy": true
+          }
+        }
+      ]
+    }
+  ]
+}
