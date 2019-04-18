@@ -89,14 +89,21 @@
             "buttonTitle": "Reboot",
             "click": "ubus('luci2.system', 'reboot')"
           }
-        },
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Backup & Upgrade" },
+      "content": [
         {
-          "widget": "set-button",
+          "widget": "set-popup",
           "options": {
             "title": "Firmware",
             "description": "Flash new firmware image",
-            "buttonTitle": "Flash"
-          }
+            "popupTitle": "Flash"
+          },
+          "content": "load('views/system/system.firmware.json')"
         },
         {
           "widget": "set-button",
@@ -109,12 +116,42 @@
           }
         },
         {
-          "widget": "set-button",
+          "widget": "set-link",
           "options": {
-            "title": "Restore",
-            "description": "Upload a previously generated backup archive",
-            "buttonTitle": "Upload"
+            "title": "Configure",
+            "description": "List files/folder to keep & backup",
+            "link": "system/backup"
           }
+        },
+        {
+          "widget": "set-expansion",
+          "options": { "title": "Restore" },
+          "content": [
+            {
+              "widget": "set-button",
+              "options": {
+                "title": "From backup",
+                "description": "Upload a previously generated backup archive",
+                "buttonTitle": "Upload"
+              }
+            },
+            {
+              "widget": "set-button",
+              "options": {
+                "title": "Restore defaults",
+                "description": "Revert to default configuration",
+                "buttonTitle": "Reset"
+              }
+            },
+            {
+              "widget": "set-button",
+              "options": {
+                "title": "Restore to previous",
+                "description": "Revert to previous firmware",
+                "buttonTitle": "Rollback"
+              }
+            }
+          ]
         }
       ]
     },
