@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { UciModel2 } from 'app/uci/uci';
 
 import { IMenuItem } from '../menu/menu.interface';
 
@@ -27,12 +28,15 @@ export class ShellComponent {
   @Input()
   menu: IMenuItem | undefined;
 
+  saving = false;
+
   isMediaSmall = false;
   constructor(
     public media: BreakpointObserver,
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
-    cdr: ChangeDetectorRef
+    public cdr: ChangeDetectorRef,
+    public uci: UciModel2
   ) {
     iconRegistry.addSvgIconSet(
       sanitizer.bypassSecurityTrustResourceUrl('./../../../assets/mdi.svg')
@@ -42,5 +46,12 @@ export class ShellComponent {
       this.isMediaSmall = isMatched.matches;
       cdr.markForCheck();
     });
+  }
+
+  saveUCI(): void {
+    this.saving = true;
+    this.uci
+      .save()
+      .subscribe({ complete: () => ((this.saving = false), this.cdr.markForCheck()) });
   }
 }
