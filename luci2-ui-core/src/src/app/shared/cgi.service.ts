@@ -7,9 +7,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, of } from 'rxjs';
+import { catchError, map, shareReplay } from 'rxjs/operators';
 
 import { UbusService } from './ubus.service';
-import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,11 @@ import { catchError, map } from 'rxjs/operators';
 export class CgiService {
   private a: HTMLAnchorElement = document.createElement('a');
 
-  constructor(private http: HttpClient, private ubus: UbusService, private snackbar: MatSnackBar) {
+  constructor(
+    private http: HttpClient,
+    private ubus: UbusService,
+    private snackbar: MatSnackBar
+  ) {
     this.a.style.display = 'none';
     document.body.appendChild(this.a);
   }

@@ -17,7 +17,10 @@ import { Observable } from 'rxjs';
 export class ViewsResolverService implements Resolve<IWidgetDef> {
   constructor(private _http: HttpClient) {}
 
-  resolve(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<IWidgetDef> {
-    return this._http.get<IWidgetDef>(`/views${state.url}.json`);
+  resolve(
+    route: ActivatedRouteSnapshot,
+    _state: RouterStateSnapshot
+  ): Observable<IWidgetDef> {
+    return this._http.get<IWidgetDef>(`views/${route.data.view}.json`);
   }
 }
