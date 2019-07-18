@@ -14,6 +14,7 @@ import {
   WidgetsCoreModule,
 } from 'reactive-json-form-ng';
 
+import { PopupDialogComponent } from './popup/popup.component';
 import { rootContextProvider } from './rootContext';
 import { StatusModule } from './status/status.module';
 
@@ -26,8 +27,9 @@ import { StatusModule } from './status/status.module';
     FormFieldWidgetsModule,
     SettingsWidgetsModule,
   ],
-  declarations: [],
+  declarations: [PopupDialogComponent],
   exports: [WidgetsCoreModule, MaterialModule],
+  entryComponents: [PopupDialogComponent],
 
   providers: [
     {
