@@ -1,0 +1,11 @@
+<div mat-dialog-content>
+  {{ data.message }}
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="false" *ngIf="data.cancelLabel">
+    {{ data.cancelLabel }}
+  </button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>
+    {{ data.okLabel }}
+  </button>
+</div>
