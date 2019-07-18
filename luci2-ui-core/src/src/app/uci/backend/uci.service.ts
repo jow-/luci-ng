@@ -26,16 +26,16 @@ export class UciService {
   constructor(private _ubus: UbusService, private _http: HttpClient) {}
 
   getConfig(config: string): Observable<[IUciConfigData, any]> {
-    return forkJoin(
+    return forkJoin([
       this._ubus
         .call<IUciConfigData>('uci', 'get', { config })
         .pipe(map(r => (r && r.values) || {})),
-      this._http.get<{}>(`/schemas/${config}.json`).pipe(
+      this._http.get<{}>(`schemas/${config}.json`).pipe(
         debug('schema get'),
         catchError(() => of({})),
         debug('schema')
-      )
-    ).pipe(debug('forkJoin UCI'));
+      ),
+    ]).pipe(debug('forkJoin UCI'));
   }
 
   /** Adds a section and returns its name, or empty string on error */
@@ -45,11 +45,22 @@ export class UciService {
       .pipe(map(r => (r && r.section) || ''));
   }
 
-  set(param: IUciSetParam): Observable<any> {
+  set(param: IUciSetParam): Observable<null> {
     return this._ubus.call('uci', 'set', param);
   }
 
-  delete(param: IUciDeleteParam): Observable<any> {
+  delete(param: IUciDeleteParam): Observable<null> {
     return this._ubus.call('uci', 'delete', param);
+  }
+
+  apply(): Observable<null> {
+    return this._ubus.call('uci', 'apply', { rollback: true });
+  }
+  commit(config: string): Observable<null> {
+    return this._ubus.call('uci', 'commit', { config });
+  }
+
+  changes(config: string): Observable<null> {
+    return this._ubus.call('uci', 'changes', { config });
   }
 }

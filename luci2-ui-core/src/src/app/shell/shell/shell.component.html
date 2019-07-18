@@ -1,6 +1,14 @@
 <mat-toolbar class="app-bar mat-elevation-z6" color="primary">
-  <button mat-icon-button (click)="nav.open()" [style.display]="isMediaSmall ? 'block' : 'none'">
+  <button
+    mat-icon-button
+    (click)="nav.open()"
+    [style.display]="isMediaSmall ? 'block' : 'none'"
+  >
     <mat-icon svgIcon="menu"></mat-icon>
+  </button>
+
+  <button mat-icon-button (click)="saveUCI()" [disabled]="saving">
+    <mat-icon svgIcon="content-save"></mat-icon>
   </button>
 </mat-toolbar>
 
