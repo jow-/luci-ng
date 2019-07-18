@@ -26,6 +26,20 @@ import { JsonrpcErrorCodes } from './jsonrpc.interface';
 import { JsonrpcService } from './jsonrpc.service';
 import { debug } from './observable.debug';
 
+const UBUS_ERRORS = [
+  'OK', // UBUS_STATUS_OK,
+  'Invalid command', // UBUS_STATUS_INVALID_COMMAND,
+  'Invalid argument', // UBUS_STATUS_INVALID_ARGUMENT,
+  'Method not found', // UBUS_STATUS_METHOD_NOT_FOUND,
+  'Not found', // UBUS_STATUS_NOT_FOUND,
+  'No data', // UBUS_STATUS_NO_DATA,
+  'Permission denied', // UBUS_STATUS_PERMISSION_DENIED,
+  'Timeout', // UBUS_STATUS_TIMEOUT,
+  'Not supported', // UBUS_STATUS_NOT_SUPPORTED,
+  'Unknown error', // UBUS_STATUS_UNKNOWN_ERROR,
+  'Connection failed', // UBUS_STATUS_CONNECTION_FAILED,
+];
+
 @Injectable({
   providedIn: 'root',
 })
@@ -71,7 +85,8 @@ export class UbusService implements ILogin {
     service: string,
     method: string,
     params?: object,
-    autologin: boolean = true
+    autologin: boolean = true,
+    returnError?: { [code: number]: any }
   ): Observable<T> {
     // cache params in object, so that SID can be changed later and be seen by resuscription holding a reference
     const jsonrpcParams = [this.sid, service, method, params || {}];
@@ -80,15 +95,24 @@ export class UbusService implements ILogin {
       // for successfull responses (status=0) return directly the response
       // for errors throw corresponding error wrapped in IJsonrpcError
       map(r => {
-        if (!Array.isArray(r)) throw { code: 0, message: 'Invalid response format', layer: 'js' };
-        if (r[0] !== 0) throw { code: r[0], layer: 'ubus', data: r[1], message: r[0] };
+        if (!Array.isArray(r))
+          throw { code: 0, message: 'Invalid response format', layer: 'js' };
+        if (r[0] !== 0)
+          throw {
+            code: r[0],
+            layer: 'ubus',
+            data: r[1],
+            message: `${r[0]} - ${UBUS_ERRORS[r[0]] || ''}`,
+          };
         return r.length > 1 ? r[1] : null;
       }),
       // if there is "accessDenied" login and retry
       retryWhen(o =>
         o.pipe(
           mergeMap(e =>
-            autologin && e.layer === 'jsonrpc' && e.code === JsonrpcErrorCodes.AccessDenied
+            autologin &&
+            e.layer === 'jsonrpc' &&
+            e.code === JsonrpcErrorCodes.AccessDenied
               ? this.loginDialog().pipe(
                   tap(() => (jsonrpcParams[0] = this.sid)),
                   debug('loginDialog')
@@ -98,9 +122,17 @@ export class UbusService implements ILogin {
         )
       ),
       catchError(e => {
-        this._snackbar.open(`Error calling ${service} ${method}: ${e.message}`, 'close', {
-          duration: 5000,
-        });
+        if (returnError) {
+          if (e.code in returnError) return of(returnError[e.code]);
+          if ('0' in returnError) return of(returnError['0']);
+        }
+        this._snackbar.open(
+          `Error calling ubus "${service} ${method}": ${e.message}`,
+          'close',
+          {
+            duration: 5000,
+          }
+        );
         return throwError(e);
       }),
 
@@ -147,20 +179,27 @@ export class UbusService implements ILogin {
     service: string,
     method: string,
     params?: object | string | number,
-    jsPathFilter?: string | number,
-    repeatDelay?: number,
-    errorVal?: any
-  ) => Observable<{}> {
+    jsPathFilter?: string | number | { [code: number]: string },
+    repeatDelay?: number | { [code: number]: string },
+    errorVal?: { [code: number]: string }
+  ) => Observable<any> {
     return (
       service: string,
       method: string,
       params?: object | string | number,
-      jsPathFilter?: string | number,
-      repeatDelay?: number,
-      errorVal?: any
+      jsPathFilter?: string | number | { [code: number]: string },
+      repeatDelay?: number | { [code: number]: string },
+      errorVal?: { [code: number]: string }
     ) => {
+      if (typeof repeatDelay === 'object') {
+        errorVal = repeatDelay;
+        repeatDelay = undefined;
+      }
       if (typeof jsPathFilter === 'number') {
         repeatDelay = jsPathFilter;
+        jsPathFilter = undefined;
+      } else if (typeof jsPathFilter === 'object') {
+        errorVal = jsPathFilter;
         jsPathFilter = undefined;
       }
 
@@ -173,18 +212,16 @@ export class UbusService implements ILogin {
         jsPathFilter = undefined;
       }
 
-      let result = this.call(service, method, params, true);
+      let result = this.call(service, method, params, true, errorVal);
 
       if (repeatDelay && typeof repeatDelay === 'number')
         result = result.pipe(repeatWhen(o => o.pipe(delay(<number>repeatDelay))));
       if (jsPathFilter && typeof jsPathFilter === 'string')
-        result = result.pipe(map(res => this._jsPath.query(res, <string>jsPathFilter).values));
+        result = result.pipe(
+          map(res => this._jsPath.query(res, <string>jsPathFilter).values)
+        );
 
-      return result.pipe(
-        catchError(() => of(errorVal)),
-        debug('ubus()'),
-        shareReplay({ bufferSize: 1, refCount: true })
-      );
+      return result.pipe(shareReplay({ bufferSize: 1, refCount: true }));
     };
   }
 }
