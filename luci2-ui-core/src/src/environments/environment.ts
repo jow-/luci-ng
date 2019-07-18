@@ -14,10 +14,3 @@
 export const environment = {
   production: false,
 };
-
-// Reflect.metadata polyfill is only needed in the JIT/dev mode.
-//
-// In order to load these polyfills early enough (before app code), polyfill.ts imports this file to
-// to change the order in the final bundle.
-import 'core-js/es6/reflect';
-import 'core-js/es7/reflect';
