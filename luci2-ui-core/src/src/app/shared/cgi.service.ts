@@ -40,7 +40,16 @@ export class CgiService {
     fd.append('filemode', mode);
     fd.append('filedata', file);
 
-    return this.http.post('/cgi-bin/luci-upload', fd);
+    return this.http.post('/cgi-bin/luci-upload', fd).pipe(
+      catchError((e: HttpErrorResponse) => {
+        this.snackbar.open('Error uploading file', 'close', {
+          duration: 5000,
+        });
+        console.log(e);
+        return of(undefined);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 
   backup(): Observable<any> {
