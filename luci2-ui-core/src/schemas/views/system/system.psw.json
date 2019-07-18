@@ -27,7 +27,7 @@
       "widget": "button",
       "options": {
         "title": "Cancel",
-        "click": "$dlg.close()"
+        "onClick": "$dlg.close()"
       }
     },
     {
@@ -35,7 +35,7 @@
       "options": {
         "title": "Change",
         "disabled=": "!$form.valid",
-        "click": "ubus('luci2.system', 'password_set', {user:$user, password: model.pss1}) === null && $dlg.close() && snackbar('Password successfully changed')"
+        "onClick": "ubus('luci2.system', 'password_set', {user:$user, password: model.pss1}) === null && $dlg.close() && snackbar('Password successfully changed')"
       }
     }
   ]

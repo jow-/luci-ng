@@ -368,7 +368,11 @@
       "items": {
         "type": "object",
         "properties": {
-          "enable": { "type": "boolean", "title": "Enable entry", "default": true },
+          "enable": {
+            "type": "boolean",
+            "title": "Enable entry",
+            "default": true
+          },
           "name": {
             "type": "string",
             "format": "hostname",

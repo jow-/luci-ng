@@ -11,15 +11,7 @@
       "anonymous": true,
       "items": {
         "type": "object",
-        "ui": {
-          "fieldsets": {
-            "default": 1,
-            "sets": [
-              { "title": "Main", "fields": ["enable", "Interface", "Port"] },
-              { "title": "Advanced" }
-            ]
-          }
-        },
+
         "properties": {
           "enable": {
             "title": "Enable",
@@ -31,7 +23,7 @@
             "title": "Interface",
             "description": "Listen only on the specified interface, if unspecified, on all.",
             "type": "string",
-            "enum=": "ubus('uci', 'get', {config:'network',type:'interface'} , `$.values[?(@['.name']!='loopback')]['.name']`)"
+            "enum=": "ubus('network.interface', 'dump', {} , '$.interface[?(@.device!='lo')].interface')"
           },
           "Port": {
             "title": "Port",

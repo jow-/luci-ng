@@ -38,11 +38,19 @@
       }
     },
     {
+      "widget": "input",
+      "bind": "$model.errorVal",
+      "options": {
+        "title": "error values",
+        "description=": "Transformation to apply to error codes"
+      }
+    },
+    {
       "widget": "button",
       "bind": "$model.refresh",
       "options": {
         "title": "Execute",
-        "click": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {}, $model.path)"
+        "onClick": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {}, $model.path, $model.errorVal && JSON.parse($model.errorVal))"
       }
     },
     {

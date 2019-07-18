@@ -6,41 +6,17 @@
     {
       "widget": "set-section",
       "options": { "title": "Global" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('network','@globals').items",
-            "bind": "uci.configs.network['@globals'][0]"
-          }
-        }
-      ]
+      "content": "uciUI('network','@globals', 0)"
     },
     {
       "widget": "set-section",
       "options": { "title": "Interfaces" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('network','@interface')",
-            "bind": "uci.configs.network['@interface']"
-          }
-        }
-      ]
+      "content": "uciUI('network','@interface')"
     },
     {
       "widget": "set-section",
       "options": { "title": "Devices" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('network','@device')",
-            "bind": "uci.configs.network['@device']"
-          }
-        }
-      ]
+      "content": "uciUI('network','@device')"
     }
   ]
 }

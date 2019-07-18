@@ -6,26 +6,8 @@
   },
 
   "content": [
-    {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@switch')",
-        "bind": "uci.configs.network['@switch']"
-      }
-    },
-    {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@switch_vlan')",
-        "bind": "uci.configs.network['@switch_vlan']"
-      }
-    },
-    {
-      "widget": "schema-form",
-      "options": {
-        "schema=": "uci.getSchema('network','@switch_port')",
-        "bind": "uci.configs.network['@switch_port']"
-      }
-    }
+    "uciUI('network','@switch')",
+    "uciUI('network','@switch_vlan')",
+    "uciUI('network','@switch_port')"
   ]
 }

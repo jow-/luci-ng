@@ -5,54 +5,22 @@
     {
       "widget": "set-section",
       "options": { "title": "DNS Server" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('dhcp','@dnsmasq').items",
-            "bind": "uci.configs.dhcp['@dnsmasq'][0]"
-          }
-        }
-      ]
+      "content": "uciUI('dhcp', '@dnsmasq', 0)"
     },
     {
       "widget": "set-section",
       "options": { "title": "DHCP Interfaces" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('dhcp','@dhcp')",
-            "bind": "uci.configs.dhcp['@dhcp']"
-          }
-        }
-      ]
+      "content": "uciUI('dhcp','@dhcp')"
     },
     {
       "widget": "set-section",
       "options": { "title": "Hostnames" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('dhcp','@host')",
-            "bind": "uci.configs.dhcp['@host']"
-          }
-        }
-      ]
+      "content": "uciUI('dhcp','@host')"
     },
     {
       "widget": "set-section",
       "options": { "title": "Custom Domains" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('dhcp','@domain')",
-            "bind": "uci.configs.dhcp['@domain']"
-          }
-        }
-      ]
+      "content": "uciUI('dhcp','@domain')"
     }
   ]
 }
