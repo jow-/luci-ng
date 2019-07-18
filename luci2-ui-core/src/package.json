@@ -8,45 +8,46 @@
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint --type-check && prettier -l \"src/**/*.{ts,scss,css,html,json}\" ",
-    "precise-commits": "precise-commits"
+    "lint-fix": "ng lint --type-check --fix && prettier --write \"src/**/*.{ts,scss,css,html,json}\" ",
+    "publish": "sed -i -e \"s|base href=\\\"/\\\"|base href=\\\"/luci-ng/\\\"|\" dist/index.html && scp -r -P 8022 dist/* root@35.208.122.24:/www/luci-ng/ && scp -r -P 8022 share/* root@35.208.122.24:/usr/share/"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run precise-commits --whitelist \"*.{ts,scss,css,html}\""
+      "pre-commit": "npx pretty-quick --staged --pattern \"*.{ts,scss,css,html}\""
     }
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^7.2.8",
-    "@angular/cdk": "^7.3.3",
-    "@angular/common": "^7.2.8",
-    "@angular/compiler": "^7.2.8",
-    "@angular/core": "^7.2.8",
-    "@angular/forms": "^7.2.8",
-    "@angular/material": "^7.3.3",
-    "@angular/platform-browser": "^7.2.8",
-    "@angular/platform-browser-dynamic": "^7.2.8",
-    "@angular/router": "^7.2.8",
-    "core-js": "^2.6.5",
-    "espression": "^1.1.1",
+    "@angular/animations": "^8.1.1",
+    "@angular/cdk": "^8.1.1",
+    "@angular/common": "^8.1.1",
+    "@angular/compiler": "^8.1.1",
+    "@angular/core": "^8.1.1",
+    "@angular/forms": "^8.1.1",
+    "@angular/material": "^8.1.1",
+    "@angular/platform-browser": "^8.1.1",
+    "@angular/platform-browser-dynamic": "^8.1.1",
+    "@angular/router": "^8.1.1",
+    "core-js": "^3.1.4",
+    "espression": "^1.2.0",
     "espression-jsonpath": "^0.1",
-    "espression-rx": "^0.2.0",
+    "espression-rx": "^0.3.1",
     "reactive-json-form-ng": "github:ianchi/reactive-json-form-ng#deploy",
-    "rxjs": "^6.4.0",
-    "web-animations-js": "^2.3.1",
-    "zone.js": "^0.8.29"
+    "rxjs": "^6.5.2",
+    "web-animations-js": "^2.3.2",
+    "zone.js": "~0.9.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.13.5",
-    "@angular/cli": "^7.3.5",
-    "@angular/compiler-cli": "^7.2.8",
-    "@angular/language-service": "^7.2.8",
-    "@types/node": "^10.12.30",
-    "codelyzer": "^4.5.0",
-    "husky": "^1.3.1",
-    "precise-commits": "^1.0.2",
-    "prettier": "^1.16.4",
-    "tslint": "^5.13.1",
-    "typescript": "~3.2.4"
+    "@angular-devkit/build-angular": "~0.801.1",
+    "@angular/cli": "^8.1.1",
+    "@angular/compiler-cli": "^8.1.1",
+    "@angular/language-service": "^8.1.1",
+    "@types/node": "^10.14.10",
+    "codelyzer": "^5.0.1",
+    "husky": "^3.0.0",
+    "pretty-quick": "^1.11.1",
+    "prettier": "^1.18.2",
+    "tslint": "^5.18.0",
+    "typescript": "~3.4.5"
   }
 }
