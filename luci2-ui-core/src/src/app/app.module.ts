@@ -26,14 +26,17 @@ import { WidgetsModule } from './widgets';
     FormsModule,
     HttpClientModule,
     ShellModule,
-    RouterModule.forRoot([
-      {
-        path: '*',
-        component: RoutedWidgetComponent,
-        resolve: ViewsResolverService,
-        canActivate: [MenuGuardService],
-      },
-    ]),
+    RouterModule.forRoot(
+      [
+        {
+          path: '**', // initial wildcard route, will be replaced on menu load
+          component: RoutedWidgetComponent,
+          resolve: ViewsResolverService,
+          canActivate: [MenuGuardService],
+        },
+      ],
+      { enableTracing: false, useHash: true }
+    ),
     WidgetsModule,
   ],
   providers: [JsonrpcService, UbusService, MenuService],

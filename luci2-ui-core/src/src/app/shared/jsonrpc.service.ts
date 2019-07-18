@@ -66,7 +66,9 @@ export class JsonrpcService {
 
     return (
       this._http
-        .post<IJsonrpcResponse>(this._url, reqData, { headers: JsonrpcService._headers })
+        .post<IJsonrpcResponse>(this._url, reqData, {
+          headers: JsonrpcService._headers,
+        })
 
         // retry on http errors a maximun of {_retryCount} times waiting {_retrayDelay} milliseconds
         .pipe(
@@ -82,7 +84,12 @@ export class JsonrpcService {
 
           // rethrow http errors wrapped in IJsonrpcError format, to unify response
           catchError((e: HttpErrorResponse) => {
-            throw { code: e.status, message: e.statusText, data: e.error, layer: 'http' };
+            throw {
+              code: e.status,
+              message: e.statusText,
+              data: e.error,
+              layer: 'http',
+            };
           }),
 
           // check if there is an inner jsonrpc error to rethrow; if not emit result
