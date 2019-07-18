@@ -1,0 +1,31 @@
+{
+  "widget": "form",
+  "content": [
+    {
+      "widget": "span",
+      "options": {
+        "text=": "$model.files[0].name || 'Select file'"
+      }
+    },
+    {
+      "widget": "file-button",
+      "bind": "$model.files",
+      "options": { "title": "Select" }
+    },
+    {
+      "widget": "button",
+      "options": {
+        "title": "Cancel",
+        "onClick": "$dlg.close()"
+      }
+    },
+    {
+      "widget": "button",
+      "options": {
+        "title": "Upload",
+        "disabled=": "!$model.files || !$model.files.length",
+        "onClick": "cgi.upload('/tmp/testfile','666', $model.files[0]) && $dlg.close() && snackbar(`uploading ${$model.files[0].name}`) "
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "widget": "set-subpage",
+  "waitFor": "uci.loadConfig('dropbear')",
+  "options": {
+    "title": "SSH Instance"
+  },
+  "content": [
+    {
+      "widget": "set-section",
+      "options": {
+        "title": "Advanced"
+      },
+      "content": "uciUI('dropbear', '@dropbear', $routeParam.id)"
+    }
+  ]
+}

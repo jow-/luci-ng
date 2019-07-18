@@ -1,0 +1,11 @@
+{
+  "widget": "set-page",
+  "waitFor": "uci.loadConfig('network') && ( network = uci.configs.network )",
+  "content": [
+    {
+      "widget": "set-section",
+      "onInit": "iface_dump = ubus('network.interface', 'dump', '$.interface[?(@.device!='lo')]')",
+      "options": { "title": "Interfaces" }
+    }
+  ]
+}

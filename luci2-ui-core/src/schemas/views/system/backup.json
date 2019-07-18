@@ -1,14 +1,42 @@
 {
   "widget": "set-subpage",
-
   "options": {
     "title": "Backup Configuration"
   },
   "content": [
-    { "widget": "set-expansion", "options": { "title": "Files to include" } },
+    {
+      "widget": "set-popup",
+      "onInit": "$tmp.backupConfig = ubus('luci2.system', 'backup_config_get' ).config",
+      "options": {
+        "title": "Files to include",
+        "popupTitle": "Files to include"
+      },
+      "content": [
+        {
+          "widget": "textarea",
+          "bind": "$tmp.backupConfig"
+        },
+        {
+          "widget": "button",
+          "options": {
+            "title": "Cancel",
+            "onClick": "$dlg.close()"
+          }
+        },
+        {
+          "widget": "button",
+          "options": {
+            "title": "Update",
+            "onClick": "ubus('luci2.system', 'backup_config_set', { data:$tmp.backupConfig }) === null && $dlg.close() && snackbar('Configuration updated')"
+          }
+        }
+      ]
+    },
     {
       "widget": "set-expansion",
-      "options": { "title": "Generated list" },
+      "options": {
+        "title": "Generated list"
+      },
       "content": [
         {
           "widget": "table",

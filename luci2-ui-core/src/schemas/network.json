@@ -35,7 +35,10 @@
             "type": "boolean",
             "title": "Bridge interfaces",
             "description": "Creates a bridge over specified interface(s)",
-            "convert": { "toUCI": "$data ? 'bridge' : undefined", "fromUCI": "$data === 'bridge'" },
+            "convert": {
+              "toUCI": "$data ? 'bridge' : undefined",
+              "fromUCI": "$data === 'bridge'"
+            },
             "depends=": "['static', 'dhcp', 'none'].includes($model.proto)"
           },
           "stp": {
@@ -78,7 +81,10 @@
             "title": "Force link",
             "description": "Set interface properties regardless of the link carrier (If set, carrier sense events do not invoke hotplug handlers)."
           },
-          "delegate": { "type": "boolean", "title": "Use builtin IPv6-management" }
+          "delegate": {
+            "type": "boolean",
+            "title": "Use builtin IPv6-management"
+          }
         }
       }
     },
@@ -238,9 +244,18 @@
         "properties": {
           ".name": { "type": "string" },
 
-          "enable_vlan": { "type": "boolean", "title": "Enable VLAN functionality" },
-          "enable_learning": { "type": "boolean", "title": "Enable learning and aging" },
-          "max_length": { "type": "boolean", "title": "Enable Jumbo Frame passthrough" },
+          "enable_vlan": {
+            "type": "boolean",
+            "title": "Enable VLAN functionality"
+          },
+          "enable_learning": {
+            "type": "boolean",
+            "title": "Enable learning and aging"
+          },
+          "max_length": {
+            "type": "boolean",
+            "title": "Enable Jumbo Frame passthrough"
+          },
           "enable_mirror_rx": {
             "type": "boolean",
             "title": "Enable mirroring of incoming packets"
@@ -270,7 +285,12 @@
         "type": "object",
         "properties": {
           "device": { "type": "string", "title": "Device", "required": true },
-          "vlan": { "type": "integer", "title": "VLAN ID", "minimum": 0, "required": true },
+          "vlan": {
+            "type": "integer",
+            "title": "VLAN ID",
+            "minimum": 0,
+            "required": true
+          },
           "ports": { "type": "string", "title": "Ports" }
         }
       }
@@ -283,8 +303,18 @@
         "type": "object",
         "properties": {
           "device": { "type": "string", "title": "Device", "required": true },
-          "pvid": { "type": "integer", "title": "Default VLAN ID", "minimum": 0, "required": true },
-          "port": { "type": "integer", "title": "Port Number", "minimum": 0, "required": true }
+          "pvid": {
+            "type": "integer",
+            "title": "Default VLAN ID",
+            "minimum": 0,
+            "required": true
+          },
+          "port": {
+            "type": "integer",
+            "title": "Port Number",
+            "minimum": 0,
+            "required": true
+          }
         }
       }
     },
@@ -296,7 +326,11 @@
         "type": "object",
         "ui": { "options": { "title=": "$data['.name']" } },
         "properties": {
-          "type": { "type": "string", "title": "VLAN Type", "enum": ["8021q", "8021ad"] },
+          "type": {
+            "type": "string",
+            "title": "VLAN Type",
+            "enum": ["8021q", "8021ad"]
+          },
           "name": {
             "type": "string",
             "title": "Name",
@@ -307,7 +341,11 @@
             "title": "Parent interface",
             "description": "Name of parent/base interface, i.e. eth0"
           },
-          "vid": { "type": "integer", "title": "Default VLAN ID", "minimum": 0 },
+          "vid": {
+            "type": "integer",
+            "title": "Default VLAN ID",
+            "minimum": 0
+          },
           "macaddr": { "type": "string", "title": "MAC Address" }
         }
       }

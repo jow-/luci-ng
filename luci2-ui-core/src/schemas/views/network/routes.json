@@ -5,28 +5,12 @@
     {
       "widget": "set-section",
       "options": { "title": "IPv4" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('network','@route')",
-            "bind": "uci.configs.network['@route']"
-          }
-        }
-      ]
+      "content": "uciUI('network','@route')"
     },
     {
       "widget": "set-section",
       "options": { "title": "IPv6" },
-      "content": [
-        {
-          "widget": "schema-form",
-          "options": {
-            "schema=": "uci.getSchema('network','@route6')",
-            "bind": "uci.configs.network['@route6']"
-          }
-        }
-      ]
+      "content": "uciUI('network','@route6')"
     }
   ]
 }

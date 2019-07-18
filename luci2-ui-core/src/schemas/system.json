@@ -57,17 +57,22 @@
             "required": true
           },
           "timezone": {
-            "title": "Time Zone",
-            "description": "The time zone that date and time should be rendered in by default.",
             "type": "string",
+            "title": "Time Zone Info",
+            "description": "The time zone that date and time should be rendered in by default.",
             "default": "UTC"
           },
           "zonename": {
-            "title": "Time zone name for zoneinfo",
-            "description": "Only useful when using glibc and zoneinfo (overrides timezone).",
+            "title": "Time Zone Name",
+            "description": "The time zone that date and time should be rendered in by default.",
             "type": "string",
-            "examples": ["Europe/Brussels"],
-            "depends=": "ubus('file', 'stat', {path:'/usr/share/zoneinfo'})"
+            "ui": {
+              "widget": "set-autocomplete",
+              "onValueChange": "uci.configs.system['@system'][0].timezone = $value[1]"
+            },
+            "default": "UTC",
+            "enum=": "load('views/system/tz.json')",
+            "propKey": "0"
           },
           "buffersize": {
             "title": "Kernel log Buffersize",
@@ -80,7 +85,8 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 8,
-            "default": 7
+            "default": 7,
+            "ui": { "widget": "set-slider" }
           },
           "cronloglevel": {
             "title": "Cron log level",
@@ -91,22 +97,22 @@
             "maximum": 15
           },
           "log_buffer_size": {
-            "title": "System log buffer size [kB]",
-            "description": "Use log_size if no set.",
+            "title": "Buffersize",
+            "description": "System log in memory buffer size [kB]",
             "type": "integer",
             "minimum": 0,
             "default": 64
           },
           "log_file": {
             "title": "Log file",
-            "description": "File to write log messages to (type file). The default is to not write a log in a file.",
+            "description": "File to write log messages to",
             "examples": ["/var/log/messages"],
             "type": "string",
             "format": "path"
           },
           "log_ip": {
             "title": "Remote Syslog Server IP",
-            "description": "Log messages to server in addition to the local destination.",
+
             "type": "string",
             "format": "ipv4",
             "depends=": "$model.log_remote",
@@ -137,12 +143,13 @@
           },
           "log_remote": {
             "title": "Enable remote logging",
+            "description": "Log messages to server in addition to the local destination.",
             "type": "boolean",
             "default": true
           },
           "log_size": {
-            "title": "Log size [kB]",
-            "description": "Size of the file or circular memory buffer in KiB.",
+            "title": "Log size",
+            "description": "Size of the file buffer in [kB]",
             "type": "integer",
             "default": 16,
             "minimum": 0
@@ -169,27 +176,25 @@
         "type": "object",
         "properties": {
           "enabled": {
-            "title": "Enabled",
+            "title": "Use NTP",
+            "description": "Enable use of time server",
             "type": "boolean",
-            "default": true,
-            "depends=": "ubus('file','stat', {path: '/usr/sbin/ntpd'})"
+            "default": true
           },
           "enable_server": {
-            "title": "Enable Server",
-            "description": "Busybox-ntpd server will answer with the time of the router (it listens to UDP 123).",
+            "title": "Enable Local Server",
+            "description": "Provide local NTP server",
             "type": "boolean",
-            "default": false,
-            "depends=": "$model.enabled"
+            "default": false
           },
           "server": {
-            "title": "NTP Servers",
-            "description": "Pool of NTP servers to poll the time from. If empty, ntpd disables client mode, and system time won't be set automatically.",
+            "title": "Servers",
+            "description": "NTP servers to poll the time from. If empty disables client.",
             "type": "array",
             "items": {
               "type": "string",
               "format": "hostname"
-            },
-            "depends=": "$model.enabled"
+            }
           },
           "use_dhcp": {
             "title": "Use DHCP",
@@ -218,6 +223,11 @@
 
       "items": {
         "type": "object",
+        "ui": {
+          "options": {
+            "title=": "`${$model.name || ''} (${$model.sysfs || ''})`"
+          }
+        },
         "properties": {
           "name": {
             "title": "Led name",

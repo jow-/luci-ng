@@ -1,17 +1,11 @@
 {
   "widget": "set-page",
-  "waitFor": "_system = uci.loadConfig('system') , data=RxObject({})",
+  "waitFor": "uci.loadConfig('system') && ( system0 = uci.configs.system['@system'][0] )",
   "content": [
     {
       "widget": "set-section",
       "options": { "title": "General" },
-      "content": [
-        {
-          "widget": "set-input",
-          "bind": "uci.configs.system['@system'][0].hostname",
-          "options": { "title": "Hostname" }
-        }
-      ]
+      "content": "uciUI('system', '@system', 0, 'hostname')"
     },
     {
       "widget": "set-section",
@@ -20,7 +14,9 @@
     },
     {
       "widget": "set-section",
-      "options": { "title": "Administration" },
+      "options": {
+        "title": "Administration"
+      },
       "content": [
         {
           "widget": "set-popup",
@@ -33,68 +29,29 @@
         },
         {
           "widget": "set-expansion",
+          "displayIf": "ubus('file', 'stat', {path:'/etc/config/dropbear'}, { 0: null } )",
           "waitFor": "uci.loadConfig('dropbear')",
           "options": {
             "title": "SSH Access",
             "description=": "`${uci.configs.dropbear['@dropbear'].length} instances`"
           },
-          "content": [
-            {
-              "widget": "set-rowarray",
-              "bind": "uci.configs.dropbear['@dropbear']",
-              "options": { "newRow": "{}" },
-
-              "content": [
-                {
-                  "widget": "set-expansion",
-
-                  "options": {
-                    "title=": "`Port ${$data.Port} [${$data.Interface.join('-') || '*'}]`"
-                  },
-
-                  "content": [
-                    {
-                      "widget": "set-input",
-                      "bind": "$data.Port",
-                      "options": { "title": "Port" }
-                    },
-                    {
-                      "widget": "set-popup",
-                      "options": {
-                        "title": "Interface",
-                        "description=": "`${$data.Interface.join('-') || '*'}`",
-                        "popupTitle": "Select Interfaces"
-                      }
-                    },
-                    {
-                      "widget": "set-expansion",
-                      "options": { "title": "Advanced" }
-                    }
-                  ]
-                }
-              ]
-            },
-
-            {
-              "widget": "set-expansion",
-              "options": { "title": "SSH Keys", "description": "Manage authorization keys" }
-            }
-          ]
+          "content": "load('views/system/system.dropbear.json')"
         },
-
         {
           "widget": "set-button",
           "options": {
             "title": "Restart Device",
             "buttonTitle": "Reboot",
-            "click": "ubus('luci2.system', 'reboot')"
+            "onClick": "popupMsg('Are you sure you want to restart the device?') && ubus('luci2.system', 'reboot')"
           }
         }
       ]
     },
     {
       "widget": "set-section",
-      "options": { "title": "Backup & Upgrade" },
+      "options": {
+        "title": "Backup & Upgrade"
+      },
       "content": [
         {
           "widget": "set-popup",
@@ -111,7 +68,7 @@
             "title": "Backup",
             "description": "Download a tar archive of the current configuration files",
             "buttonTitle": "Generate",
-            "click": "$tmp.loading=true, cgi.backup() || ($tmp.loading=false)",
+            "onClick": "$tmp.loading=true, cgi.backup() || ($tmp.loading=false)",
             "spinner=": "$tmp.loading"
           }
         },
@@ -125,22 +82,27 @@
         },
         {
           "widget": "set-expansion",
-          "options": { "title": "Restore" },
+          "options": {
+            "title": "Restore"
+          },
           "content": [
             {
-              "widget": "set-button",
+              "widget": "set-popup",
               "options": {
                 "title": "From backup",
                 "description": "Upload a previously generated backup archive",
-                "buttonTitle": "Upload"
-              }
+                "popupTitle": "Restore Backup"
+              },
+              "content": "load('views/system/system.restore.json')"
             },
             {
               "widget": "set-button",
+              "displayIf": "ubus('luci2.system', 'reset_test' ).supported",
               "options": {
                 "title": "Restore defaults",
                 "description": "Revert to default configuration",
-                "buttonTitle": "Reset"
+                "buttonTitle": "Reset",
+                "onClick": "popupMsg('This will erase all current configuration.\nAre you sure?') && ubus('luci2.system', 'reset_start' )"
               }
             },
             {
@@ -157,7 +119,9 @@
     },
     {
       "widget": "set-section",
-      "options": { "title": "Programs & Tasks" },
+      "options": {
+        "title": "Programs & Tasks"
+      },
       "content": [
         {
           "widget": "set-link",
@@ -187,153 +151,104 @@
     },
     {
       "widget": "set-sectiongroup",
-      "options": { "title": "Advanced" },
+      "options": {
+        "title": "Advanced"
+      },
       "content": [
         {
           "widget": "set-section",
-          "options": { "title": "Logging" },
+          "options": {
+            "title": "Logging"
+          },
           "content": [
             {
               "widget": "set-expansion",
-              "options": { "title": "System Log" },
+              "bind": "system0",
+              "options": {
+                "title": "System Log"
+              },
               "content": [
-                {
-                  "widget": "set-input",
-                  "bind": "uci.configs.system['@system'][0].log_buffer_size",
-                  "options": {
-                    "title": "Buffersize",
-                    "description": "System log in memory buffer size [kB]"
-                  }
-                },
+                "uciUI('system', '@system', 0, 'log_buffer_size')",
                 {
                   "widget": "set-expansion",
+                  "bind": "system0",
                   "options": {
                     "title": "File Log",
-                    "description=": "uci.configs.system['@system'][0].log_file ? `Logging to ${uci.configs.system['@system'][0].log_file}` : 'Disabled'"
+                    "description=": "$model.log_file ? `Logging to ${$model.log_file}` : 'Disabled'"
                   },
-                  "content": [
-                    {
-                      "widget": "set-input",
-                      "bind": "uci.configs.system['@system'][0].log_file",
-                      "options": {
-                        "title": "Log file",
-                        "description": "File to write log messages to."
-                      }
-                    },
-                    {
-                      "widget": "set-input",
-                      "bind": "uci.configs.system['@system'][0].log_size",
-                      "options": {
-                        "title": "Buffersize",
-                        "description": "Size of the file buffer in KiB [kB]"
-                      }
-                    }
-                  ]
+                  "content": "uciUI('system', '@system', 0, ['log_file', 'log_size'])"
                 },
                 {
                   "widget": "set-toggle",
-                  "bind": "uci.configs.system['@system'][0].log_remote",
+                  "bind": "$model.log_remote",
                   "options": {
                     "title": "Remote Logging",
                     "description": "Log messages to server in addition to the local destination."
                   },
-                  "content": [
-                    {
-                      "widget": "set-input",
-                      "bind": "uci.configs.system['@system'][0].log_ip",
-                      "options": {
-                        "title": "Remote Syslog Server IP"
-                      }
-                    },
-                    {
-                      "widget": "set-input",
-                      "bind": "uci.configs.system['@system'][0].log_port",
-                      "options": {
-                        "title": "Remote Port"
-                      }
-                    },
-                    {
-                      "widget": "set-input",
-                      "bind": "uci.configs.system['@system'][0].log_proto",
-                      "options": {
-                        "title": "Protocol",
-                        "description": "Sets the protocol to use for the connection"
-                      }
-                    },
-                    {
-                      "widget": "set-input",
-                      "bind": "uci.configs.system['@system'][0].log_hostname",
-                      "options": {
-                        "title": "Hostname for log"
-                      }
-                    },
-                    {
-                      "widget": "set-toggle",
-                      "bind": "uci.configs.system['@system'][0].log_trailer_null",
-                      "options": {
-                        "title": "Trailer null",
-                        "description": "Use \\0 instead of \\n as trailer when using TCP."
-                      }
-                    },
-                    {
-                      "widget": "set-input",
-                      "bind": "uci.configs.system['@system'][0].log_prefix",
-                      "options": {
-                        "title": "Log prefix",
-                        "description": "Adds a prefix to all log messages send over network"
-                      }
-                    }
-                  ]
+                  "content": "uciUI('system', '@system', 0, ['log_ip', 'log_port', 'log_proto', 'log_hostname', 'log_trailer_null', 'log_prefix'])"
                 }
               ]
             },
             {
               "widget": "set-expansion",
               "options": {
-                "title": "Kernel Log",
-                "expanded": true
+                "title": "Kernel Log"
+              },
+              "content": "uciUI('system', '@system', 0, ['buffersize', 'conloglevel'])"
+            },
+            {
+              "widget": "set-expansion",
+              "options": {
+                "title": "Cron Log"
               },
               "content": [
                 {
-                  "widget": "set-input",
-                  "bind": "uci.configs.system['@system'][0].buffersize",
+                  "widget": "set-toggle",
+                  "bind": "$model.start",
+                  "onInit": "$model.start = system0.cronloglevel & 1",
+                  "onValueChange": "$value ? system0.cronloglevel |= 1 : system0.cronloglevel &= ~1",
                   "options": {
-                    "title": "Buffersize",
-                    "description": "Size of the kernel message buffer"
+                    "title": "Log Job Start"
                   }
                 },
                 {
-                  "widget": "set-slider",
-                  "bind": "uci.configs.system['@system'][0].conloglevel",
+                  "widget": "set-toggle",
+                  "bind": "$model.end",
+                  "onInit": "$model.end = system0.cronloglevel & 2",
+                  "onValueChange": "$value ? system0.cronloglevel |= 2 : system0.cronloglevel &= ~2",
                   "options": {
-                    "title": "Log Level",
-                    "description": "Maximum log level for kernel messages to be logged to the console",
-                    "min": 1,
-                    "max": 8
+                    "title": "Log Job End"
+                  }
+                },
+                {
+                  "widget": "set-toggle",
+                  "bind": "$model.failed",
+                  "onInit": "$model.failed = system0.cronloglevel & 4",
+                  "onValueChange": "$value ? system0.cronloglevel |= 4 : system0.cronloglevel &= ~4",
+                  "options": {
+                    "title": "Log Failed Jobs"
+                  }
+                },
+                {
+                  "widget": "set-toggle",
+                  "bind": "$model.pid",
+                  "onInit": "$model.pid = system0.cronloglevel & 8",
+                  "onValueChange": "$value ? system0.cronloglevel |= 8 : system0.cronloglevel &= ~8",
+                  "options": {
+                    "title": "Log PID for all Jobs"
                   }
                 }
               ]
-            },
-            {
-              "widget": "set-slider",
-              "bind": "uci.configs.system['@system'][0].cronloglevel",
-              "options": { "title": "Cron log level", "min": 0, "max": 15 }
             }
           ]
         },
         {
           "widget": "set-section",
-          "options": { "title": "Leds" },
-          "displayIf": "ubus('file', 'list', {path:'/sys/class/leds'} ).entries.length",
-          "content": [
-            {
-              "widget": "schema-form",
-              "options": {
-                "schema=": "uci.getSchema('system','@led')",
-                "bind": "uci.configs.system['@led']"
-              }
-            }
-          ]
+          "options": {
+            "title": "Leds"
+          },
+          "displayIf": "ubus('file', 'list', {path:'/sys/class/leds'}, '$.entries', { 0: [] } ).length",
+          "content": "uciUI('system', '@led')"
         }
       ]
     }
