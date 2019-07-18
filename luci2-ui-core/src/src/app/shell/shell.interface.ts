@@ -13,4 +13,5 @@ export interface IMenuNode {
   open?: boolean; // default state
 
   childs?: IMenuNode[];
+  hideChilds?: boolean;
 }

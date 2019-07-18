@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { Route, Router, Routes } from '@angular/router';
 import { RoutedWidgetComponent } from 'reactive-json-form-ng';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 
 import { UbusService } from '../../shared/ubus.service';
 import { ViewsResolverService } from '../../shared/viewsresolver.service';
@@ -16,31 +16,45 @@ import { IMenu, IMenuItem, IMenuItemArr, IMenuItemObj } from './menu.interface';
 
 const FIXED_MENU = {
   development: { title: 'Development', index: 999 },
-  'development/ubus': { title: 'Ubus tester', view: 'development/ubus', index: 0 },
-  'development/uci': { title: 'UCI editor', view: 'development/uci', index: 1 },
-  'development/widget': { title: 'Widget', view: 'development/widget', index: 2 },
+  'development/ubus': {
+    title: 'Ubus tester',
+    view: 'development/ubus',
+    index: 0,
+  },
+  'development/widget': {
+    title: 'Widget',
+    view: 'development/widget',
+    index: 2,
+  },
 };
 
 @Injectable()
 export class MenuService {
   private _routes: Routes = [];
   private _menu: IMenuItemArr | undefined;
+  private _pending: Observable<IMenuItem> | undefined;
 
   constructor(private _ubus: UbusService, private _router: Router) {}
 
   loadMenu(): Observable<IMenuItem> {
     if (this._menu) return of(this._menu);
+    if (this._pending) return this._pending;
 
-    return this._ubus.call<any>('luci2.ui', 'menu').pipe(
+    this._pending = this._ubus.call<any>('luci2.ui', 'menu').pipe(
       // tslint:disable-next-line:prefer-object-spread
       map(r => this._toChildArray(this._toChildTree(Object.assign(r.menu, FIXED_MENU)))),
       map(root => {
+        console.log(this._routes);
         this._router.resetConfig(this._routes);
 
         this._menu = root;
+        this._pending = undefined;
         return root;
-      })
+      }),
+      shareReplay(1)
     );
+
+    return this._pending;
   }
 
   /**
@@ -48,7 +62,12 @@ export class MenuService {
    * with subnodes in a 'childs' property, for further transformation to ordered array children
    */
   private _toChildTree(menu: IMenu): IMenuItemObj {
-    const root: IMenuItemObj = { title: 'root', index: 0, link: '/', childs: {} };
+    const root: IMenuItemObj = {
+      title: 'root',
+      index: 0,
+      link: '/',
+      childs: {},
+    };
     let node: IMenuItemObj;
 
     if (!menu) return root;
@@ -100,6 +119,7 @@ export class MenuService {
 
     if (childs.length) {
       (<IMenuItemArr>node).childs = childs;
+      node.linkTo = childs[0].linkTo || childs[0].link;
     } else {
       delete node.childs;
     }
@@ -112,8 +132,9 @@ export class MenuService {
   private _addRoute(item: IMenuItem): void {
     const route: Route = { path: item.link.substr(1) || '' };
 
-    if (item.childs) {
-      route.redirectTo = item.childs[0].link;
+    if (item.param) route.path = `${route.path}/:${item.param}`;
+    if (item.linkTo) {
+      route.redirectTo = item.linkTo;
       route.pathMatch = 'full';
     } else {
       route.component = RoutedWidgetComponent;

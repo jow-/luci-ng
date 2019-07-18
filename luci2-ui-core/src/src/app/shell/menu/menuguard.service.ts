@@ -15,20 +15,21 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { MenuService } from './menu.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MenuGuardService implements CanActivate {
-  constructor(private _router: Router) {}
+  constructor(private _router: Router, private _menuService: MenuService) {}
 
-  canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): boolean {
-    // return this._menu.loadMenu().pipe(
-    //   map( _ => (this._router.navigateByUrl( _state.url), false))
-    // );
-    console.log(this._router.navigated);
-
-    console.log('guard', _route, _state);
-    return false;
+  canActivate(
+    _route: ActivatedRouteSnapshot,
+    _state: RouterStateSnapshot
+  ): Observable<boolean> {
+    // load menu definitions and routes, and renavigate
+    return this._menuService
+      .loadMenu()
+      .pipe(map(_ => (this._router.navigateByUrl(_state.url), false)));
   }
 }
