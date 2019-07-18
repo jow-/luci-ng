@@ -1,4 +1,4 @@
-<div *ngIf="!node.childs">
+<div *ngIf="!node.childs || node.hideChilds">
   <a
     [routerLink]="node.link"
     [ngClass]="classes"
@@ -10,7 +10,7 @@
   </a>
 </div>
 
-<div *ngIf="node.childs">
+<div *ngIf="node.childs && !node.hideChilds">
   <a
     *ngIf="node.link != null"
     [routerLink]="node.link"
@@ -38,6 +38,10 @@
   </button>
 
   <div class="heading-children" [ngClass]="classes">
-    <app-nav-item *ngFor="let node of nodeChilds" [level]="level + 1" [node]="node"></app-nav-item>
+    <app-nav-item
+      *ngFor="let node of nodeChilds"
+      [level]="level + 1"
+      [node]="node"
+    ></app-nav-item>
   </div>
 </div>
