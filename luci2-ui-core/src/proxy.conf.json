@@ -1,10 +1,10 @@
 {
   "/ubus": {
-    "target": "http://192.168.20.100",
+    "target": "http://localhost:9080",
     "secure": false
   },
   "/cgi-bin": {
-    "target": "http://192.168.20.100",
+    "target": "http://localhost:9080",
     "secure": false
   }
 }
