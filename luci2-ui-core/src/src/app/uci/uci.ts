@@ -6,11 +6,12 @@
  */
 
 import { Injectable } from '@angular/core';
-import { debug } from 'app/shared/observable.debug';
 import { RxObject } from 'espression-rx';
 import { IMap, ISchema, SchemaObject } from 'rx-json-ui';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+
+import { debug } from '../shared/observable.debug';
 
 import { IUciConfigData } from './backend/config.interface';
 import { IUciSectionData } from './backend/section.interface';

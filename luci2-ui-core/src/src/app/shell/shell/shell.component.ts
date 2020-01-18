@@ -13,8 +13,8 @@ import {
 } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { UciModel2 } from 'app/uci/uci';
 
+import { UciModel2 } from '../../uci/uci';
 import { IMenuItem } from '../menu/menu.interface';
 
 @Component({
