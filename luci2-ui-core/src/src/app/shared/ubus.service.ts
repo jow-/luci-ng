@@ -212,7 +212,7 @@ export class UbusService implements ILogin {
         jsPathFilter = undefined;
       }
 
-      let result = this.call(service, method, params, true, errorVal);
+      let result = this.call<any>(service, method, params, true, errorVal);
 
       if (repeatDelay && typeof repeatDelay === 'number')
         result = result.pipe(repeatWhen(o => o.pipe(delay(<number>repeatDelay))));

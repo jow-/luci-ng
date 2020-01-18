@@ -6,7 +6,7 @@
   "content": [
     {
       "widget": "set-popup",
-      "onInit": "$tmp.backupConfig = ubus('luci2.system', 'backup_config_get' ).config",
+      "if": "$tmp.backupConfig = ubus('luci2.system', 'backup_config_get' ).config",
       "options": {
         "title": "Files to include",
         "popupTitle": "Files to include"
@@ -18,15 +18,15 @@
         },
         {
           "widget": "button",
-          "options": {
-            "title": "Cancel",
+          "options": { "title": "Cancel" },
+          "events": {
             "onClick": "$dlg.close()"
           }
         },
         {
           "widget": "button",
-          "options": {
-            "title": "Update",
+          "options": { "title": "Update" },
+          "events": {
             "onClick": "ubus('luci2.system', 'backup_config_set', { data:$tmp.backupConfig }) === null && $dlg.close() && snackbar('Configuration updated')"
           }
         }
@@ -40,12 +40,12 @@
       "content": [
         {
           "widget": "table",
-          "onInit": "data = ubus('luci2.system', 'backup_list')",
+          "if": "data = ubus('luci2.system', 'backup_list')",
           "options": {
-            "colKeys": ["0"],
-            "colHeaders": ["File"],
+            "columns": ["0"],
+            "headers": { "0": "File" },
             "dataSource=": "map(data.files, '[$value]')",
-            "filterBy": true
+            "filter": true
           }
         }
       ]

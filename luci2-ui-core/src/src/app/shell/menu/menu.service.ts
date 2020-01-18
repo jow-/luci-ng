@@ -5,7 +5,7 @@
 
 import { Injectable } from '@angular/core';
 import { Route, Router, Routes } from '@angular/router';
-import { RoutedWidgetComponent } from 'reactive-json-form-ng';
+import { RoutedWidgetComponent } from 'rx-json-ui';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 

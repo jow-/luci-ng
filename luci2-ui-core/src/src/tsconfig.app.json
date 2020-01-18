@@ -3,7 +3,9 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "",
-    "types": []
+    "types": [],
+    "paths": { "rx-json-ui": ["./rx-json-ui/src/public_api"] },
+    "preserveSymlinks": true
   },
   "exclude": ["test.ts", "**/*.spec.ts"]
 }

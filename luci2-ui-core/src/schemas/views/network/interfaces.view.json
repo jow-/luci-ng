@@ -1,22 +1,22 @@
 {
   "widget": "set-page",
-  "waitFor": "uci.loadConfig('network')",
+  "if": "uci.loadConfig('network')",
 
   "content": [
     {
       "widget": "set-section",
       "options": { "title": "Global" },
-      "content": "uciUI('network','@globals', 0)"
+      "content": ["uciUI('network','@globals', 0)"]
     },
     {
       "widget": "set-section",
       "options": { "title": "Interfaces" },
-      "content": "uciUI('network','@interface')"
+      "content": ["uciUI('network','@interface')"]
     },
     {
       "widget": "set-section",
       "options": { "title": "Devices" },
-      "content": "uciUI('network','@device')"
+      "content": ["uciUI('network','@device')"]
     }
   ]
 }

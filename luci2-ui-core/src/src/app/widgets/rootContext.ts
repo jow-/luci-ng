@@ -15,9 +15,9 @@ import {
   Context,
   ESpression,
   Expressions,
-  ISchemaArray,
   ROOT_EXPR_CONTEXT,
-} from 'reactive-json-form-ng';
+  SchemaArray,
+} from 'rx-json-ui';
 import { Observable, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 
@@ -135,7 +135,7 @@ export function rootContextFactory(
                 opt.include = opt.include!.filter(key => !opt.exclude!.includes(key));
             }
             if (typeof section === 'number') {
-              schema = (<ISchemaArray>schema).items;
+              schema = (<SchemaArray>schema).items;
 
               if (opt.wrapForm)
                 return buildUI(schema, `uci.configs.${config}['${type}'][${section}]`);

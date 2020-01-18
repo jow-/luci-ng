@@ -8,7 +8,7 @@
 import { Injectable } from '@angular/core';
 import { debug } from 'app/shared/observable.debug';
 import { RxObject } from 'espression-rx';
-import { IMap, ISchema, ISchemaObject } from 'reactive-json-form-ng';
+import { IMap, ISchema, SchemaObject } from 'rx-json-ui';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -79,7 +79,7 @@ export class UciModel2 {
     return this.loadConfig(config).pipe(
       map(() => {
         if (!(config in this.schemas)) return undefined;
-        const schema = <ISchemaObject>this.schemas[config];
+        const schema = <SchemaObject>this.schemas[config];
         if (!type) return schema;
         type = type.charAt(0) === '@' ? type : `@${type}`;
         if (!schema.properties || !(type in schema.properties)) return undefined;

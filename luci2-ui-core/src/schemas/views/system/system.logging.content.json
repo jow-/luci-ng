@@ -1,0 +1,89 @@
+[
+  {
+    "widget": "set-expansion",
+    "options": {
+      "title": "System Log"
+    },
+    "content": [
+      "uciUI('system', '@system', 0, 'log_buffer_size')",
+      {
+        "widget": "set-expansion",
+        "options": {
+          "title": "File Log",
+          "description=": "$model.log_file ? `Logging to ${$model.log_file}` : 'Disabled'"
+        },
+        "content": ["uciUI('system', '@system', 0, ['log_file', 'log_size'])"]
+      },
+      {
+        "widget": "set-toggle",
+        "bind": "$model.log_remote",
+        "options": {
+          "title": "Remote Logging",
+          "description": "Log messages to server in addition to the local destination."
+        },
+        "content": [
+          "uciUI('system', '@system', 0, ['log_ip', 'log_port', 'log_proto', 'log_hostname', 'log_trailer_null', 'log_prefix'])"
+        ]
+      }
+    ]
+  },
+  {
+    "widget": "set-expansion",
+    "options": {
+      "title": "Kernel Log"
+    },
+    "content": ["uciUI('system', '@system', 0, ['buffersize', 'conloglevel'])"]
+  },
+  {
+    "widget": "set-expansion",
+    "options": {
+      "title": "Cron Log"
+    },
+    "content": [
+      {
+        "widget": "set-toggle",
+        "bind": "$model.start",
+        "events": {
+          "onInit": "$model.start = system0.cronloglevel & 1",
+          "onValueChange": "$value ? system0.cronloglevel |= 1 : system0.cronloglevel &= ~1"
+        },
+        "options": {
+          "title": "Log Job Start"
+        }
+      },
+      {
+        "widget": "set-toggle",
+        "bind": "$model.end",
+        "events": {
+          "onInit": "$model.end = system0.cronloglevel & 2",
+          "onValueChange": "$value ? system0.cronloglevel |= 2 : system0.cronloglevel &= ~2"
+        },
+        "options": {
+          "title": "Log Job End"
+        }
+      },
+      {
+        "widget": "set-toggle",
+        "bind": "$model.failed",
+        "events": {
+          "onInit": "$model.failed = system0.cronloglevel & 4",
+          "onValueChange": "$value ? system0.cronloglevel |= 4 : system0.cronloglevel &= ~4"
+        },
+        "options": {
+          "title": "Log Failed Jobs"
+        }
+      },
+      {
+        "widget": "set-toggle",
+        "bind": "$model.pid",
+        "events": {
+          "onInit": "$model.pid = system0.cronloglevel & 8",
+          "onValueChange": "$value ? system0.cronloglevel |= 8 : system0.cronloglevel &= ~8"
+        },
+        "options": {
+          "title": "Log PID for all Jobs"
+        }
+      }
+    ]
+  }
+]

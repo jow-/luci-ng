@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { MaterialModule } from 'reactive-json-form-ng';
+import { MaterialModule } from 'rx-json-ui';
 
 import { WidgetsModule } from '../widgets';
 

@@ -1,27 +1,43 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:4200",
-            "webRoot": "${workspaceRoot}",
-            "sourceMaps": true,
-
-
-        },
-        {
-            "type": "chrome",
-            "request": "attach",
-            "name": "Attach to Chrome",
-            "port": 9222,
-            "webRoot": "${workspaceRoot}",
-            "sourceMaps": true,
-            "sourceMapPathOverrides": {
-								"webpack:///.+/~/*": "${webRoot}/node_modules/*",
-								"webpack:///.+/src/*": "${webRoot}/src/*"
-            }
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "CLI",
+      "program": "${workspaceFolder}/node_modules/rx-json-ui-cli/bin/cli.js",
+      "sourceMaps": false,
+      "args": [
+        "g",
+        "-m",
+        "app/app.module",
+        "-p",
+        "./src/tsconfig.app.json",
+        "dist/widgetschema"
+      ],
+      "stopOnEntry": true,
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceRoot}",
+      "sourceMaps": true
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "webRoot": "${workspaceRoot}",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///.+/~/*": "${webRoot}/node_modules/*",
+        "webpack:///.+/src/*": "${webRoot}/src/*"
+      }
+    }
+  ]
 }

@@ -1,0 +1,100 @@
+[
+  {
+    "widget": "set-rowarray",
+    "bind": "uci.configs.dropbear['@dropbear']",
+    "events": { "onNewRow": "{}" },
+    "content": [
+      {
+        "widget": "set-expansion",
+        "options": {
+          "title=": "`Listen on ${$data.Interface || 'all'}:${$data.Port}`"
+        },
+        "content": [
+          "uciUI('dropbear', '@dropbear', $index, ['enable', 'Port'])",
+          {
+            "widget": "set-select",
+            "bind": "$data.Interface",
+            "options": {
+              "title": "Interface",
+              "description": "Leave empty to listen on all interfaces",
+              "propKey": "interface",
+              "type": "string",
+              "enum=": "ubus('network.interface', 'dump', {} , `$.interface[?(@.device!='lo')]`)"
+            }
+          },
+          {
+            "widget": "set-link",
+            "options": {
+              "title": "Advanced",
+              "link=": "`system/ssh/${$index}`"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "widget": "set-expansion",
+    "if": [
+      "sshKeys = RxObject([]),",
+      "ubus('luci2.system', 'sshkeys_get', undefined, {4: {keys: []}}).keys.map( value => (",
+      "m=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec(value), ",
+      "sshKeys.push({row: value, key: m[4], type: m[1], hash: m[2], ending: m[3]})))"
+    ],
+    "options": {
+      "title": "SSH Keys",
+      "description": "Manage authorization keys for passwordless logins"
+    },
+    "content": [
+      {
+        "widget": "table",
+        "options": {
+          "dataSource=": "sshKeys",
+          "columns": ["key", "type", "ending"],
+          "headers": { "key": "Remote", "type": "Type", "ending": "Hash End" }
+        }
+      },
+      {
+        "widget": "set-popup",
+        "options": {
+          "title": "NEW",
+          "popupTitle": "New SSH key"
+        },
+        "events": { "onSetup": "$tmp.key = ''" },
+        "content": {
+          "main": [
+            {
+              "widget": "textarea",
+              "bind": "$tmp.key",
+              "options": { "title": "Key" },
+              "events": {
+                "onValidate": "!/^([^ ]+) ([^ ]*([^ ]{8})) ([^ ]+)$/.test($value) && 'Invalid key format'"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "widget": "button",
+              "options": { "title": "Cancel" },
+              "events": { "onClick": "$dlg.close()" }
+            },
+            {
+              "widget": "button",
+              "options": {
+                "title": "Add",
+                "disabled=": "!$form.valid"
+              },
+              "events": {
+                "onClick": [
+                  "m=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec($tmp.key),",
+                  "sshKeys.push({row: $tmp.key, key: m[4], type: m[1], hash: m[2], ending: m[3]}),",
+                  "console.log(sshKeys), $dlg.close()"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

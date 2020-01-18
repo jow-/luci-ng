@@ -6,7 +6,7 @@
  */
 
 import { NgModule } from '@angular/core';
-import { MaterialModule, WidgetsCoreModule } from 'reactive-json-form-ng';
+import { MaterialModule, WidgetsCoreModule } from 'rx-json-ui';
 
 import { ExpansionComponent } from './expansion/expansion.component';
 import { LevelComponent } from './level/level.component';

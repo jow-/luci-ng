@@ -1,6 +1,6 @@
 {
   "widget": "form",
-  "bind": "model",
+  "events": { "onSetup": "$parentContext.model = RxObject({})" },
   "content": [
     {
       "widget": "input",
@@ -25,16 +25,16 @@
     },
     {
       "widget": "button",
-      "options": {
-        "title": "Cancel",
-        "onClick": "$dlg.close()"
-      }
+      "options": { "title": "Cancel" },
+      "events": { "onClick": "$dlg.close()" }
     },
     {
       "widget": "button",
       "options": {
         "title": "Change",
-        "disabled=": "!$form.valid",
+        "disabled=": "!$form.valid"
+      },
+      "events": {
         "onClick": "ubus('luci2.system', 'password_set', {user:$user, password: model.pss1}) === null && $dlg.close() && snackbar('Password successfully changed')"
       }
     }

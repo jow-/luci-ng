@@ -8,19 +8,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
-import { IWidgetDef } from 'reactive-json-form-ng';
+import { AbstractWidgetDef } from 'rx-json-ui';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ViewsResolverService implements Resolve<IWidgetDef> {
+export class ViewsResolverService implements Resolve<AbstractWidgetDef> {
   constructor(private _http: HttpClient) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     _state: RouterStateSnapshot
-  ): Observable<IWidgetDef> {
-    return this._http.get<IWidgetDef>(`views/${route.data.view}.json`);
+  ): Observable<AbstractWidgetDef> {
+    return this._http.get<AbstractWidgetDef>(`views/${route.data.view}.view.json`);
   }
 }

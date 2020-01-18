@@ -8,7 +8,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { RoutedWidgetComponent } from 'reactive-json-form-ng';
+import { RoutedWidgetComponent } from 'rx-json-ui';
 
 import { AppComponent } from './app.component';
 import { JsonrpcService } from './shared/jsonrpc.service';

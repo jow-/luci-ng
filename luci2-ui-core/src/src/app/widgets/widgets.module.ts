@@ -12,7 +12,7 @@ import {
   MaterialModule,
   SettingsWidgetsModule,
   WidgetsCoreModule,
-} from 'reactive-json-form-ng';
+} from 'rx-json-ui';
 
 import { PopupDialogComponent } from './popup/popup.component';
 import { rootContextProvider } from './rootContext';

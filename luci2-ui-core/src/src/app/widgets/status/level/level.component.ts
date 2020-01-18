@@ -11,7 +11,7 @@ import {
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
+import { BaseWidget, Expressions } from 'rx-json-ui';
 
 export interface ILevelWidgetDef {
   value: number;
@@ -29,7 +29,7 @@ export interface ILevelWidgetDef {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LevelComponent extends AbstractWidget<ILevelWidgetDef> {
+export class LevelComponent extends BaseWidget<ILevelWidgetDef> {
   constructor(cdr: ChangeDetectorRef, expr: Expressions) {
     super(cdr, expr);
   }

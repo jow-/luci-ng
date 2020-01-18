@@ -1,0 +1,26 @@
+[
+  "uciUI('system', '@system', 0, 'zonename')",
+  {
+    "widget": "set-button",
+    "options": {
+      "title": "Local Time",
+      "description=": "a.toDateString() + ' ' + a.toLocaleTimeString()",
+      "buttonTitle": "Sync with Browser"
+    },
+    "events": {
+      "onSetup": "$parentContext.a = new Date(ubus('system', 'info').localtime * 1000 + (new Date()).getTimezoneOffset() * 60000)",
+      "onClick": " "
+    }
+  },
+  {
+    "widget": "set-expansion",
+    "if": "ubus('file','stat', {path: '/usr/sbin/ntpd'}, { 0: null })",
+    "options": {
+      "title": "Time Synchronization",
+      "description=": "`NTP is ${uci.configs.system['@timeserver'][0].enabled ? 'enabled': 'disabled'}`"
+    },
+    "content": [
+      "uciUI('system', '@timeserver', 0, ['enabled', 'server', 'enable_server'])"
+    ]
+  }
+]

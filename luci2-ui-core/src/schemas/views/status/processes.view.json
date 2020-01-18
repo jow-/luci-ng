@@ -1,0 +1,32 @@
+{
+  "widget": "table",
+  "if": "data = ubus('luci2.system', 'process_list', 2000)",
+  "options": {
+    "title": "Running Processes",
+    "dataSource=": "data.processes",
+    "columns": ["pid", "user", "command"],
+    "headers": { "pid": "PID", "user": "Owner", "command": "Command" },
+    "filter": true,
+    "actionsHeader": "Signal",
+    "actions": [
+      {
+        "icon": "reload",
+        "label": "Reload - HUP",
+        "data": "1"
+      },
+      {
+        "icon": "close-circle ",
+        "label": "Terminate - INT",
+        "data": "15"
+      },
+      {
+        "icon": "flash",
+        "label": "Kill - KILL",
+        "data": 9
+      }
+    ]
+  },
+  "events": {
+    "onAction": "ubus('luci2.system','process_signal', { pid: $row.pid, signal: $action.data})"
+  }
+}

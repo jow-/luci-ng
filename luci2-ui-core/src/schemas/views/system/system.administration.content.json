@@ -1,0 +1,30 @@
+[
+  {
+    "widget": "set-popup",
+    "options": {
+      "title": "Password",
+      "description": "Changes the administrator password for accessing the device",
+      "popupTitle": "Change Password"
+    },
+    "content": ["load('views/system/system.psw.content.json')"]
+  },
+  {
+    "widget": "set-expansion",
+    "if": "ubus('file', 'stat', {path:'/etc/config/dropbear'}, { 0: null } ) && uci.loadConfig('dropbear')",
+    "options": {
+      "title": "SSH Access",
+      "description=": "`${uci.configs.dropbear['@dropbear'].length} instances`"
+    },
+    "content": ["load('views/system/system.dropbear.content.json')"]
+  },
+  {
+    "widget": "set-button",
+    "options": {
+      "title": "Restart Device",
+      "buttonTitle": "Reboot"
+    },
+    "events": {
+      "onClick": "popupMsg('Are you sure you want to restart the device?', true) && ubus('luci2.system', 'reboot')"
+    }
+  }
+]

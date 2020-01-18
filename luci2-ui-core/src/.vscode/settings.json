@@ -1,9 +1,9 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-	"tslint.rulesDirectory": "./node_modules/tslint-eslint-rules/dist/rules",
-	"editor.tabSize": 2,
-	"stylelint.enable": true,
-	"css.validate": false,
+  "tslint.rulesDirectory": "./node_modules/tslint-eslint-rules/dist/rules",
+  "editor.tabSize": 2,
+  "stylelint.enable": true,
+  "css.validate": false,
   "scss.validate": false,
   "typescript.tsc.autoDetect": "off",
   "typescript.referencesCodeLens.enabled": true,
@@ -12,37 +12,32 @@
     ".stylelintrc": "json"
   },
   "json.schemas": [
-        {
-        "fileMatch": [
-            "/.stylelintrc"
-        ],
-        "url": "http://json.schemastore.org/stylelintrc"
+    {
+      "fileMatch": ["/.stylelintrc"],
+      "url": "http://json.schemastore.org/stylelintrc"
     },
     {
-      "fileMatch": [
-          "/schemas/views/**/*.json"
-      ],
-      "url": "file://home/ianchi/dev/ianchi_wrt/lede/luci-ng/luci2-ui-core/src/src/app/widgets/base.meta.json"
-  }
-
+      "fileMatch": ["/schemas/views/**/*.view.json"],
+      "url": "./dist/widgetschema/WidgetsDef.json"
+    },
+    {
+      "fileMatch": ["/schemas/views/**/*.content.json"],
+      "url": "./dist/widgetschema/WidgetsDef.content.json"
+    }
   ],
 
-  "terminal.integrated.shellArgs.linux": [
-    "--rcfile",
-    ".vscode/bashrc"
-  ],
+  "terminal.integrated.shellArgs.linux": ["--rcfile", ".vscode/bashrc"],
   "tslint.exclude": "**/node_modules/**",
   "files.exclude": {
+    "**/.DS_Store": true,
     "**/.git": true,
-    "**/.svn": true,
     "**/.hg": true,
+    "**/.svn": true,
     "**/CVS": true,
-    "**/.DS_Store": true
+    "src/rx-json-ui": true
   },
-  "spellright.language": "en_US",
-  "spellright.documentTypes": [
-    "markdown",
-    "latex",
-    "plaintext"
-  ]
+  "spellright.language": ["en_US"],
+  "spellright.documentTypes": ["markdown", "latex", "plaintext"],
+  "editor.formatOnSave": true,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

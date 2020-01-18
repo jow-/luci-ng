@@ -1,16 +1,14 @@
 {
   "widget": "table",
-  "onInit": "log=ubus('luci2.system', 'dmesg'), re=/^(?:\\[([ .0-9]*)\\])?\\s*(.*)$/i",
+  "if": "log=ubus('luci2.system', 'dmesg'), re=/^(?:\\[([ .0-9]*)\\])?\\s*(.*)$/i",
   "options": {
     "title": "Kernel Log",
-    "icon": "sd",
     "dataSource=": "map(log.log.split('\\n'), 'm=re.exec($value) , m ? {log: $value, row:$index, time: parseFloat(m[1]), msg: m[2]} : {log:$value, msg: $value, row: $index}')",
-    "colKeys": ["row", "time", "msg"],
-    "colHeaders": ["Row", "Time", "Message"],
-    "colFormat": [null, "number:'1.6-6'"],
-    "colTransform": [],
+    "columns": ["row", "time", "msg"],
+    "headers": { "row": "Row", "time": "Time", "msg": "Message" },
+    "colFormat": ["", "number:'1.6-6'"],
     "pageSizes": [10, 20, 50],
-    "filterBy": ["msg"],
+    "filter": true,
     "disableSort": ["msg"]
   }
 }

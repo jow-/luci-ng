@@ -1,0 +1,75 @@
+{
+  "widget": "set-page",
+  "if": "uci.loadConfig('system') && ( system0 = uci.configs.system['@system'][0] )",
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "General" },
+      "content": ["uciUI('system', '@system', 0, 'hostname')"]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Time & Date" },
+      "content": ["load('views/system/system.time.content.json')"]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Administration" },
+      "content": ["load('views/system/system.administration.content.json')"]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Backup & Upgrade" },
+      "content": ["load('views/system/system.backup.content.json')"]
+    },
+    {
+      "widget": "set-section",
+      "options": {
+        "title": "Programs & Tasks"
+      },
+      "content": [
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Startup",
+            "description": "Manage installed init scripts",
+            "link": "system/startup"
+          }
+        },
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Software",
+            "description": "Install & manage programs",
+            "link": "system/software"
+          }
+        },
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Scheduled Tasks",
+            "description": "Manage Crontab tasks",
+            "link": "system/schedule"
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-sectiongroup",
+      "options": { "title": "Advanced" },
+      "content": [
+        {
+          "widget": "set-section",
+          "options": { "title": "Logging" },
+          "content": ["load('views/system/system.logging.content.json')"]
+        },
+        {
+          "widget": "set-section",
+          "options": { "title": "Leds" },
+          "if": "ubus('file', 'list', {path:'/sys/class/leds'}, '$.entries', { 0: [] } ).length",
+          "content": ["uciUI('system', '@led')"]
+        }
+      ]
+    }
+  ]
+}

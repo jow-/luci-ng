@@ -5,22 +5,22 @@
     {
       "widget": "set-section",
       "options": { "title": "DNS Server" },
-      "content": "uciUI('dhcp', '@dnsmasq', 0)"
+      "content": ["uciUI('dhcp', '@dnsmasq', 0)"]
     },
     {
       "widget": "set-section",
       "options": { "title": "DHCP Interfaces" },
-      "content": "uciUI('dhcp','@dhcp')"
+      "content": ["uciUI('dhcp','@dhcp')"]
     },
     {
       "widget": "set-section",
       "options": { "title": "Hostnames" },
-      "content": "uciUI('dhcp','@host')"
+      "content": ["uciUI('dhcp','@host')"]
     },
     {
       "widget": "set-section",
       "options": { "title": "Custom Domains" },
-      "content": "uciUI('dhcp','@domain')"
+      "content": ["uciUI('dhcp','@domain')"]
     }
   ]
 }

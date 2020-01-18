@@ -1,6 +1,6 @@
 {
   "widget": "form",
-  "bind": "$model",
+  "events": { "onSetup": "$model = RxObject({})" },
 
   "content": [
     {
@@ -25,7 +25,7 @@
       "widget": "input",
       "bind": "$model.params",
       "options": {
-        "title": "Method",
+        "title": "Parameters",
         "description=": "JSON.stringify(ubusList([$model.service])[$model.service][$model.method])"
       }
     },
@@ -34,7 +34,7 @@
       "bind": "$model.path",
       "options": {
         "title": "jsonPath filter",
-        "description=": "Transformation to apply to result"
+        "description": "Transformation to apply to result"
       }
     },
     {
@@ -42,27 +42,35 @@
       "bind": "$model.errorVal",
       "options": {
         "title": "error values",
-        "description=": "Transformation to apply to error codes"
+        "description": "Transformation to apply to error codes"
       }
     },
     {
       "widget": "button",
-      "bind": "$model.refresh",
-      "options": {
-        "title": "Execute",
-        "onClick": "ubus($model.service, $model.method, $model.params.trim() ? JSON.parse($model.params) : {}, $model.path, $model.errorVal && JSON.parse($model.errorVal))"
+      "options": { "title": "Execute" },
+      "events": {
+        "onClick": [
+          "$model.result = ubus($model.service, $model.method, ",
+          "  $model.params.trim() ? JSON.parse($model.params) : {}, ",
+          "  $model.path, $model.errorVal && JSON.parse($model.errorVal))"
+        ]
       }
     },
     {
       "widget": "code",
       "options": {
-        "text=": "`ubus('${$model.service}', '${$model.method}', ${JSON.stringify(JSON.parse($model.params.trim()) || {})} ${$model.path ? `, '${$model.path}'` : ''})`"
+        "text=": [
+          "`ubus('${$model.service}', '${$model.method}', ${",
+          "JSON.stringify(JSON.parse($model.params.trim()) || {})}${",
+          "$model.path  ? `, '${$model.path}'` :  $model.errorVal ? `, ${$model.path}` : ''}${",
+          "$model.errorVal ? `, ${JSON.stringify(JSON.parse($model.errorVal))}` : ''})`"
+        ]
       }
     },
     {
       "widget": "code",
       "options": {
-        "text=": "JSON.stringify($model.refresh, null, 4)"
+        "text=": "JSON.stringify($model.result, null, 4)"
       }
     }
   ]

@@ -1,0 +1,21 @@
+{
+  "widget": "set-subpage",
+
+  "options": { "title": "Installed Programs" },
+  "content": [
+    {
+      "widget": "table",
+      "if": "data = ubus('luci2.opkg', 'list_installed')",
+      "options": {
+        "columns": ["0", "1"],
+        "headers": { "0": "Package", "1": "Version" },
+        "dataSource=": "data.packages",
+        "filter": true,
+        "actions": [{ "icon": "delete", "label": "Uninstall" }]
+      },
+      "events": {
+        "onAction": "ubus('luci2.opkg','remove', { package: $row[0]})"
+      }
+    }
+  ]
+}

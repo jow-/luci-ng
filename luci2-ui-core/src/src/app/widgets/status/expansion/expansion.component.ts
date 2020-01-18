@@ -11,7 +11,7 @@ import {
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import { AbstractWidget, Expressions } from 'reactive-json-form-ng';
+import { BaseWidget, Expressions, MainSlotContentDef } from 'rx-json-ui';
 
 export interface IExpansionWidgetDef {
   gridRowOpen: string;
@@ -37,7 +37,10 @@ export interface IExpansionWidgetDef {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExpansionComponent extends AbstractWidget<IExpansionWidgetDef> {
+export class ExpansionComponent extends BaseWidget<
+  IExpansionWidgetDef,
+  MainSlotContentDef
+> {
   gridRow = '';
 
   constructor(cdr: ChangeDetectorRef, expr: Expressions) {

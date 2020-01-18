@@ -10,9 +10,11 @@
     {
       "widget": "file-button",
       "bind": "$model.files",
-      "onInit": "$model.result = null",
       "options": {
-        "title": "Select",
+        "title": "Select"
+      },
+      "events": {
+        "onInit": "$model.result = null",
         "onAdded": "$model.result = cgi.upload('/tmp/backup.tar.gz','0400', $model.files[0])"
       }
     },
@@ -32,18 +34,16 @@
     },
     {
       "widget": "button",
-      "options": {
-        "title": "Cancel",
-        "onClick": "$dlg.close()"
-      }
+      "options": { "title": "Cancel" },
+      "events": { "onClick": "$dlg.close()" }
     },
     {
       "widget": "button",
       "options": {
         "title": "Upload",
-        "disabled=": "!$model.files || !$model.files.length",
-        "onClick": " $dlg.close() && snackbar(`flashing device`) "
-      }
+        "disabled=": "!$model.files || !$model.files.length"
+      },
+      "events": { "onClick": " $dlg.close() && snackbar(`flashing device`) " }
     }
   ]
 }

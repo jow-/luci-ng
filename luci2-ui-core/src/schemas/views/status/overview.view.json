@@ -1,13 +1,11 @@
 {
   "widget": "grid-container",
-  "onInit": "info = ubus('system','info', 1000)",
-  "options": {
-    "direction": "row"
-  },
+  "if": "info = ubus('system','info', 1000)",
+  "options": { "direction": "row" },
   "content": [
     {
       "widget": "stat-expand",
-      "waitFor": "board = ubus('system','board')",
+      "if": "board = ubus('system','board')",
       "options": {
         "gridCol": "span 2",
         "gridRowOpen": "span 3",
@@ -17,35 +15,36 @@
         "icon": "information-variant",
         "noGraph": true
       },
-      "content": {
-        "widget": "table",
-        "options": {
-          "colKeys": ["title", "value"],
-          "colHeaders": false,
-          "dataSource": [
-            {
-              "title": "Hostname",
-              "value=": "board.hostname"
-            },
-            {
-              "title": "Kernel",
-              "value=": "board.kernel"
-            },
-            {
-              "title": "System",
-              "value=": "board.system"
-            },
-            {
-              "title": "Target",
-              "value=": "board.release.target"
-            }
-          ]
+      "content": [
+        {
+          "widget": "table",
+          "options": {
+            "columns": ["title", "value"],
+            "dataSource": [
+              {
+                "title": "Hostname",
+                "value=": "board.hostname"
+              },
+              {
+                "title": "Kernel",
+                "value=": "board.kernel"
+              },
+              {
+                "title": "System",
+                "value=": "board.system"
+              },
+              {
+                "title": "Target",
+                "value=": "board.release.target"
+              }
+            ]
+          }
         }
-      }
+      ]
     },
     {
       "widget": "stat-expand",
-      "waitFor": "info",
+      "if": "info",
       "options": {
         "title": "Uptime",
         "icon": "clock-fast",
@@ -57,7 +56,7 @@
     },
     {
       "widget": "stat-expand",
-      "waitFor": "info",
+      "if": "info",
       "options": {
         "title": "Memory",
         "icon": "memory",
@@ -69,7 +68,7 @@
     },
     {
       "widget": "stat-expand",
-      "waitFor": "info",
+      "if": "info",
       "options": {
         "title": "Load",
         "icon": "chip",
@@ -81,7 +80,7 @@
 
     {
       "widget": "stat-expand",
-      "waitFor": "leases = ubus('luci2.network', 'dhcp_leases',  5000)",
+      "if": "leases = ubus('luci2.network', 'dhcp_leases',  5000)",
       "options": {
         "title": "DHCP Leases",
         "value=": "leases.leases.length",
@@ -92,24 +91,26 @@
         "gridCol": "span 2",
         "gridRowOpen": "span 5"
       },
-      "content": {
-        "widget": "table",
-        "options": {
-          "colKeys": ["hostname", "ipaddr", "macaddr", "expires"],
-          "colKeys.xs": ["hostname", "ipaddr"],
-          "colHeaders": ["Hostname", "IPaddr", "MACaddr", "Expires"],
-          "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
-          "colTransform": [null, null, null, "$data * 1000"],
-          "transform": [],
-          "actions": {},
-          "dataSource=": "leases.leases"
+      "content": [
+        {
+          "widget": "table",
+          "options": {
+            "columns": ["hostname", "ipaddr", "macaddr", "expires"],
+            "headers": {
+              "hostname": "Hostname",
+              "ipaddr": "IPaddr",
+              "macaddr": "MACaddr",
+              "expires": "Expires"
+            },
+            "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
+            "dataSource=": "leases.leases.map(row => (row.expires*=1000, row))"
+          }
         }
-      },
-      "details": {}
+      ]
     },
     {
       "widget": "stat-expand",
-      "waitFor": "leases = ubus('luci2.network', 'dhcp6_leases',  5000)",
+      "if": "leases = ubus('luci2.network', 'dhcp6_leases',  5000)",
       "options": {
         "title": "DHCPv6 Leases",
         "value=": "leases.leases.length",
@@ -120,24 +121,28 @@
         "gridCol": "span 2",
         "gridRowOpen": "span 5"
       },
-      "content": {
-        "widget": "table",
-        "options": {
-          "colKeys": ["hostname", "ipaddr", "macaddr", "expires"],
-          "colKeys.xs": ["hostname", "ipaddr"],
-          "colHeaders": ["Hostname", "IPaddr", "MACaddr", "Expires"],
-          "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
-          "transform": [],
-          "actions": {},
-          "dataSource=": "leases.leases"
+      "content": [
+        {
+          "widget": "table",
+          "options": {
+            "columns": ["hostname", "ipaddr", "macaddr", "expires"],
+            "headers": {
+              "hostname": "Hostname",
+              "ipaddr": "IPaddr",
+              "macaddr": "MACaddr",
+              "expires": "Expires"
+            },
+            "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
+            "actions": [],
+            "dataSource=": "leases.leases"
+          }
         }
-      },
-      "details": {}
+      ]
     },
 
     {
       "widget": "stat-expand",
-      "waitFor": "disk = ubus('luci2.system', 'diskfree',  5000)",
+      "if": "disk = ubus('luci2.system', 'diskfree',  5000)",
 
       "options": {
         "title": "Free Disk",
@@ -151,7 +156,7 @@
 
     {
       "widget": "stat-expand",
-      "waitFor": "conntrack = ubus('luci2.network', 'conntrack_count',  2000)",
+      "if": "conntrack = ubus('luci2.network', 'conntrack_count',  2000)",
 
       "options": {
         "title": "Connection Tracking",
