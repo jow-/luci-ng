@@ -1,11 +1,10 @@
 {
   "widget": "form",
-  "bind": "$model",
 
   "content": [
     {
       "widget": "input",
-      "bind": "$model.widget",
+      "bind": "_.widget",
       "options": {
         "title": "Widget",
         "description": "Enter widget definition",
@@ -14,15 +13,15 @@
     },
     {
       "widget": "button",
-      "bind": "$model.update",
+      "bind": "_.update",
       "options": {
         "title": "Update",
-        "click": "JSON.parse($model.widget)"
+        "click": "JSON.parse(_.widget)"
       }
     },
     {
       "widget": "dynamic",
-      "options": { "widget=": "$model.update" }
+      "options": { "widget=": "_.update" }
     }
   ]
 }

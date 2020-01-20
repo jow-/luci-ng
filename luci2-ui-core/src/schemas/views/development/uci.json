@@ -1,20 +1,19 @@
 {
   "widget": "form",
   "onInit": "configs = ubus('uci', 'configs').configs",
-  "bind": "$model",
   "content": [
     {
       "widget": "autocomplete",
-      "bind": "$model.config",
+      "bind": "_.config",
       "options": {
         "enum=": "configs"
       }
     },
     {
       "widget": "uci-config",
-      "displayIf": "configs.indexOf($model.config)>=0",
+      "displayIf": "configs.indexOf(_.config)>=0",
       "options": {
-        "config=": "$model.config"
+        "config=": "_.config"
       }
     }
   ]

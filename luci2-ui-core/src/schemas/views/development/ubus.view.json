@@ -1,11 +1,11 @@
 {
   "widget": "form",
-  "events": { "onSetup": "$model = RxObject({})" },
+  "events": { "onSetup": "_ = RxObject({})" },
 
   "content": [
     {
       "widget": "autocomplete",
-      "bind": "$model.service",
+      "bind": "_.service",
       "options": {
         "title": "Service",
         "description": "Ubus service",
@@ -14,24 +14,24 @@
     },
     {
       "widget": "autocomplete",
-      "bind": "$model.method",
+      "bind": "_.method",
       "options": {
         "title": "Method",
         "description": "Ubus method",
-        "enum=": "Object.keys(ubusList([$model.service])[$model.service] || {})"
+        "enum=": "Object.keys(ubusList([_.service])[_.service] || {})"
       }
     },
     {
       "widget": "input",
-      "bind": "$model.params",
+      "bind": "_.params",
       "options": {
         "title": "Parameters",
-        "description=": "JSON.stringify(ubusList([$model.service])[$model.service][$model.method])"
+        "description=": "JSON.stringify(ubusList([_.service])[_.service][_.method])"
       }
     },
     {
       "widget": "input",
-      "bind": "$model.path",
+      "bind": "_.path",
       "options": {
         "title": "jsonPath filter",
         "description": "Transformation to apply to result"
@@ -39,7 +39,7 @@
     },
     {
       "widget": "input",
-      "bind": "$model.errorVal",
+      "bind": "_.errorVal",
       "options": {
         "title": "error values",
         "description": "Transformation to apply to error codes"
@@ -50,9 +50,9 @@
       "options": { "title": "Execute" },
       "events": {
         "onClick": [
-          "$model.result = ubus($model.service, $model.method, ",
-          "  $model.params.trim() ? JSON.parse($model.params) : {}, ",
-          "  $model.path, $model.errorVal && JSON.parse($model.errorVal))"
+          "_.result = ubus(_.service, _.method, ",
+          "  _.params.trim() ? JSON.parse(_.params) : {}, ",
+          "  _.path, _.errorVal && JSON.parse(_.errorVal))"
         ]
       }
     },
@@ -60,17 +60,17 @@
       "widget": "code",
       "options": {
         "text=": [
-          "`ubus('${$model.service}', '${$model.method}', ${",
-          "JSON.stringify(JSON.parse($model.params.trim()) || {})}${",
-          "$model.path  ? `, '${$model.path}'` :  $model.errorVal ? `, ${$model.path}` : ''}${",
-          "$model.errorVal ? `, ${JSON.stringify(JSON.parse($model.errorVal))}` : ''})`"
+          "`ubus('${_.service}', '${_.method}', ${",
+          "JSON.stringify(JSON.parse(_.params.trim()) || {})}${",
+          "_.path  ? `, '${_.path}'` :  _.errorVal ? `, ${_.path}` : ''}${",
+          "_.errorVal ? `, ${JSON.stringify(JSON.parse(_.errorVal))}` : ''})`"
         ]
       }
     },
     {
       "widget": "code",
       "options": {
-        "text=": "JSON.stringify($model.result, null, 4)"
+        "text=": "JSON.stringify(_.result, null, 4)"
       }
     }
   ]

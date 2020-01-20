@@ -4,29 +4,29 @@
     {
       "widget": "span",
       "options": {
-        "text=": "$model.files[0].name || 'Select file'"
+        "text=": "_.files[0].name || 'Select file'"
       }
     },
     {
       "widget": "file-button",
-      "bind": "$model.files",
+      "bind": "_.files",
       "options": {
         "title": "Select"
       },
       "events": {
-        "onInit": "$model.result = null",
-        "onAdded": "$model.result = cgi.upload('/tmp/backup.tar.gz','0400', $model.files[0])"
+        "onInit": "_.result = null",
+        "onAdded": "_.result = cgi.upload('/tmp/backup.tar.gz','0400', _.files[0])"
       }
     },
     {
       "widget": "span",
       "options": {
-        "text=": "JSON.stringify($model.result) "
+        "text=": "JSON.stringify(_.result) "
       }
     },
     {
       "widget": "toggle",
-      "bind": "$model.keep",
+      "bind": "_.keep",
       "options": {
         "title": "Keep settings",
         "default": true
@@ -41,7 +41,7 @@
       "widget": "button",
       "options": {
         "title": "Upload",
-        "disabled=": "!$model.files || !$model.files.length"
+        "disabled=": "!_.files || !_.files.length"
       },
       "events": { "onClick": " $dlg.close() && snackbar(`flashing device`) " }
     }

@@ -7,7 +7,7 @@
 
 import { Injectable } from '@angular/core';
 import { RxObject } from 'espression-rx';
-import { IMap, ISchema, SchemaObject } from 'rx-json-ui';
+import { Schema, SchemaObject } from 'rx-json-ui';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -17,6 +17,9 @@ import { IUciConfigData } from './backend/config.interface';
 import { IUciSectionData } from './backend/section.interface';
 import { UciService } from './backend/uci.service';
 
+export interface IMap<T> {
+  [config: string]: T;
+}
 export type RxConfig = IMap<IUciSectionData | IUciSectionData[]>;
 
 @Injectable({
@@ -24,7 +27,7 @@ export type RxConfig = IMap<IUciSectionData | IUciSectionData[]>;
 })
 export class UciModel2 {
   configs: IMap<RxConfig> = {};
-  schemas: IMap<ISchema> = {};
+  schemas: IMap<Schema> = {};
   private _orig: IMap<IMap<IUciSectionData[]>> = {};
 
   constructor(private _uci: UciService) {}
@@ -76,7 +79,7 @@ export class UciModel2 {
     });
   }
 
-  getSchema(config: string, type?: string): Observable<ISchema | undefined> {
+  getSchema(config: string, type?: string): Observable<Schema | undefined> {
     return this.loadConfig(config).pipe(
       map(() => {
         if (!(config in this.schemas)) return undefined;

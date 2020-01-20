@@ -10,13 +10,13 @@
         "widget": "set-expansion",
         "options": {
           "title": "File Log",
-          "description=": "$model.log_file ? `Logging to ${$model.log_file}` : 'Disabled'"
+          "description=": "_.log_file ? `Logging to ${_.log_file}` : 'Disabled'"
         },
         "content": ["uciUI('system', '@system', 0, ['log_file', 'log_size'])"]
       },
       {
         "widget": "set-toggle",
-        "bind": "$model.log_remote",
+        "bind": "_.log_remote",
         "options": {
           "title": "Remote Logging",
           "description": "Log messages to server in addition to the local destination."
@@ -42,9 +42,9 @@
     "content": [
       {
         "widget": "set-toggle",
-        "bind": "$model.start",
+        "bind": "_.start",
         "events": {
-          "onInit": "$model.start = system0.cronloglevel & 1",
+          "onInit": "_.start = system0.cronloglevel & 1",
           "onValueChange": "$value ? system0.cronloglevel |= 1 : system0.cronloglevel &= ~1"
         },
         "options": {
@@ -53,9 +53,9 @@
       },
       {
         "widget": "set-toggle",
-        "bind": "$model.end",
+        "bind": "_.end",
         "events": {
-          "onInit": "$model.end = system0.cronloglevel & 2",
+          "onInit": "_.end = system0.cronloglevel & 2",
           "onValueChange": "$value ? system0.cronloglevel |= 2 : system0.cronloglevel &= ~2"
         },
         "options": {
@@ -64,9 +64,9 @@
       },
       {
         "widget": "set-toggle",
-        "bind": "$model.failed",
+        "bind": "_.failed",
         "events": {
-          "onInit": "$model.failed = system0.cronloglevel & 4",
+          "onInit": "_.failed = system0.cronloglevel & 4",
           "onValueChange": "$value ? system0.cronloglevel |= 4 : system0.cronloglevel &= ~4"
         },
         "options": {
@@ -75,9 +75,9 @@
       },
       {
         "widget": "set-toggle",
-        "bind": "$model.pid",
+        "bind": "_.pid",
         "events": {
-          "onInit": "$model.pid = system0.cronloglevel & 8",
+          "onInit": "_.pid = system0.cronloglevel & 8",
           "onValueChange": "$value ? system0.cronloglevel |= 8 : system0.cronloglevel &= ~8"
         },
         "options": {

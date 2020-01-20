@@ -7,13 +7,13 @@
       {
         "widget": "set-expansion",
         "options": {
-          "title=": "`Listen on ${$data.Interface || 'all'}:${$data.Port}`"
+          "title=": "`Listen on ${$row.data.Interface || 'all'}:${$row.data.Port}`"
         },
         "content": [
-          "uciUI('dropbear', '@dropbear', $index, ['enable', 'Port'])",
+          "uciUI('dropbear', '@dropbear', $row.index, ['enable', 'Port'])",
           {
             "widget": "set-select",
-            "bind": "$data.Interface",
+            "bind": "$row.data.Interface",
             "options": {
               "title": "Interface",
               "description": "Leave empty to listen on all interfaces",
@@ -26,7 +26,7 @@
             "widget": "set-link",
             "options": {
               "title": "Advanced",
-              "link=": "`system/ssh/${$index}`"
+              "link=": "`system/ssh/${$row.index}`"
             }
           }
         ]
@@ -66,9 +66,10 @@
             {
               "widget": "textarea",
               "bind": "$tmp.key",
-              "options": { "title": "Key" },
-              "events": {
-                "onValidate": "!/^([^ ]+) ([^ ]*([^ ]{8})) ([^ ]+)$/.test($value) && 'Invalid key format'"
+              "options": {
+                "title": "Key",
+                "type": "string",
+                "pattern": "!/^([^ ]+) ([^ ]*([^ ]{8})) ([^ ]+)$/.test($value) && 'Invalid key format'"
               }
             }
           ],

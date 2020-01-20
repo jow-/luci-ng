@@ -4,12 +4,12 @@
     {
       "widget": "span",
       "options": {
-        "text=": "$model.files[0].name || 'Select file'"
+        "text=": "_.files[0].name || 'Select file'"
       }
     },
     {
       "widget": "file-button",
-      "bind": "$model.files",
+      "bind": "_.files",
       "options": { "title": "Select" }
     },
     {
@@ -21,12 +21,12 @@
       "widget": "button",
       "options": {
         "title": "Upload",
-        "disabled=": "!$model.files || !$model.files.length"
+        "disabled=": "!_.files || !_.files.length"
       },
       "events": {
         "onClick": [
-          "cgi.upload('/tmp/testfile','666', $model.files[0]) && ",
-          "$dlg.close() && snackbar(`uploading ${$model.files[0].name}`) "
+          "cgi.upload('/tmp/testfile','666', _.files[0]) && ",
+          "$dlg.close() && snackbar(`uploading ${_.files[0].name}`) "
         ]
       }
     }
