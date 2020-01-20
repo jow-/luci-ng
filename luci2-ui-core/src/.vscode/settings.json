@@ -18,11 +18,15 @@
     },
     {
       "fileMatch": ["/schemas/views/**/*.view.json"],
-      "url": "./dist/widgetschema/WidgetsDef.json"
+      "url": "./dist/widgetschema/widgets.json"
     },
     {
       "fileMatch": ["/schemas/views/**/*.content.json"],
-      "url": "./dist/widgetschema/WidgetsDef.content.json"
+      "url": "./dist/widgetschema/widgets.content.json"
+    },
+    {
+      "fileMatch": ["/schemas/uci/*.json"],
+      "url": "./dist/widgetschema/schema.json"
     }
   ],
 

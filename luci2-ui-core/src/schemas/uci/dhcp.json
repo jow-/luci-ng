@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-06/schema#",
   "type": "object",
   "title": "Basic System configurations",
   "description": "Settings that apply to the most basic operation of the system, such as the hostname, the time zone, and how and where to write logging information to",
@@ -137,7 +136,7 @@
             "type": "boolean",
             "title": "Full qualified domain name",
             "description": "Do not resolve unqualifed local hostnames.",
-            "depends=": "$model.domain"
+            "depends=": "_.domain"
           },
           "interface": {
             "type": "array",
@@ -199,7 +198,7 @@
               "type": "string",
               "format": "iface"
             },
-            "depends=": "$model.nonwildcard"
+            "depends=": "_.nonwildcard"
           },
           "nonwildcard": {
             "type": "boolean",
@@ -235,13 +234,13 @@
             "type": "boolean",
             "title": "Allow localhost",
             "description": "Allows upstream 127.0.0.0/8 responses, required for DNS based blacklist services",
-            "depends=": "$model.rebind_protection"
+            "depends=": "_.rebind_protection"
           },
           "rebind_domain": {
             "type": "array",
             "title": "Domain whitelist",
             "description": "List of domains to allow RFC1918 responses for.",
-            "depends=": "$model.rebind_protection",
+            "depends=": "_.rebind_protection",
             "items": { "type": "string", "format": "host" }
           },
           "resolvfile": {
@@ -250,7 +249,7 @@
             "default": "/tmp/resolv.conf.auto",
             "title": "Resolve file",
             "description": "Local alternative resolv file",
-            "depends=": "!$model.noresolv"
+            "depends=": "!_.noresolv"
           },
           "server": {
             "type": "array",
@@ -268,7 +267,7 @@
             "format": "path",
             "title": "TFTP server root directory",
             "description": "Specifies the TFTProot directory",
-            "dependes=": "$model.enable_tftp"
+            "depends=": "_.enable_tftp"
           }
         }
       }

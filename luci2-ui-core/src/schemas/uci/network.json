@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-06/schema#",
   "type": "object",
   "title": "General Network configurations",
   "properties": {
@@ -39,19 +38,19 @@
               "toUCI": "$data ? 'bridge' : undefined",
               "fromUCI": "$data === 'bridge'"
             },
-            "depends=": "['static', 'dhcp', 'none'].includes($model.proto)"
+            "depends=": "['static', 'dhcp', 'none'].includes(_.proto)"
           },
           "stp": {
             "type": "boolean",
             "title": "STP",
             "description": "Enables the Spanning Tree Protocol",
-            "depends=": "$model.type"
+            "depends=": "_.type"
           },
           "igmp_snooping": {
             "type": "boolean",
             "title": "IGMP snooping",
             "description": "Enables IGMP snooping on this bridge",
-            "depends=": "$model.type"
+            "depends=": "_.type"
           },
           "ifname": {
             "type": "string",
@@ -63,7 +62,7 @@
             "type": "boolean",
             "title": "Allow empty",
             "description": "Enables creating empty bridges",
-            "depends=": "$model.type"
+            "depends=": "_.type"
           },
 
           "protocol": {
@@ -267,12 +266,12 @@
           "mirror_source_port": {
             "type": "string",
             "title": "Mirror source port",
-            "depends=": "$model.enable_mirror_tx || $model.enable_mirror_rx"
+            "depends=": "_.enable_mirror_tx || _.enable_mirror_rx"
           },
           "mirror_monitor_port": {
             "type": "string",
             "title": "Mirror monitor port",
-            "depends=": "$model.enable_mirror_tx || $model.enable_mirror_rx"
+            "depends=": "_.enable_mirror_tx || _.enable_mirror_rx"
           }
         }
       }

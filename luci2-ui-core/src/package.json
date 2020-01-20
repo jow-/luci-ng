@@ -11,7 +11,7 @@
     "lint-fix": "ng lint --type-check --fix && prettier --write \"src/**/*.{ts,scss,css,html,json}\" ",
     "publish": "sed -i -e \"s|base href=\\\"/\\\"|base href=\\\"/luci-ng/\\\"|\" dist/index.html && scp -r -P 8022 dist/* root@35.208.122.24:/www/luci-ng/ && scp -r -P 8022 share/* root@35.208.122.24:/usr/share/",
     "gen-schema": "rm -rf dist/widgetschema && rx-json-ui g -p ./src/tsconfig.app.json -m app/app.module#AppModule dist/widgetschema",
-    "lint-views": "rx-json-ui l -s dist/widgetschema/WidgetsDef.json schemas/views/**/*.view.json && rx-json-ui l -s dist/widgetschema/WidgetsDef.content.json schemas/views/**/*.content.json",
+    "lint-views": "rx-json-ui l -s dist/widgetschema/widgets.json schemas/views/**/*.view.json && rx-json-ui l -s dist/widgetschema/widgets.content.json schemas/views/**/*.content.json && rx-json-ui l -s dist/widgetschema/schema.json schemas/uci/*.json",
     "openwrt": "docker run -d --privileged -p 9443:443 -p 9080:80 -p 9022:22 --name openwrt ianchi74/openwrt:luci2-rpc"
   },
   "husky": {

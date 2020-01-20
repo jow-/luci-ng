@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-06/schema#",
   "type": "object",
   "title": "SSH Configuration",
   "description": "The ssh configuration is handled by the dropbear subsystem. Each dropbear SSH server instance uses a single section of the configuration file, and you can have multiple instances.",
@@ -23,7 +22,7 @@
             "title": "Interface",
             "description": "Listen only on the specified interface, if unspecified, on all.",
             "type": "string",
-            "enum=": "ubus('network.interface', 'dump', {} , '$.interface[?(@.device!='lo')].interface')"
+            "enum=": "ubus('network.interface', 'dump', {} , `$.interface[?(@.device!='lo')].interface`)"
           },
           "Port": {
             "title": "Port",

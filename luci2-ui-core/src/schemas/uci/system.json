@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-06/schema#",
   "type": "object",
   "title": "Basic System configurations",
   "description": "Settings that apply to the most basic operation of the system, such as the hostname, the time zone, and how and where to write logging information to",
@@ -12,40 +11,30 @@
         "type": "object",
         "anonymous": true,
         "ui": {
-          "fieldsets": {
-            "default": 5,
-            "sets": [
-              {
-                "title": "General",
-                "fields": ["hostname", "timezone", "zonename"]
-              },
-              {
-                "title": "Kernel Log",
-                "fields": ["conloglevel", "buffersize"]
-              },
-              {
-                "title": "System Log",
-                "fields": ["log_buffer_size"]
-              },
-              {
-                "title": "File Logging",
-                "fields": ["log_file", "log_size"]
-              },
-              {
-                "title": "Remote Logging",
-                "fields": [
-                  "log_remote",
-                  "log_ip",
-                  "log_port",
-                  "log_proto",
-                  "log_hostname",
-                  "log_trailer_null",
-                  "log_prefix"
-                ]
-              },
-              { "title": "Other" }
+          "include": [
+            ["hostname", "timezone", "zonename"],
+            ["conloglevel", "buffersize"],
+            ["log_buffer_size"],
+            ["log_file", "log_size"],
+            [
+              "log_remote",
+              "log_ip",
+              "log_port",
+              "log_proto",
+              "log_hostname",
+              "log_trailer_null",
+              "log_prefix"
             ]
-          }
+          ],
+
+          "titles": [
+            "General",
+            "Kernel Log",
+            "System Log",
+            "File Logging",
+            "Remote Logging",
+            "Other"
+          ]
         },
         "properties": {
           "hostname": {
@@ -68,7 +57,9 @@
             "type": "string",
             "ui": {
               "widget": "set-autocomplete",
-              "onValueChange": "uci.configs.system['@system'][0].timezone = $value[1]"
+              "events": {
+                "onValueChange": "uci.configs.system['@system'][0].timezone = $value[1]"
+              }
             },
             "default": "UTC",
             "enum=": "load('views/system/tz.json')",
@@ -106,7 +97,6 @@
           "log_file": {
             "title": "Log file",
             "description": "File to write log messages to",
-            "examples": ["/var/log/messages"],
             "type": "string",
             "format": "path"
           },
@@ -115,8 +105,8 @@
 
             "type": "string",
             "format": "ipv4",
-            "depends=": "$model.log_remote",
-            "required=": "!!$model.log_remote"
+            "depends=": "_.log_remote",
+            "required=": "!!_.log_remote"
           },
           "log_port": {
             "title": "Remote Port",
@@ -125,13 +115,13 @@
             "default": 514,
             "minimum": 1,
             "maximum": 65535,
-            "depends=": "$model.log_remote"
+            "depends=": "_.log_remote"
           },
           "log_prefix": {
             "title": "Log prefix (remote)",
             "description": "Adds a prefix to all log messages send over network",
             "type": "string",
-            "depends=": "$model.log_remote"
+            "depends=": "_.log_remote"
           },
           "log_proto": {
             "title": "Protocol",
@@ -139,7 +129,7 @@
             "type": "string",
             "enum": ["tcp", "udp"],
             "default": "udp",
-            "depends=": "$model.log_remote"
+            "depends=": "_.log_remote"
           },
           "log_remote": {
             "title": "Enable remote logging",
@@ -159,13 +149,13 @@
             "description": "Use \\0 instead of \\n as trailer when using TCP.",
             "type": "boolean",
             "default": false,
-            "depends=": "$model.log_proto=='tcp'"
+            "depends=": "_.log_proto=='tcp'"
           },
           "log_hostname": {
             "title": "Hostname for log",
             "type": "string",
             "format": "host",
-            "depends=": "$model.log_remote"
+            "depends=": "_.log_remote"
           }
         }
       }
@@ -201,7 +191,7 @@
             "description": "Get NTP servers from DHCP.",
             "type": "boolean",
             "default": false,
-            "depends=": "$model.enabled"
+            "depends=": "_.enabled"
           },
           "dhcp_interface": {
             "title": "Use DHCP Interface",
@@ -210,7 +200,7 @@
             "items": {
               "type": "string"
             },
-            "depends=": "$model.use_dhcp"
+            "depends=": "_.use_dhcp"
           }
         }
       }
@@ -218,14 +208,14 @@
     "@led": {
       "type": "array",
       "ui": {
-        "onInit": "leds = ubus('luci2.system','led_list').leds"
+        "events": { "onInit": "leds = ubus('luci2.system','led_list').leds" }
       },
 
       "items": {
         "type": "object",
         "ui": {
           "options": {
-            "title=": "`${$model.name || ''} (${$model.sysfs || ''})`"
+            "title=": "`${_.name || ''} (${_.sysfs || ''})`"
           }
         },
         "properties": {
@@ -251,7 +241,7 @@
             "title": "Trigger",
             "description": "Event that controls the led activation",
             "type": "string",
-            "enum=": "jsonPath(leds, `$[?(@.name=='${$model.sysfs}')].triggers[*]`)",
+            "enum=": "jsonPath(leds, `$[?(@.name=='${_.sysfs}')].triggers[*]`)",
             "default": "none"
           },
           "delayon": {
@@ -260,7 +250,7 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "depends=": "$model.trigger === 'timer'"
+            "depends=": "_.trigger === 'timer'"
           },
           "delayoff": {
             "title": "Delay OFF",
@@ -268,14 +258,14 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "depends=": "$model.trigger === 'timer'"
+            "depends=": "_.trigger === 'timer'"
           },
           "dev": {
             "title": "Device",
             "description": "Name of the network/usb device which status should be reflected",
             "type": "string",
             "required": true,
-            "depends=": "['netdev', 'usbdev', 'morse'].indexOf($model.trigger)>=0",
+            "depends=": "['netdev', 'usbdev', 'morse'].indexOf(_.trigger)>=0",
             "enum=": "ubus('luci2.network', 'device_list', '$.devices[*].device')"
           },
           "mode": {
@@ -284,7 +274,7 @@
             "type": "string",
             "required": true,
             "enum": ["link", "tx", "rx"],
-            "depends=": "$model.trigger === 'netdev'",
+            "depends=": "_.trigger === 'netdev'",
             "default": "link"
           },
           "interval": {
@@ -293,7 +283,7 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "depends=": "$model.trigger === 'usbdev'",
+            "depends=": "_.trigger === 'usbdev'",
             "default": 50
           },
           "delay": {
@@ -301,25 +291,25 @@
             "description": "Dit length in milliseconds",
             "type": "integer",
             "minimum": 0,
-            "depends=": "$model.trigger === 'morse'",
+            "depends=": "_.trigger === 'morse'",
             "default": 150
           },
           "message": {
             "title": "Message",
             "description": "The message to signal",
             "type": "string",
-            "depends=": "$model.trigger === 'morse'"
+            "depends=": "_.trigger === 'morse'"
           },
           "gpio": {
             "title": "GPIO",
             "type": "integer",
             "default": 0,
-            "depends=": "$model.trigger === 'gpio'"
+            "depends=": "_.trigger === 'gpio'"
           },
           "inverted": {
             "title": "Inverted",
             "type": "boolean",
-            "depends=": "$model.trigger === 'gpio'"
+            "depends=": "_.trigger === 'gpio'"
           }
         }
       }
