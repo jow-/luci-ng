@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "SchemaNumber": {}
+  },
+
+  "allOf": [
+    { "$ref": "../dist/widgetschema/schema.json#/definitions" },
+    {
+      "type": "object",
+
+      "properties": {
+        "properties": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^@[\\x20-\\x7E]+$"
+          },
+          "additionalProperties": {
+            "title": "Typed Section",
+            "$ref": "../dist/widgetschema/schema.json#/definitions/SchemaArray"
+          }
+        }
+      },
+      "required": ["type", "properties"],
+      "minProperties": 1
+    }
+  ]
+}

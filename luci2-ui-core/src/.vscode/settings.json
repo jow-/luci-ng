@@ -26,7 +26,7 @@
     },
     {
       "fileMatch": ["/schemas/uci/*.json"],
-      "url": "./dist/widgetschema/schema.json"
+      "url": "./schemas/metaschema.json"
     }
   ],
 
@@ -40,8 +40,8 @@
     "**/CVS": true,
     "src/rx-json-ui": true
   },
-  "spellright.language": ["en_US"],
-  "spellright.documentTypes": ["markdown", "latex", "plaintext"],
+  "spellright.language": ["en"],
+  "spellright.documentTypes": ["markdown", "latex", "typescript"],
   "editor.formatOnSave": true,
   "typescript.tsdk": "node_modules\\typescript\\lib"
 }
