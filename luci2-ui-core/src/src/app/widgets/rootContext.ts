@@ -100,7 +100,7 @@ export function rootContextFactory(
       buildUI,
       uciUI: (
         config: string,
-        type: string,
+        type?: string,
         section?: number,
         options?:
           | string
@@ -147,7 +147,9 @@ export function rootContextFactory(
                   )
                 );
             }
-            return buildUI(schema, `uci.configs.${config}['${type}']`);
+            return type
+              ? buildUI(schema, `uci.configs.${config}['${type}']`)
+              : buildUI(schema, `uci.configs.${config}`);
           })
         );
       },

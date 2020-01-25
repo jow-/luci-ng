@@ -21,10 +21,10 @@ const FIXED_MENU = {
     view: 'development/ubus',
     index: 0,
   },
-  'development/widget': {
-    title: 'Widget',
-    view: 'development/widget',
-    index: 2,
+  'development/Uci': {
+    title: 'Uci Schema viewer',
+    view: 'development/uci',
+    index: 1,
   },
 };
 
