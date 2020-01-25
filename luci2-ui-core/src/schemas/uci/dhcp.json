@@ -136,7 +136,7 @@
             "type": "boolean",
             "title": "Full qualified domain name",
             "description": "Do not resolve unqualifed local hostnames.",
-            "depends=": "_.domain"
+            "depends=": "$.domain"
           },
           "interface": {
             "type": "array",
@@ -198,7 +198,7 @@
               "type": "string",
               "format": "iface"
             },
-            "depends=": "_.nonwildcard"
+            "depends=": "$.nonwildcard"
           },
           "nonwildcard": {
             "type": "boolean",
@@ -234,13 +234,13 @@
             "type": "boolean",
             "title": "Allow localhost",
             "description": "Allows upstream 127.0.0.0/8 responses, required for DNS based blacklist services",
-            "depends=": "_.rebind_protection"
+            "depends=": "$.rebind_protection"
           },
           "rebind_domain": {
             "type": "array",
             "title": "Domain whitelist",
             "description": "List of domains to allow RFC1918 responses for.",
-            "depends=": "_.rebind_protection",
+            "depends=": "$.rebind_protection",
             "items": { "type": "string", "format": "host" }
           },
           "resolvfile": {
@@ -249,7 +249,7 @@
             "default": "/tmp/resolv.conf.auto",
             "title": "Resolve file",
             "description": "Local alternative resolv file",
-            "depends=": "!_.noresolv"
+            "depends=": "!$.noresolv"
           },
           "server": {
             "type": "array",
@@ -267,7 +267,7 @@
             "format": "path",
             "title": "TFTP server root directory",
             "description": "Specifies the TFTProot directory",
-            "depends=": "_.enable_tftp"
+            "depends=": "$.enable_tftp"
           }
         }
       }
@@ -279,7 +279,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "ui": { "options": { "title=": "$data['.name']" } },
+        "title=": "$['.name']",
         "properties": {
           "interface": {
             "type": "string",

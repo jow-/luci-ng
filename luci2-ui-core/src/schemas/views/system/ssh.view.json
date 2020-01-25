@@ -6,7 +6,7 @@
     {
       "widget": "set-section",
       "options": { "title": "Advanced" },
-      "content": ["uciUI('dropbear', '@dropbear', $routeParam.id)"]
+      "content": ["uciUI('dropbear', '@dropbear', parseInt($routeParam.id))"]
     }
   ]
 }

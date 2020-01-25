@@ -8,19 +8,38 @@
       "buttonTitle": "Sync with Browser"
     },
     "events": {
-      "onSetup": "$parentContext.a = new Date(ubus('system', 'info').localtime * 1000 + (new Date()).getTimezoneOffset() * 60000)",
-      "onClick": " "
+      "onSetup": "$parentContext.a = new Date(ubus('luci', 'getLocaltime').result * 1000 + (new Date()).getTimezoneOffset() * 60000)",
+      "onClick": [
+        "ubus('luci', 'setLocaltime', {localtime: Math.floor(Date.now() / 1000)}).result &&",
+        "snackbar('Time changed')"
+      ]
     }
   },
+
   {
     "widget": "set-expansion",
+    "bind": "uci.configs.system['@timeserver'][0]",
     "if": "ubus('file','stat', {path: '/usr/sbin/ntpd'}, { 0: null })",
     "options": {
       "title": "Time Synchronization",
-      "description=": "`NTP is ${uci.configs.system['@timeserver'][0].enabled ? 'enabled': 'disabled'}`"
+      "description=": "`NTP is ${$.enabled ? 'enabled': 'disabled'}`"
     },
     "content": [
-      "uciUI('system', '@timeserver', 0, ['enabled', 'server', 'enable_server'])"
+      {
+        "widget": "set-button",
+        "if": "ubus('luci', 'getInitList', {name: 'sysntpd'}).sysntpd.enabled",
+        "options": {
+          "title": "Service is running",
+          "buttonTitle": "Sync with NTP"
+        },
+        "events": {
+          "onClick": [
+            "ubus('luci', 'setInitAction', {name: 'sysntpd', action: 'restart'}) &&",
+            "snackbar('Server requered')"
+          ]
+        }
+      },
+      "uciUI('system', '@timeserver', 0, ['enabled','use_dhcp','server', 'enable_server'])"
     ]
   }
 ]

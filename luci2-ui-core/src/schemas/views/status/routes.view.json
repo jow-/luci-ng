@@ -1,51 +1,62 @@
 {
-  "widget": "tabs",
-
-  "options": {
-    "tabLabels": ["IPv4 Routes", "IPv6 Routes", "ARP Table"]
-  },
+  "widget": "set-page",
   "content": [
     {
-      "widget": "table",
-      "if": "data = ubus('luci2.network', 'routes')",
-      "options": {
-        "columns": ["target", "nexthop", "metric", "device"],
-        "headers": {
-          "target": "Target",
-          "nexthop": "Gateway",
-          "metric": "Metric",
-          "device": "Interface"
-        },
-        "dataSource=": "data.routes"
-      }
-    },
-    {
-      "widget": "table",
-      "if": "data = ubus('luci2.network', 'routes6')",
-      "options": {
-        "columns": ["target", "source", "nexthop", "metric", "device"],
-        "headers": {
-          "target": "Target",
-          "source": "Source",
-          "nexthop": "Gateway",
-          "metric": "Metric",
-          "device": "Interface"
-        },
-        "dataSource=": "data.routes"
-      }
-    },
-    {
-      "widget": "table",
-      "if": "data = ubus('luci2.network', 'arp_table')",
-      "options": {
-        "columns": ["ipaddr", "macaddr", "device"],
-        "headers": {
-          "ipaddr": "IP Address",
-          "macaddr": "MAC Address",
-          "device": "Device"
-        },
-        "dataSource=": "data.entries"
-      }
+      "widget": "set-section",
+      "options": { "title": "Known Routes" },
+      "content": [
+        {
+          "widget": "tabs",
+
+          "options": {
+            "tabLabels": ["IPv4 Routes", "IPv6 Routes", "ARP Table"]
+          },
+          "content": [
+            {
+              "widget": "table",
+              "if": "data = ubus('luci2.network', 'routes')",
+              "options": {
+                "columns": ["target", "nexthop", "metric", "device"],
+                "headers": {
+                  "target": "Target",
+                  "nexthop": "Gateway",
+                  "metric": "Metric",
+                  "device": "Interface"
+                },
+                "dataSource=": "data.routes"
+              }
+            },
+            {
+              "widget": "table",
+              "if": "data = ubus('luci2.network', 'routes6')",
+              "options": {
+                "columns": ["target", "source", "nexthop", "metric", "device"],
+                "headers": {
+                  "target": "Target",
+                  "source": "Source",
+                  "nexthop": "Gateway",
+                  "metric": "Metric",
+                  "device": "Interface"
+                },
+                "dataSource=": "data.routes"
+              }
+            },
+            {
+              "widget": "table",
+              "if": "data = ubus('luci2.network', 'arp_table')",
+              "options": {
+                "columns": ["ipaddr", "macaddr", "device"],
+                "headers": {
+                  "ipaddr": "IP Address",
+                  "macaddr": "MAC Address",
+                  "device": "Device"
+                },
+                "dataSource=": "data.entries"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

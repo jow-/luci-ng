@@ -10,13 +10,13 @@
         "widget": "set-expansion",
         "options": {
           "title": "File Log",
-          "description=": "_.log_file ? `Logging to ${_.log_file}` : 'Disabled'"
+          "description=": "$.log_file ? `Logging to ${$.log_file}` : 'Disabled'"
         },
         "content": ["uciUI('system', '@system', 0, ['log_file', 'log_size'])"]
       },
       {
         "widget": "set-toggle",
-        "bind": "_.log_remote",
+        "bind": "$.log_remote",
         "options": {
           "title": "Remote Logging",
           "description": "Log messages to server in addition to the local destination."
@@ -42,9 +42,9 @@
     "content": [
       {
         "widget": "set-toggle",
-        "bind": "_.start",
+        "bind": "$.start",
         "events": {
-          "onInit": "_.start = system0.cronloglevel & 1",
+          "onInit": "$.start = system0.cronloglevel & 1",
           "onValueChange": "$value ? system0.cronloglevel |= 1 : system0.cronloglevel &= ~1"
         },
         "options": {
@@ -53,9 +53,9 @@
       },
       {
         "widget": "set-toggle",
-        "bind": "_.end",
+        "bind": "$.end",
         "events": {
-          "onInit": "_.end = system0.cronloglevel & 2",
+          "onInit": "$.end = system0.cronloglevel & 2",
           "onValueChange": "$value ? system0.cronloglevel |= 2 : system0.cronloglevel &= ~2"
         },
         "options": {
@@ -64,9 +64,9 @@
       },
       {
         "widget": "set-toggle",
-        "bind": "_.failed",
+        "bind": "$.failed",
         "events": {
-          "onInit": "_.failed = system0.cronloglevel & 4",
+          "onInit": "$.failed = system0.cronloglevel & 4",
           "onValueChange": "$value ? system0.cronloglevel |= 4 : system0.cronloglevel &= ~4"
         },
         "options": {
@@ -75,9 +75,9 @@
       },
       {
         "widget": "set-toggle",
-        "bind": "_.pid",
+        "bind": "$.pid",
         "events": {
-          "onInit": "_.pid = system0.cronloglevel & 8",
+          "onInit": "$.pid = system0.cronloglevel & 8",
           "onValueChange": "$value ? system0.cronloglevel |= 8 : system0.cronloglevel &= ~8"
         },
         "options": {

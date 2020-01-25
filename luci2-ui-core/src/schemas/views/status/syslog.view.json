@@ -1,23 +1,28 @@
 {
-  "widget": "table",
-  "if": [
-    "log = ubus('luci2.system', 'syslog',10000), ",
-    "re = /^(<[0-9]+>)?\\s*(([a-z ]*)\\s+([0-9]{1,2})\\s+([0-9]{2}:[0-9]{2}:[0-9]{2})\\s([0-9]{4}))\\s+([\\w.-]+)?\\s+([\\w\\-().0-9/]+)?(?:\\[([a-z0-9-.]+)\\])?:\\s*(.+)$/i"
-  ],
-  "options": {
-    "title": "System Log",
-    "dataSource=": "log.log.split('\\n').reverse().map( $value => (m=re.exec($value) , m ? {log: $value, priority: m[1], date: new Date(m[2]), month: m[3],day: m[4],hour: m[5],year: m[6],type: m[7],process: m[8],pid: m[9],msg: m[10]} : {log:$value, msg: $value}))",
-    "columns": ["date", "type", "pid", "process", "msg"],
-    "headers": {
-      "date": "Date",
-      "type": "Type",
-      "pid": "PID",
-      "process": "Process",
-      "msg": "Message"
-    },
-    "colFormat": ["date:'MMM-dd HH:mm:ss'"],
-    "pageSizes": [10, 20, 50],
-    "filter": true,
-    "disableSort": ["msg"]
-  }
+  "widget": "set-section",
+  "options": { "title": "System Log" },
+  "content": [
+    {
+      "widget": "table",
+      "if": [
+        "log = ubus('luci2.system', 'syslog',10000).log, ",
+        "re = /^(<[0-9]+>)?\\s*(([a-z ]*)\\s+([0-9]{1,2})\\s+([0-9]{2}:[0-9]{2}:[0-9]{2})\\s([0-9]{4}))\\s+([\\w.-]+)?\\s+([\\w\\-().0-9/]+)?(?:\\[([a-z0-9-.]+)\\])?:\\s*(.+)$/i"
+      ],
+      "options": {
+        "dataSource=": "log.split('\\n').reverse().map( $value => (m=re.exec($value) , m ? {log: $value, priority: m[1], date: new Date(m[2]), month: m[3],day: m[4],hour: m[5],year: m[6],type: m[7],process: m[8],pid: m[9],msg: m[10]} : {log:$value, msg: $value}))",
+        "columns": ["date", "type", "pid", "process", "msg"],
+        "headers": {
+          "date": "Date",
+          "type": "Type",
+          "pid": "PID",
+          "process": "Process",
+          "msg": "Message"
+        },
+        "colFormat": ["date:'MMM-dd HH:mm:ss'"],
+        "pageSizes": [10, 20, 50],
+        "filter": true,
+        "disableSort": ["msg"]
+      }
+    }
+  ]
 }

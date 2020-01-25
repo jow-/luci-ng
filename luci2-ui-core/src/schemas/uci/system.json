@@ -4,12 +4,11 @@
   "description": "Settings that apply to the most basic operation of the system, such as the hostname, the time zone, and how and where to write logging information to",
   "properties": {
     "@system": {
-      "title": "",
-      "description": "General System options",
       "type": "array",
       "items": {
         "type": "object",
-        "anonymous": true,
+        "title": "System",
+        "description": "General System options",
         "ui": {
           "include": [
             ["hostname", "timezone", "zonename"],
@@ -38,11 +37,9 @@
         },
         "properties": {
           "hostname": {
-            "title": "Hostname for this system",
-            "description": "",
+            "title": "Hostname",
             "type": "string",
             "format": "hostname",
-            "default": "OpenWrt",
             "required": true
           },
           "timezone": {
@@ -52,18 +49,20 @@
             "default": "UTC"
           },
           "zonename": {
-            "title": "Time Zone Name",
+            "title": "Timezone Name",
             "description": "The time zone that date and time should be rendered in by default.",
+            "depends=": "tz=ubus('luci', 'getTimezones')",
             "type": "string",
             "ui": {
               "widget": "set-autocomplete",
               "events": {
-                "onValueChange": "uci.configs.system['@system'][0].timezone = $value[1]"
+                "onValueChange": "$.timezone = tz && $value in tz && tz[$value].tzstring || ''"
               }
             },
             "default": "UTC",
-            "enum=": "load('views/system/tz.json')",
-            "propKey": "0"
+            "enum=": "Object.keys(tz).sort()",
+
+            "propKey": "name"
           },
           "buffersize": {
             "title": "Kernel log Buffersize",
@@ -105,8 +104,8 @@
 
             "type": "string",
             "format": "ipv4",
-            "depends=": "_.log_remote",
-            "required=": "!!_.log_remote"
+            "depends=": "$.log_remote",
+            "required=": "!!$.log_remote"
           },
           "log_port": {
             "title": "Remote Port",
@@ -115,13 +114,13 @@
             "default": 514,
             "minimum": 1,
             "maximum": 65535,
-            "depends=": "_.log_remote"
+            "depends=": "$.log_remote"
           },
           "log_prefix": {
             "title": "Log prefix (remote)",
             "description": "Adds a prefix to all log messages send over network",
             "type": "string",
-            "depends=": "_.log_remote"
+            "depends=": "$.log_remote"
           },
           "log_proto": {
             "title": "Protocol",
@@ -129,7 +128,7 @@
             "type": "string",
             "enum": ["tcp", "udp"],
             "default": "udp",
-            "depends=": "_.log_remote"
+            "depends=": "$.log_remote"
           },
           "log_remote": {
             "title": "Enable remote logging",
@@ -149,22 +148,28 @@
             "description": "Use \\0 instead of \\n as trailer when using TCP.",
             "type": "boolean",
             "default": false,
-            "depends=": "_.log_proto=='tcp'"
+            "depends=": "$.log_proto=='tcp'"
           },
           "log_hostname": {
             "title": "Hostname for log",
             "type": "string",
             "format": "host",
-            "depends=": "_.log_remote"
+            "depends=": "$.log_remote"
           }
         }
       }
     },
     "@timeserver": {
       "type": "array",
+      "additionalItems": false,
       "items": {
         "type": "object",
+        "title": "Time Server",
         "properties": {
+          ".name": {
+            "type": "string",
+            "const": "ntp"
+          },
           "enabled": {
             "title": "Use NTP",
             "description": "Enable use of time server",
@@ -175,12 +180,15 @@
             "title": "Enable Local Server",
             "description": "Provide local NTP server",
             "type": "boolean",
+            "depends=": "$.enabled",
             "default": false
           },
           "server": {
             "title": "Servers",
             "description": "NTP servers to poll the time from. If empty disables client.",
             "type": "array",
+            "depends=": "$.enabled",
+            "minItems": 1,
             "items": {
               "type": "string",
               "format": "hostname"
@@ -188,10 +196,10 @@
           },
           "use_dhcp": {
             "title": "Use DHCP",
-            "description": "Get NTP servers from DHCP.",
+            "description": "Use DHCP advertised servers",
             "type": "boolean",
             "default": false,
-            "depends=": "_.enabled"
+            "depends=": "$.enabled"
           },
           "dhcp_interface": {
             "title": "Use DHCP Interface",
@@ -200,24 +208,19 @@
             "items": {
               "type": "string"
             },
-            "depends=": "_.use_dhcp"
+            "depends=": "$.enabled && $.use_dhcp"
           }
         }
       }
     },
     "@led": {
       "type": "array",
-      "ui": {
-        "events": { "onInit": "leds = ubus('luci2.system','led_list').leds" }
-      },
+      "title": "Leds",
+      "depends=": "leds = ubus('luci2.system','led_list').leds",
 
       "items": {
         "type": "object",
-        "ui": {
-          "options": {
-            "title=": "`${_.name || ''} (${_.sysfs || ''})`"
-          }
-        },
+        "title=": "`${$.name || ''} (${$.sysfs || ''})`",
         "properties": {
           "name": {
             "title": "Led name",
@@ -241,7 +244,7 @@
             "title": "Trigger",
             "description": "Event that controls the led activation",
             "type": "string",
-            "enum=": "jsonPath(leds, `$[?(@.name=='${_.sysfs}')].triggers[*]`)",
+            "enum=": "jsonPath(leds, `$[?(@.name=='${$.sysfs}')].triggers[*]`)",
             "default": "none"
           },
           "delayon": {
@@ -250,7 +253,7 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "depends=": "_.trigger === 'timer'"
+            "depends=": "$.trigger === 'timer'"
           },
           "delayoff": {
             "title": "Delay OFF",
@@ -258,14 +261,14 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "depends=": "_.trigger === 'timer'"
+            "depends=": "$.trigger === 'timer'"
           },
           "dev": {
             "title": "Device",
             "description": "Name of the network/usb device which status should be reflected",
             "type": "string",
             "required": true,
-            "depends=": "['netdev', 'usbdev', 'morse'].indexOf(_.trigger)>=0",
+            "depends=": "['netdev', 'usbdev', 'morse'].indexOf($.trigger)>=0",
             "enum=": "ubus('luci2.network', 'device_list', '$.devices[*].device')"
           },
           "mode": {
@@ -274,7 +277,7 @@
             "type": "string",
             "required": true,
             "enum": ["link", "tx", "rx"],
-            "depends=": "_.trigger === 'netdev'",
+            "depends=": "$.trigger === 'netdev'",
             "default": "link"
           },
           "interval": {
@@ -283,7 +286,7 @@
             "type": "integer",
             "required": true,
             "minimum": 0,
-            "depends=": "_.trigger === 'usbdev'",
+            "depends=": "$.trigger === 'usbdev'",
             "default": 50
           },
           "delay": {
@@ -291,25 +294,25 @@
             "description": "Dit length in milliseconds",
             "type": "integer",
             "minimum": 0,
-            "depends=": "_.trigger === 'morse'",
+            "depends=": "$.trigger === 'morse'",
             "default": 150
           },
           "message": {
             "title": "Message",
             "description": "The message to signal",
             "type": "string",
-            "depends=": "_.trigger === 'morse'"
+            "depends=": "$.trigger === 'morse'"
           },
           "gpio": {
             "title": "GPIO",
             "type": "integer",
             "default": 0,
-            "depends=": "_.trigger === 'gpio'"
+            "depends=": "$.trigger === 'gpio'"
           },
           "inverted": {
             "title": "Inverted",
             "type": "boolean",
-            "depends=": "_.trigger === 'gpio'"
+            "depends=": "$.trigger === 'gpio'"
           }
         }
       }

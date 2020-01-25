@@ -1,6 +1,6 @@
 {
   "widget": "set-page",
-  "if": "uci.loadConfig('network')",
+  "if": "uci.loadConfig('network') && (ifc = ubus('network.interface','dump').interface)",
 
   "content": [
     {

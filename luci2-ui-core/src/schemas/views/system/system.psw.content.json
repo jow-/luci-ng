@@ -1,10 +1,9 @@
 {
   "widget": "form",
-  "events": { "onSetup": "$parentContext.model = RxObject({})" },
   "content": [
     {
       "widget": "input",
-      "bind": "model.pss1",
+      "bind": "$.psw1",
       "options": {
         "title": "New password",
         "type": "string",
@@ -15,11 +14,11 @@
     },
     {
       "widget": "input",
-      "bind": "model.pss2",
+      "bind": "$.psw2",
       "options": {
         "title": "Retype password",
         "inputType": "password",
-        "const=": "model.pss1",
+        "const=": "$.psw1",
         "required": true
       }
     },
@@ -35,7 +34,11 @@
         "disabled=": "!$form.valid"
       },
       "events": {
-        "onClick": "ubus('luci2.system', 'password_set', {user:$user, password: model.pss1}) === null && $dlg.close() && snackbar('Password successfully changed')"
+        "onClick": [
+          "ubus('luci2.system', 'password_set', {user:$user, password: $.pss1}) === null ? ",
+          "  $dlg.close() && snackbar('Password successfully changed') : ",
+          "  scnackbar('Failed to change the system password')"
+        ]
       }
     }
   ]

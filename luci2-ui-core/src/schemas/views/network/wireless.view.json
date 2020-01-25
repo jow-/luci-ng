@@ -1,0 +1,40 @@
+{
+  "widget": "set-page",
+  "if": "uci.loadConfig('network') && (ifs = ubus('network.interface','dump').interface)",
+
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "Global" },
+      "content": ["uciUI('network','@globals', 0)"]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Interfaces" },
+      "content": [
+        {
+          "widget": "set-link",
+          "for": "uci.configs.network['@interface'].filter( e => e['.name'] != 'loopback')",
+          "events": {
+            "onSetup": [
+              "$parentContext.ifd = ifs.find( e => e.interface === $for.data['.name'])"
+            ]
+          },
+          "options": {
+            "title=": "`${$for.data['.name'].toUpperCase()} - ${ifd.up ? 'up': 'down'}`",
+            "description=": [
+              "`IPv4 ${ifd['ipv4-address'][0].address}/${ifd['ipv4-address'][0].mask}${",
+              "ifd['ipv4-address'].length>1 ? ` +${ifd['ipv4-address'].length-1}` : '' }`"
+            ],
+            "link=": "`network/interfaces/${$for.data['.name']}`"
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Devices" },
+      "content": ["uciUI('network','@device')"]
+    }
+  ]
+}

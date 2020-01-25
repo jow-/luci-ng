@@ -1,14 +1,24 @@
 {
-  "widget": "table",
-  "if": "log=ubus('luci2.system', 'dmesg'), re=/^(?:\\[([ .0-9]*)\\])?\\s*(.*)$/i",
-  "options": {
-    "title": "Kernel Log",
-    "dataSource=": "map(log.log.split('\\n'), 'm=re.exec($value) , m ? {log: $value, row:$index, time: parseFloat(m[1]), msg: m[2]} : {log:$value, msg: $value, row: $index}')",
-    "columns": ["row", "time", "msg"],
-    "headers": { "row": "Row", "time": "Time", "msg": "Message" },
-    "colFormat": ["", "number:'1.6-6'"],
-    "pageSizes": [10, 20, 50],
-    "filter": true,
-    "disableSort": ["msg"]
-  }
+  "widget": "set-page",
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "Kernel Log" },
+      "content": [
+        {
+          "widget": "table",
+          "if": "log=ubus('luci2.system', 'dmesg'), re=/^(?:\\[([ .0-9]*)\\])?\\s*(.*)$/i",
+          "options": {
+            "dataSource=": "map(log.log.split('\\n'), 'm=re.exec($value) , m ? {log: $value, row:$index, time: parseFloat(m[1]), msg: m[2]} : {log:$value, msg: $value, row: $index}')",
+            "columns": ["row", "time", "msg"],
+            "headers": { "row": "Row", "time": "Time", "msg": "Message" },
+            "colFormat": ["", "number:'1.6-6'"],
+            "pageSizes": [10, 20, 50],
+            "filter": true,
+            "disableSort": ["msg"]
+          }
+        }
+      ]
+    }
+  ]
 }

@@ -1,77 +1,150 @@
 {
-  "widget": "form",
-  "events": { "onSetup": "_ = RxObject({})" },
-
+  "widget": "set-page",
+  "events": { "onSetup": "$parentContext.pageContext = this, $parentContext.page = $" },
   "content": [
     {
-      "widget": "autocomplete",
-      "bind": "_.service",
-      "options": {
-        "title": "Service",
-        "description": "Ubus service",
-        "enum=": "ubusList()"
-      }
+      "widget": "set-section",
+      "options": { "title": "UBUS Service" },
+      "content": [
+        {
+          "widget": "set-autocomplete",
+          "bind": "page.service",
+          "options": {
+            "title": "Service",
+            "description": "Ubus service",
+            "enum=": "ubusList()",
+            "required": true
+          },
+          "events": {
+            "onValueChange": "page.ubusList = ubusList([page.service])[page.service] , page.method = undefined"
+          }
+        },
+        {
+          "widget": "set-autocomplete",
+          "bind": "page.method",
+          "options": {
+            "title": "Method",
+            "description": "Ubus method",
+            "enum=": "Object.keys(page.ubusList || {})",
+            "required": true
+          },
+          "events": {
+            "onValueChange": "Object.keys(page.params || {}).forEach( key => delete page.params[key])"
+          }
+        }
+      ]
     },
     {
-      "widget": "autocomplete",
-      "bind": "_.method",
-      "options": {
-        "title": "Method",
-        "description": "Ubus method",
-        "enum=": "Object.keys(ubusList([_.service])[_.service] || {})"
-      }
+      "widget": "set-section",
+      "if": "page.params = RxObject({})",
+      "events": { "onSetup": "$parentContext.aux = $" },
+      "options": { "title": "Parameters" },
+      "content": [
+        {
+          "widget": "set-container",
+          "for": "Object.keys(page.ubusList && page.ubusList[page.method] || {}) ",
+          "content": [
+            {
+              "widget": "set-input",
+              "if": "['string', 'number', 'integer'].includes(page.ubusList[page.method][$for.data]) ",
+              "bind": "page.params[$for.data]",
+              "options": {
+                "title=": "$for.data",
+                "description=": "page.ubusList[page.method][$for.data]",
+                "type=": "page.ubusList[page.method][$for.data]"
+              },
+              "events": {
+                "onValueChange": "page.params[$for.data] !==''  || delete page.params[$for.data]"
+              }
+            },
+            {
+              "widget": "set-toggle",
+              "if": "page.ubusList[page.method][$for.data] ==='boolean'",
+              "bind": "page.params[$for.data]",
+              "options": {
+                "title=": "$for.data",
+                "description=": "page.ubusList[page.method][$for.data]"
+              }
+            },
+            {
+              "widget": "set-input",
+              "if": "['object', 'array'].includes(page.ubusList[page.method][$for.data]) ",
+              "bind": "aux[$for.data]",
+              "events": {
+                "onValueChange": "page.params[$for.data] = $form.valid && $value && $value.trim() && eval($value, {}) || undefined",
+                "onValidate": [
+                  "$value && $value.trim() && ",
+                  "typeof eval($value, {}) !== page.ubusList[page.method][$for.data] && ",
+                  "`Must be a valid '${page.ubusList[page.method][$for.data]}'`"
+                ]
+              },
+              "options": {
+                "title=": "$for.data",
+                "description=": "page.ubusList[page.method][$for.data]"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
-      "widget": "input",
-      "bind": "_.params",
-      "options": {
-        "title": "Parameters",
-        "description=": "JSON.stringify(ubusList([_.service])[_.service][_.method])"
-      }
+      "widget": "set-section",
+      "options": { "title": "Transforms" },
+      "content": [
+        {
+          "widget": "set-input",
+          "bind": "page.path",
+          "options": {
+            "title": "jsonPath filter",
+            "description": "Transformation to apply to result"
+          }
+        },
+        {
+          "widget": "set-input",
+          "bind": "page.errorVal",
+          "options": {
+            "title": "error values",
+            "description": "Transformation to apply to error codes"
+          },
+          "events": {
+            "onValidate": "$value && typeof eval($value, {})!=='object' && `Must be a valid 'object'`"
+          }
+        },
+        {
+          "widget": "set-button",
+          "options": {
+            "title": "Ubus call",
+            "buttonTitle": "Execute",
+            "disabled=": "!pageContext.$form.valid",
+            "description=": [
+              "!pageContext.$form.valid ? '' : ",
+              "`ubus('${page.service}', '${page.method}' ${page.params ? ",
+              "`, ${JSON.stringify(page.params)}` : page.errorVal ? ', undefined' : '' }${",
+              "page.path  ? `, '${page.path}'` :  page.errorVal ? `, ${page.path}` : ''}${",
+              "eval(page.errorVal,{}) ? `, ${JSON.stringify(eval(page.errorVal,{}))}` : ''})`"
+            ]
+          },
+          "events": {
+            "onClick": [
+              "page.result = ubus(page.service, page.method, ",
+              "  page.params || {}, ",
+              "  page.path, page.errorVal && eval(page.errorVal, {}))"
+            ]
+          }
+        }
+      ]
     },
     {
-      "widget": "input",
-      "bind": "_.path",
-      "options": {
-        "title": "jsonPath filter",
-        "description": "Transformation to apply to result"
-      }
-    },
-    {
-      "widget": "input",
-      "bind": "_.errorVal",
-      "options": {
-        "title": "error values",
-        "description": "Transformation to apply to error codes"
-      }
-    },
-    {
-      "widget": "button",
-      "options": { "title": "Execute" },
-      "events": {
-        "onClick": [
-          "_.result = ubus(_.service, _.method, ",
-          "  _.params.trim() ? JSON.parse(_.params) : {}, ",
-          "  _.path, _.errorVal && JSON.parse(_.errorVal))"
-        ]
-      }
-    },
-    {
-      "widget": "code",
-      "options": {
-        "text=": [
-          "`ubus('${_.service}', '${_.method}', ${",
-          "JSON.stringify(JSON.parse(_.params.trim()) || {})}${",
-          "_.path  ? `, '${_.path}'` :  _.errorVal ? `, ${_.path}` : ''}${",
-          "_.errorVal ? `, ${JSON.stringify(JSON.parse(_.errorVal))}` : ''})`"
-        ]
-      }
-    },
-    {
-      "widget": "code",
-      "options": {
-        "text=": "JSON.stringify(_.result, null, 4)"
-      }
+      "widget": "set-section",
+      "options": { "title": "Result" },
+      "content": [
+        {
+          "widget": "code",
+          "options": {
+            "text=": "JSON.stringify(page.result, null, 4)"
+          }
+        }
+      ]
     }
   ]
 }
