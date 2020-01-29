@@ -36,7 +36,7 @@ export class UciModel2 {
     if (configName in this.configs) return of(this.configs[configName]);
 
     return this._uci.getConfig(configName).pipe(
-      map(([data, schema]: [IUciConfigData, any]) => {
+      map(([data, schema]: [IUciConfigData, SchemaObject]) => {
         this.schemas[configName] = schema;
         this.reactiveConfig(data, configName);
         return this.configs[configName];

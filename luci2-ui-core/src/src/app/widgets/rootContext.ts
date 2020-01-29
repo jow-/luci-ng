@@ -59,15 +59,13 @@ export function rootContextFactory(
       console,
       ubus: ubus.callFactory(),
       ubusList: ubus.list.bind(ubus),
-      map: expr.mapFactory(),
-      reduce: expr.reduceFactory(),
       uci: { configs: uci.configs, loadConfig: uci.loadConfig.bind(uci) },
       cgi,
       $user: ubus.user,
       jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values,
       load: (url: string) => http.get(url).pipe(catchError(() => of(undefined))),
       snackbar(message: string, action: string, onAction: string): true {
-        // use 'funtion' to have 'this' as the calling context
+        // use 'function' to have 'this' as the calling context
 
         const snack = snackbar.open(message, action, { duration: 5000 });
         if (onAction)
@@ -85,7 +83,7 @@ export function rootContextFactory(
         cancelLabel?: string | boolean,
         okLabel?: string
       ): Observable<boolean> {
-        // use 'funtion' to have 'this' as the calling context
+        // use 'function' to have 'this' as the calling context
         if (!okLabel) okLabel = 'OK';
         if (cancelLabel === true) cancelLabel = 'Cancel';
 
@@ -152,6 +150,17 @@ export function rootContextFactory(
               : buildUI(schema, `uci.configs.${config}`);
           })
         );
+      },
+      eval(expression: string, context?: object): any {
+        // evaluate in provided context or in the context of the call
+        let result: any;
+        try {
+          result = expr.eval(expression, context || this); // tslint:disable-line: no-invalid-this
+        } catch (e) {
+          return undefined;
+        }
+
+        return result;
       },
     },
     undefined,
