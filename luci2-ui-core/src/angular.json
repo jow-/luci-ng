@@ -45,6 +45,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "baseHref": "/luci-ng/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

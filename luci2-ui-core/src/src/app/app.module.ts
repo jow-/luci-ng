@@ -35,7 +35,7 @@ import { WidgetsModule } from './widgets';
           canActivate: [MenuGuardService],
         },
       ],
-      { enableTracing: false, useHash: true }
+      { enableTracing: false, useHash: false }
     ),
     WidgetsModule,
   ],
