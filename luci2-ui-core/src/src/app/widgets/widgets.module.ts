@@ -16,13 +16,11 @@ import {
 
 import { PopupDialogComponent } from './popup/popup.component';
 import { rootContextProvider } from './rootContext';
-import { StatusModule } from './status/status.module';
 
 /** Module containing all Widget components */
 @NgModule({
   imports: [
     MaterialModule,
-    StatusModule,
     CommonWidgetsModule,
     FormFieldWidgetsModule,
     SettingsWidgetsModule,
