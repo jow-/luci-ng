@@ -1,0 +1,70 @@
+{
+  "widget": "set-page",
+  "events": {
+    "onSetup": "$parentContext.pageContext = this, $parentContext.page = $, $.address = 'openwrt.org', $.utility = 'ping', $.protocol='IPv4'"
+  },
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "Network Utilities" },
+      "content": [
+        {
+          "widget": "set-input",
+          "bind": "page.address",
+          "options": {
+            "title": "Test address",
+            "required": true,
+            "default": "openwrt.org",
+            "format": "hostname"
+          }
+        },
+        {
+          "widget": "set-select",
+          "bind": "page.utility",
+          "options": {
+            "title": "Utility",
+            "enum": ["ping", "traceroute", "nslookup"],
+            "default": "ping"
+          }
+        },
+        {
+          "widget": "set-select",
+          "if": "page.utility !== 'nslookup'",
+          "bind": "page.protocol",
+          "options": { "title": "Protocol", "enum": ["IPv4", "IPv6"], "default": "IPv4" }
+        },
+        {
+          "widget": "set-button",
+          "options": {
+            "title=": "`Command: ${page.utility} ${page.address}`",
+            "buttonTitle": "Run",
+            "disabled=": "!pageContext.$form.valid",
+            "spinner=": "page.loading"
+          },
+          "events": {
+            "onClick": [
+              "(page.loading = true) && ",
+              "(page.result = ubus('luci2.network', `${page.utility}${page.utility !== 'nslookup' && page.protocol === 'IPv6' ? '6' : ''}`, {data: page.address})) ",
+              " && (page.loading = false)"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Result" },
+      "content": [
+        {
+          "widget": "code",
+          "options": {
+            "text=": [
+              "`${page.result && page.result.stdout ? page.result.stdout : '' }",
+              "${page.result && page.result.stderr ?  page.result.stderr :''}`"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "widget": "set-page",
-  "if": "uciLoad('network') && (ifs = ubus('network.interface','dump').interface)",
+  "if": "uciLoad('network') && uciLoad('dhcp') && (ifs = ubus('network.interface','dump').interface)",
 
   "content": [
     {
@@ -13,33 +13,74 @@
       "options": { "title": "Interfaces" },
       "content": [
         {
-          "widget": "set-link",
-          "for": "uci.network['@interface'].filter( e => e['.name'] != 'loopback')",
-          "events": {
-            "onSetup": [
-              "$parentContext.ifd = ifs.find( e => e.interface === $for.data['.name'])"
+          "widget": "set-rowarray",
+          "bind": "uci.network['@interface']",
+
+          "options": {
+            "actions": [
+              { "icon": "reload", "label": "Restart", "data": "restart" },
+              { "icon": "stop", "label": "Stop", "data": "stop" }
             ]
           },
-          "options": {
-            "title=": "`${$for.data['.name'].toUpperCase()} - ${ifd.up ? 'up': 'down'}`",
-            "description=": [
-              "`IPv4 ${ifd['ipv4-address'][0].address}/${ifd['ipv4-address'][0].mask}${",
-              "ifd['ipv4-address'].length>1 ? ` +${ifd['ipv4-address'].length-1}` : '' }`"
-            ],
-            "link=": "`network/interfaces/${$for.data['.name']}`"
-          }
+          "events": {
+            "onDeleteRow": "true",
+            "onAction": "popup($row.data)",
+            "onNewRow": "{ '.name': 'newInterface' }"
+          },
+          "content": [
+            {
+              "widget": "set-link",
+              "events": {
+                "onSetup": [
+                  "$parentContext.ifd = ifs.find( e => e.interface === $row.data['.name'])"
+                ]
+              },
+              "options": {
+                "title=": "`${$row.data['.name'].toUpperCase()} - ${ifd.up ? 'up': 'down'}`",
+                "description=": [
+                  "`IPv4 ${ifd['ipv4-address'][0].address}/${ifd['ipv4-address'][0].mask}${",
+                  "ifd['ipv4-address'].length>1 ? ` +${ifd['ipv4-address'].length-1}` : '' }`"
+                ],
+                "link=": "`network/interfaces/${$row.index}`"
+              }
+            }
+          ]
         }
       ]
     },
     {
       "widget": "set-section",
-      "options": { "title": "Devices" },
-      "content": ["uciUI('network','@device')"]
+      "options": { "title": "DHCP & DNS" },
+      "content": ["uciUI('dhcp', '@dnsmasq', 0, {wrapForm: true})"]
     },
     {
       "widget": "set-section",
-      "options": { "title": "DHCP & DNS" },
-      "content": ["uciUI('dhcp', '@dnsmasq', 0, {wrapForm: true})"]
+      "options": { "title": "Hostnames" },
+      "content": [
+        {
+          "widget": "set-rowarray",
+          "bind": "uci.dhcp['@domain']",
+          "events": { "onNewRow": "{name: 'NewHost'}", "onDeleteRow": "true" },
+
+          "content": [
+            {
+              "widget": "set-expansion",
+              "options": { "title=": "$row.data.name", "description=": "$row.data.ip" },
+              "content": ["uciUI('dhcp', '@domain', $row.index)"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Static IPv4 Routes" },
+      "content": ["uciUI('network','@route')"]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Static IPv6 Routes" },
+      "content": ["uciUI('network','@route6')"]
     }
   ]
 }

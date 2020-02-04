@@ -1,22 +1,14 @@
 {
-  "widget": "set-page",
-  "if": "uciLoad('network') && (ifc = ubus('network.interface','dump').interface)",
+  "widget": "set-subpage",
+  "if": "uciLoad('network')",
 
   "content": [
     {
       "widget": "set-section",
-      "options": { "title": "Global" },
-      "content": ["uciUI('network','@globals', 0)"]
-    },
-    {
-      "widget": "set-section",
-      "options": { "title": "Interfaces" },
-      "content": ["uciUI('network','@interface')"]
-    },
-    {
-      "widget": "set-section",
-      "options": { "title": "Devices" },
-      "content": ["uciUI('network','@device')"]
+      "options": {
+        "title=": "`Interface ${uci.network['@interface'][parseInt($routeParam.id)]['.name'].toUpperCase()}`"
+      },
+      "content": ["uciUI('network','@interface', parseInt($routeParam.id))"]
     }
   ]
 }

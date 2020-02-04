@@ -93,29 +93,34 @@
       "type": "array",
       "items": {
         "type": "object",
+        "ui": {
+          "include": [["interface", "target", "netmask", "gateway"], ["*"]],
+          "titles": ["General", "Advanced"]
+        },
         "properties": {
           "interface": {
             "type": "string",
             "title": "Interface",
-            "description": "Specifies the logical interface name of the parent (or master) interface this route belongs to; must refer to one of the defined interface sections"
+            "required": true,
+            "enum=": "jsonPath(uci.network['@interface'],`$[?(@['.name']!='loopback')]['.name']`)"
           },
           "target": {
             "type": "string",
-            "format": "ip4addr",
+            "format": "ipv4",
             "title": "Target",
-            "description": "Network address"
+            "description": "Host IP or network"
           },
           "netmask": {
             "type": "string",
-            "format": "ip4addr",
+            "format": "netmask4",
             "title": "Netmask",
-            "description": "Route netmask. If omitted, 255.255.255.255 is assumed which makes target a host address"
+            "description": "If target is a network"
           },
           "gateway": {
             "type": "string",
-            "format": "ip4addr",
+            "format": "ipv4",
             "title": "Gateway",
-            "description": "Network gateway. If omitted, the gateway from the parent interface is taken; if set to 0.0.0.0 no gateway will be specified for the route"
+            "description": "If omitted, the gateway from the parent interface is taken; if set to 0.0.0.0 no gateway will be specified for the route"
           },
           "metric": {
             "type": "integer",
@@ -134,18 +139,18 @@
           "table": {
             "type": "string",
             "title": "Routing table",
-            "description": "Defines the table ID to use for the route. The ID can be either a numeric table index ranging from 0 to 65535 or a symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
+            "description": "Numeric table index or symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
           },
           "source": {
             "type": "string",
-            "format": "ip4addr",
+            "format": "ipv4",
             "title": "Source Address",
             "description": "The preferred source address when sending to destinations covered by the target"
           },
           "onlink": {
             "type": "boolean",
-            "title": "",
-            "description": "When enabled gateway is on link even if the gateway does not match any interface prefix (Barrier Breaker and later only)"
+            "title": "On-Link Route",
+            "description": "Gateway is on link even if the gateway does not match any interface prefix."
           },
           "type": {
             "type": "string",
@@ -165,10 +170,14 @@
     },
 
     "@route6": {
-      "title": "Static IPvg routes",
+      "title": "Static IPv6 Routes",
       "type": "array",
       "items": {
         "type": "object",
+        "ui": {
+          "include": [["interface", "target", "gateway"], ["*"]],
+          "titles": ["General", "Advanced"]
+        },
         "properties": {
           "interface": {
             "type": "string",
@@ -177,13 +186,13 @@
           },
           "target": {
             "type": "string",
-            "format": "ip6addr",
+            "format": "ipv6",
             "title": "Target",
             "description": "Network address"
           },
           "gateway": {
             "type": "string",
-            "format": "ip6addr",
+            "format": "ipv6",
             "title": "Gateway",
             "description": "Network gateway. If omitted, the gateway from the parent interface is taken; if set to 0.0.0.0 no gateway will be specified for the route"
           },
@@ -208,7 +217,7 @@
           },
           "source": {
             "type": "string",
-            "format": "ip4addr",
+            "format": "ipv4",
             "title": "Source Address",
             "description": "The preferred source address when sending to destinations covered by the target"
           },
