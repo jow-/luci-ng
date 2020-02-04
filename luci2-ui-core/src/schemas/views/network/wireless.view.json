@@ -1,6 +1,6 @@
 {
   "widget": "set-page",
-  "if": "uci.loadConfig('network') && (ifs = ubus('network.interface','dump').interface)",
+  "if": "uciLoad('network') && (ifs = ubus('network.interface','dump').interface)",
 
   "content": [
     {
@@ -14,7 +14,7 @@
       "content": [
         {
           "widget": "set-link",
-          "for": "uci.configs.network['@interface'].filter( e => e['.name'] != 'loopback')",
+          "for": "uci.network['@interface'].filter( e => e['.name'] != 'loopback')",
           "events": {
             "onSetup": [
               "$parentContext.ifd = ifs.find( e => e.interface === $for.data['.name'])"
@@ -35,6 +35,11 @@
       "widget": "set-section",
       "options": { "title": "Devices" },
       "content": ["uciUI('network','@device')"]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "DHCP & DNS" },
+      "content": ["uciUI('dhcp', '@dnsmasq', 0, {wrapForm: true})"]
     }
   ]
 }

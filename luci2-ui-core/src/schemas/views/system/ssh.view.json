@@ -1,6 +1,6 @@
 {
   "widget": "set-subpage",
-  "if": "uci.loadConfig('dropbear')",
+  "if": "uciLoad('dropbear')",
   "options": { "title": "SSH Instance" },
   "content": [
     {

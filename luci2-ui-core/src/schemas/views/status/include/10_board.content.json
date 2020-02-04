@@ -13,23 +13,13 @@
         "widget": "table",
         "options": {
           "columns": ["title", "value"],
-          "dataSource": [
-            {
-              "title": "Hostname",
-              "value=": "board.hostname"
-            },
-            {
-              "title": "Kernel",
-              "value=": "board.kernel"
-            },
-            {
-              "title": "System",
-              "value=": "board.system"
-            },
-            {
-              "title": "Target",
-              "value=": "board.release.target"
-            }
+          "dataSource=": [
+            "[",
+            "{title: 'Hostname', value: board.hostname},",
+            "{title: 'Kernel', value: board.kernel},",
+            "{title: 'System', value: board.system},",
+            "{title: 'Target', value: board.release.target}",
+            "]"
           ]
         }
       }

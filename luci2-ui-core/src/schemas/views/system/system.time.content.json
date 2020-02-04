@@ -18,7 +18,7 @@
 
   {
     "widget": "set-expansion",
-    "bind": "uci.configs.system['@timeserver'][0]",
+    "bind": "uci.system['@timeserver'][0]",
     "if": "ubus('file','stat', {path: '/usr/sbin/ntpd'}, { 0: null })",
     "options": {
       "title": "Time Synchronization",

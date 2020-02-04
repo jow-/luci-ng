@@ -59,7 +59,8 @@ export function rootContextFactory(
       console,
       ubus: ubus.callFactory(),
       ubusList: ubus.list.bind(ubus),
-      uci: { configs: uci.configs, loadConfig: uci.loadConfig.bind(uci) },
+      uci: uci.configs,
+      uciLoad: uci.loadConfig.bind(uci),
       cgi,
       $user: ubus.user,
       jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values,
@@ -136,18 +137,18 @@ export function rootContextFactory(
               schema = (<SchemaArray>schema).items;
 
               if (opt.wrapForm)
-                return buildUI(schema, `uci.configs.${config}['${type}'][${section}]`);
+                return buildUI(schema, `uci.${config}['${type}'][${section}]`);
               else
                 return opt.include!.map(key =>
                   buildUI(
                     schema.properties[key],
-                    `uci.configs.${config}['${type}'][${section}].${key}`
+                    `uci.${config}['${type}'][${section}].${key}`
                   )
                 );
             }
             return type
-              ? buildUI(schema, `uci.configs.${config}['${type}']`)
-              : buildUI(schema, `uci.configs.${config}`);
+              ? buildUI(schema, `uci.${config}['${type}']`)
+              : buildUI(schema, `uci.${config}`);
           })
         );
       },

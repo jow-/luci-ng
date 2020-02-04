@@ -1,8 +1,11 @@
 [
   {
     "widget": "set-rowarray",
-    "bind": "uci.configs.dropbear['@dropbear']",
-    "events": { "onNewRow": "{}" },
+    "bind": "uci.dropbear['@dropbear']",
+    "events": {
+      "onNewRow": "{}",
+      "onDeleteRow": "popupMsg('Are you sure you want to delete this instance?', true)"
+    },
     "content": [
       {
         "widget": "set-expansion",

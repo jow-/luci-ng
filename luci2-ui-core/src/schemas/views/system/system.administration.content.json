@@ -10,10 +10,10 @@
   },
   {
     "widget": "set-expansion",
-    "if": "ubus('file', 'stat', {path:'/etc/config/dropbear'}, { 0: null } ) && uci.loadConfig('dropbear')",
+    "if": "ubus('file', 'stat', {path:'/etc/config/dropbear'}, { 0: null } ) && uciLoad('dropbear')",
     "options": {
       "title": "SSH Access",
-      "description=": "`${uci.configs.dropbear['@dropbear'].length} instances`"
+      "description=": "`${uci.dropbear['@dropbear'].length} instances`"
     },
     "content": ["load('views/system/system.dropbear.content.json')"]
   },
