@@ -11,6 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -31,11 +32,19 @@
               "src/assets",
               "src/favicon.ico"
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -76,7 +85,9 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["src/tsconfig.app.json"],
+            "tsConfig": [
+              "src/tsconfig.app.json"
+            ],
             "exclude": []
           }
         }
@@ -104,5 +115,8 @@
       "flat": true,
       "spec": false
     }
+  },
+  "cli": {
+    "analytics": "21704fb9-e93d-448b-9f1d-07e9a5af15b1"
   }
 }
