@@ -30,11 +30,10 @@
                 "output": "/views"
               },
               "src/assets",
-              "src/favicon.ico"
+              "src/favicon.ico",
+              "src/legacy.js"
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -85,9 +84,7 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json"
-            ],
+            "tsConfig": ["src/tsconfig.app.json"],
             "exclude": []
           }
         }

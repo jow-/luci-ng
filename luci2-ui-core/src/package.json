@@ -29,7 +29,6 @@
     "@angular/forms": "^9.0.0",
     "@angular/material": "^9.0.0",
     "@angular/platform-browser": "^9.0.0",
-    "@angular/platform-browser-dynamic": "^9.0.0",
     "@angular/router": "^9.0.0",
     "core-js": "^3.6.4",
     "espression": "^1.4.0",

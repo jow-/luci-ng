@@ -2,3 +2,10 @@
 
 // Include custom Material theming.
 @import './styles/main.scss';
+
+// style for the legacy error message
+#legacy {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 24px;
+}
