@@ -42,7 +42,7 @@
       "content": [
         {
           "widget": "set-container",
-          "for": "Object.keys(page.ubusList && page.ubusList[page.method] || {}) ",
+          "for": "Object.keys(page.ubusList && page.ubusList[page.method] || {}).filter(m => m!='ubus_rpc_session')",
           "content": [
             {
               "widget": "set-input",
