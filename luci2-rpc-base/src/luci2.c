@@ -36,6 +36,7 @@
 #include <libubox/avl-cmp.h>
 #include <libubus.h>
 #include <uci.h>
+#include <json-c/json.h>
 
 #include <rpcd/plugin.h>
 
@@ -153,6 +154,14 @@ static const struct blobmsg_policy rpc_switch_policy[__RPC_SWITCH_MAX] = {
 	[RPC_SWITCH_NAME]  = { .name = "switch",  .type = BLOBMSG_TYPE_STRING },
 };
 
+enum {
+	RPC_read_json_GLOB,
+	__RPC_read_json_MAX
+};
+
+static const struct blobmsg_policy rpc_read_json_policy[__RPC_read_json_MAX] = {
+	[RPC_SWITCH_NAME]  = { .name = "glob",  .type = BLOBMSG_TYPE_STRING },
+};
 
 static int
 rpc_errno_status(void)
@@ -2890,6 +2899,76 @@ rpc_luci2_ui_crypt(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
+static bool 
+add_json_file(struct blob_buf *b,  const char *name, const char *file)
+{
+	struct json_object *obj;
+	bool ret;
+	
+	obj = json_object_from_file(file);
+
+	if (!obj)
+		return false;
+
+	ret = blobmsg_add_json_element(b, name, obj);
+
+	json_object_put(obj);
+	return ret;
+}
+
+static int
+rpc_luci2_file_read_json(struct ubus_context *ctx, struct ubus_object *obj,
+                  struct ubus_request_data *req, const char *method,
+                  struct blob_attr *msg)
+{
+	int i;
+	struct blob_buf files = { 0 };
+	struct blob_buf errors = { 0 };
+	glob_t gl;
+	struct blob_attr *tb[__RPC_read_json_MAX];
+	void *b;
+
+	blobmsg_parse(rpc_read_json_policy, __RPC_read_json_MAX, tb,
+	              blob_data(msg), blob_len(msg));
+
+	if (!tb[RPC_read_json_GLOB])
+		return UBUS_STATUS_INVALID_ARGUMENT;
+
+
+	blob_buf_init(&buf, 0);
+	blobmsg_add_string(&buf, "glob", blobmsg_get_string(tb[RPC_read_json_GLOB]));
+	b = blobmsg_open_array(&buf, "content");
+
+	blob_buf_init(&files, 0);
+	blobmsg_open_array(&files, "files");
+
+	blob_buf_init(&errors, 0);
+	blobmsg_open_array(&errors, "errors");
+
+	if (!glob(blobmsg_get_string(tb[RPC_read_json_GLOB]), 0, NULL, &gl))
+	{
+		for (i = 0; i < gl.gl_pathc; i++)
+		{
+			if(add_json_file(&buf, NULL, gl.gl_pathv[i])) 
+				blobmsg_add_string(&files, NULL, gl.gl_pathv[i]);
+			else
+				blobmsg_add_string(&errors, NULL, gl.gl_pathv[i]);
+		}
+
+		globfree(&gl);
+	}
+	
+	blobmsg_close_array(&buf, b);
+
+	blobmsg_add_blob(&buf, files.head);
+	blob_buf_free(&files);
+
+	blobmsg_add_blob(&buf, errors.head);
+	blob_buf_free(&errors);
+
+	ubus_send_reply(ctx, req, buf.head);
+	return 0;
+}
 
 static int
 rpc_luci2_api_init(const struct rpc_daemon_ops *o, struct ubus_context *ctx)
@@ -3034,6 +3113,21 @@ rpc_luci2_api_init(const struct rpc_daemon_ops *o, struct ubus_context *ctx)
 		.n_methods = ARRAY_SIZE(luci2_ui_methods),
 	};
 
+	static const struct ubus_method luci2_file_methods[] = {
+		UBUS_METHOD("read_json",           rpc_luci2_file_read_json,
+		                                rpc_read_json_policy)
+	};
+
+	static struct ubus_object_type luci2_file_type =
+		UBUS_OBJECT_TYPE("luci-rpc-luci2-file", luci2_file_methods);
+
+	static struct ubus_object file_obj = {
+		.name = "luci2.file",
+		.type = &luci2_file_type,
+		.methods = luci2_file_methods,
+		.n_methods = ARRAY_SIZE(luci2_file_methods),
+	};
+
 	cursor = uci_alloc_context();
 
 	if (!cursor)
@@ -3045,6 +3139,7 @@ rpc_luci2_api_init(const struct rpc_daemon_ops *o, struct ubus_context *ctx)
 	rv |= ubus_add_object(ctx, &network_obj);
 	rv |= ubus_add_object(ctx, &opkg_obj);
 	rv |= ubus_add_object(ctx, &ui_obj);
+	rv |= ubus_add_object(ctx, &file_obj);
 
 	return rv;
 }

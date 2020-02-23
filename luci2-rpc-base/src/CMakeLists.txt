@@ -16,8 +16,10 @@ IF(crypt STREQUAL "LIBS-NOTFOUND")
   SET(crypt "")
 ENDIF()
 
+find_library(json NAMES json-c)
+
 ADD_LIBRARY(luci2-rpc-base MODULE luci2.c)
-TARGET_LINK_LIBRARIES(luci2-rpc-base ubox ubus ${crypt})
+TARGET_LINK_LIBRARIES(luci2-rpc-base ubox ubus ${json} ${crypt})
 SET_TARGET_PROPERTIES(luci2-rpc-base PROPERTIES OUTPUT_NAME luci2 PREFIX "")
 
 INSTALL(TARGETS luci2-rpc-base LIBRARY DESTINATION lib)
