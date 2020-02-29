@@ -6,7 +6,7 @@
       "description": "Changes the administrator password for accessing the device",
       "popupTitle": "Change Password"
     },
-    "content": ["load('views/system/system.psw.content.json')"]
+    "content": ["loadView('system/system.psw.content.json')"]
   },
   {
     "widget": "set-expansion",
@@ -15,7 +15,7 @@
       "title": "SSH Access",
       "description=": "`${uci.dropbear['@dropbear'].length} instances`"
     },
-    "content": ["load('views/system/system.dropbear.content.json')"]
+    "content": ["loadView('system/system.dropbear.content.json')"]
   },
   {
     "widget": "set-button",

@@ -3,7 +3,6 @@
  * Licensed under the MIT license.
  */
 
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -23,18 +22,23 @@ import { IUciConfigData } from './config.interface';
   providedIn: 'root',
 })
 export class UciService {
-  constructor(private _ubus: UbusService, private _http: HttpClient) {}
+  constructor(private _ubus: UbusService) {}
 
   getConfig(config: string): Observable<[IUciConfigData, any]> {
     return forkJoin([
       this._ubus
         .call<IUciConfigData>('uci', 'get', { config })
         .pipe(map(r => (r && r.values) || {})),
-      this._http.get<{}>(`schemas/${config}.json`).pipe(
-        debug('schema get'),
-        catchError(() => of({})),
-        debug('schema')
-      ),
+      this._ubus
+        .call<{ content: any[] }>('luci2.file', 'read_json', {
+          glob: `/usr/share/rpcd/luci2/uci/${config}.json`,
+        })
+        .pipe(
+          map(res => res?.content[0]),
+          debug('schema get'),
+          catchError(() => of({})),
+          debug('schema')
+        ),
     ]).pipe(debug('forkJoin UCI'));
   }
 

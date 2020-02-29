@@ -6,7 +6,7 @@
       "description": "Flash new firmware image",
       "popupTitle": "Flash"
     },
-    "content": ["load('views/system/system.firmware.content.json')"]
+    "content": ["loadView('system/system.firmware.content.json')"]
   },
   {
     "widget": "set-button",
@@ -41,7 +41,7 @@
           "description": "Upload a previously generated backup archive",
           "popupTitle": "Restore Backup"
         },
-        "content": ["load('views/system/system.restore.content.json')"]
+        "content": ["loadView('system/system.restore.content.json')"]
       },
       {
         "widget": "set-button",

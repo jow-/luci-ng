@@ -175,6 +175,11 @@ export class UbusService implements ILogin {
     );
   }
 
+  loadView(glob: string): Observable<[]> {
+    return this.call('luci2.file', 'read_json', {
+      glob: `/usr/share/rpcd/luci2/views/${glob}`,
+    }).pipe(map((res: any) => res?.content || []));
+  }
   callFactory(): (
     service: string,
     method: string,

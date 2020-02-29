@@ -65,6 +65,14 @@ export function rootContextFactory(
       $user: ubus.user,
       jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values,
       load: (url: string) => http.get(url).pipe(catchError(() => of(undefined))),
+      loadView: (glob: string) =>
+        ubus
+          .loadView(glob)
+          .pipe(
+            map((c: any[]) =>
+              c.reduce((ac, e) => (Array.isArray(e) ? ac.concat(...e) : ac.concat(e)), [])
+            )
+          ),
       snackbar(message: string, action: string, onAction: string): true {
         // use 'function' to have 'this' as the calling context
 

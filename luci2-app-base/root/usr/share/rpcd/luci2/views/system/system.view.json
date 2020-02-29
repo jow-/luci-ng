@@ -10,17 +10,17 @@
     {
       "widget": "set-section",
       "options": { "title": "Time & Date" },
-      "content": ["load('views/system/system.time.content.json')"]
+      "content": ["loadView('system/system.time.content.json')"]
     },
     {
       "widget": "set-section",
       "options": { "title": "Administration" },
-      "content": ["load('views/system/system.administration.content.json')"]
+      "content": ["loadView('system/system.administration.content.json')"]
     },
     {
       "widget": "set-section",
       "options": { "title": "Backup & Upgrade" },
-      "content": ["load('views/system/system.backup.content.json')"]
+      "content": ["loadView('system/system.backup.content.json')"]
     },
     {
       "widget": "set-section",
@@ -61,7 +61,7 @@
         {
           "widget": "set-section",
           "options": { "title": "Logging" },
-          "content": ["load('views/system/system.logging.content.json')"]
+          "content": ["loadView('system/system.logging.content.json')"]
         },
         {
           "widget": "set-section",
