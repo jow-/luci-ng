@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "luci-ng2": {
+    "luci2": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -53,7 +53,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "baseHref": "/luci-ng/",
+              "baseHref": "/luci2/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -66,19 +66,19 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "luci-ng2:build",
+            "browserTarget": "luci2:build",
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "browserTarget": "luci-ng2:build:production"
+              "browserTarget": "luci2:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "luci-ng2:build"
+            "browserTarget": "luci2:build"
           }
         },
         "lint": {
@@ -90,13 +90,13 @@
         }
       }
     },
-    "luci-ng2-e2e": {
+    "luci2-e2e": {
       "root": "",
       "sourceRoot": "e2e",
       "projectType": "application"
     }
   },
-  "defaultProject": "luci-ng2",
+  "defaultProject": "luci2",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "dyn",

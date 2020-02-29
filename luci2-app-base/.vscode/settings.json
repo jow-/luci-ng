@@ -1,0 +1,29 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "editor.tabSize": 2,
+  "json.schemas": [
+    {
+      "fileMatch": ["/root/usr/share/rpcd/luci2/views/**/*.view.json"],
+      "url": "../luci2-ui-core/src/out/widgetschema/widgets.json"
+    },
+    {
+      "fileMatch": ["/root/usr/share/rpcd/luci2/views/**/*.content.json"],
+      "url": "../luci2-ui-core/src/out/widgetschema/widgets.content.json"
+    },
+    {
+      "fileMatch": ["/root/usr/share/rpcd/luci2/uci/*.json"],
+      "url": "../luci2-ui-core/src/src/uci.schema.json"
+    }
+  ],
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "**/.hg": true,
+    "**/.svn": true,
+    "**/CVS": true,
+    "src/rx-json-ui": true
+  },
+  "spellright.language": ["en"],
+  "spellright.documentTypes": ["markdown", "latex", "typescript"],
+  "editor.formatOnSave": true
+}
