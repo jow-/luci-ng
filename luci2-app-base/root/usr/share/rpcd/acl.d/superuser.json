@@ -1,0 +1,21 @@
+{
+  "superuser": {
+    "description": "Super user access role",
+    "read": {
+      "ubus": { "*": ["*"] },
+      "uci": ["*"],
+      "file": {
+        "/": ["read"],
+        "/*": ["read"]
+      }
+    },
+    "write": {
+      "ubus": { "*": ["*"] },
+      "uci": ["*"],
+      "file": {
+        "/": ["write"],
+        "/*": ["write"]
+      }
+    }
+  }
+}

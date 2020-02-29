@@ -5,7 +5,7 @@
     {
       "widget": "set-section",
       "content": [
-        "load('views/status/include/10_board.content.json')",
+        "loadView('status/include/10_board.content.json')",
         {
           "widget": "set-level",
           "options": {
