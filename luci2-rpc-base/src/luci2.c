@@ -45,7 +45,7 @@
 #define RPC_LUCI2_DEF_LOGSIZE       (16 * 1024)
 
 /* location of menu definitions */
-#define RPC_LUCI2_MENU_FILES        "/usr/share/rpcd/menu.d/*.json" /* */
+#define RPC_LUCI2_MENU_FILES        "/usr/share/rpcd/luci2/routes/*.json" /* */
 
 
 static const struct rpc_daemon_ops *ops;
