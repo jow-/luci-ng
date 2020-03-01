@@ -34,7 +34,7 @@
     "espression": "^1.4.0",
     "espression-jsonpath": "^0.1",
     "espression-rx": "^0.3.2",
-    "rx-json-ui": "0.0.3",
+    "rx-json-ui": "0.0.4",
     "rxjs": "^6.5.4",
     "tslib": "^1.10.0",
     "web-animations-js": "^2.3.2",
@@ -49,7 +49,7 @@
     "husky": "^4.2.1",
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1",
-    "rx-json-ui-cli": "0.0.6",
+    "rx-json-ui-cli": "0.0.7",
     "tslint": "^5.20.1",
     "typescript": "~3.7.5"
   }
