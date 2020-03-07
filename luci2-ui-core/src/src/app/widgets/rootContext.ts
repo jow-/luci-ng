@@ -15,6 +15,7 @@ import {
   Context,
   ESpression,
   Expressions,
+  formatDuration,
   ROOT_EXPR_CONTEXT,
   SchemaArray,
 } from 'rx-json-ui';
@@ -171,6 +172,7 @@ export function rootContextFactory(
 
         return result;
       },
+      formatDuration,
     },
     undefined,
     true

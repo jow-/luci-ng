@@ -10,8 +10,8 @@
     "lint": "ng lint --type-check && prettier -l \"src/**/*.{ts,scss,css,html,json}\" ",
     "lint-fix": "ng lint --type-check --fix && prettier --write \"src/**/*.{ts,scss,css,html,json}\" ",
     "publish": "ssh root@35.208.122.24 -p 8022 'rm -rf /www/luci-ng/*' && scp -r -P 8022 dist/* root@35.208.122.24:/www/luci-ng/",
-    "gen-schema": "rm -rf dist/widgetschema && rx-json-ui g -p ./src/tsconfig.app.json -m app/app.module#AppModule dist/widgetschema",
-    "lint-views": "rx-json-ui l -s dist/widgetschema/widgets.json schemas/views/**/*.view.json && rx-json-ui l -s dist/widgetschema/widgets.content.json schemas/views/**/*.content.json && rx-json-ui l -s schemas/metaschema.json schemas/uci/*.json",
+    "gen-schema": "rm -rf out/widgetschema && rx-json-ui g -p ./src/tsconfig.app.json -m app/app.module#AppModule out/widgetschema",
+    "lint-views": "rx-json-ui l -s out/widgetschema/widgets.json schemas/views/**/*.view.json && rx-json-ui l -s out/widgetschema/widgets.content.json schemas/views/**/*.content.json && rx-json-ui l -s schemas/metaschema.json schemas/uci/*.json",
     "openwrt": "docker start openwrt || docker run -d --privileged -p 9443:443 -p 9080:80 -p 9022:22 --name openwrt ianchi74/openwrt:luci2-rpc"
   },
   "husky": {
@@ -31,10 +31,10 @@
     "@angular/platform-browser": "^9.0.0",
     "@angular/router": "^9.0.0",
     "core-js": "^3.6.4",
-    "espression": "^1.4.0",
-    "espression-jsonpath": "^0.1",
-    "espression-rx": "^0.3.2",
-    "rx-json-ui": "0.0.4",
+    "espression": "^1.6.0",
+    "espression-jsonpath": "^0.1.3",
+    "espression-rx": "^0.3.6",
+    "rx-json-ui": "0.0.5",
     "rxjs": "^6.5.4",
     "tslib": "^1.10.0",
     "web-animations-js": "^2.3.2",
@@ -50,7 +50,7 @@
     "husky": "^4.2.1",
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1",
-    "rx-json-ui-cli": "0.0.7",
+    "rx-json-ui-cli": "0.0.8",
     "tslint": "^5.20.1",
     "typescript": "~3.7.5"
   }
