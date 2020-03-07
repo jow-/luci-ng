@@ -45,6 +45,7 @@
     "@angular/cli": "^9.0.1",
     "@angular/compiler-cli": "^9.0.0",
     "@angular/language-service": "^9.0.0",
+    "@mdi/angular-material": "^4.9.95",
     "codelyzer": "^5.1.2",
     "husky": "^4.2.1",
     "prettier": "^1.19.1",

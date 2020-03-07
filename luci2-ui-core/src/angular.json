@@ -20,14 +20,9 @@
             "preserveSymlinks": true,
             "assets": [
               {
-                "glob": "*.json",
-                "input": "schemas/uci",
-                "output": "/schemas"
-              },
-              {
-                "glob": "**/*.json",
-                "input": "schemas/views",
-                "output": "/views"
+                "glob": "mdi.svg",
+                "input": "./node_modules/@mdi/angular-material",
+                "output": "/assets/"
               },
               "src/assets",
               "src/favicon.ico",
