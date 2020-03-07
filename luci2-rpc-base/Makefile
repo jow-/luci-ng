@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci2-rpc-base
-PKG_VERSION:=20200221
+PKG_VERSION:=20200325
 PKG_MAINTAINER:=Jo-Philipp Wich <jow@openwrt.org>
 
 PKG_LICENSE:=Apache-2.0
@@ -27,7 +27,7 @@ define Package/luci2-rpc-base
   SECTION:=luci2
   CATEGORY:=LuCI2
   TITLE:=Base LuCI2 RPC calls
-  DEPENDS:=+rpcd +libubox +libubus +libjson-c
+  DEPENDS:=+rpcd +libubox +libubus +libuci +libjson-c +libblobmsg-json 
 endef
 
 
@@ -43,7 +43,7 @@ endef
 
 define Package/luci2-rpc-base/postinst
 #!/bin/sh
-killall -HUP rpcd 2>/dev/null
+/etc/init.d/rpcd restart
 exit 0
 endef
 

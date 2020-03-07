@@ -313,6 +313,13 @@ rpc_luci2_system_dmesg(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
+static unsigned long 
+kscale(unsigned long b, unsigned long bs)
+{
+	return (b * (unsigned long long) bs + 1024/2) / 1024;
+}
+
+
 static int
 rpc_luci2_system_diskfree(struct ubus_context *ctx, struct ubus_object *obj,
                           struct ubus_request_data *req, const char *method,
@@ -335,9 +342,13 @@ rpc_luci2_system_diskfree(struct ubus_context *ctx, struct ubus_object *obj,
 
 		c = blobmsg_open_table(&buf, fslist[i+1]);
 
-		blobmsg_add_u32(&buf, "total", s.f_blocks * s.f_frsize);
-		blobmsg_add_u32(&buf, "free",  s.f_bfree  * s.f_frsize);
-		blobmsg_add_u32(&buf, "used", (s.f_blocks - s.f_bfree) * s.f_frsize);
+		if (!s.f_frsize)
+			s.f_frsize = s.f_bsize;
+
+		blobmsg_add_u64(&buf, "total", kscale(s.f_blocks, s.f_frsize));
+		blobmsg_add_u64(&buf, "free",  kscale(s.f_bfree, s.f_frsize));
+		blobmsg_add_u64(&buf, "used", kscale(s.f_blocks - s.f_bfree, s.f_frsize));
+		blobmsg_add_u64(&buf, "avail", kscale(s.f_bavail, s.f_frsize));
 
 		blobmsg_close_table(&buf, c);
 	}
