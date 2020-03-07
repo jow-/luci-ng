@@ -1,0 +1,65 @@
+{
+  "widget": "set-section",
+  "options": { "title": "DHCP" },
+  "content": [
+    {
+      "widget": "set-level",
+      "if": "leases = ubus('luci2.network', 'dhcp_leases',  5000)",
+      "options": {
+        "title": "DHCP Leases",
+        "value=": "leases.leases.length",
+        "unit": "leased ip",
+        "format": "number:'1.0-0'",
+        "icon": "ip-network-outline",
+        "noGraph": true,
+        "noExpand=": "!leases.leases.length"
+      },
+      "content": [
+        {
+          "widget": "table",
+          "options": {
+            "columns": ["hostname", "ipaddr", "macaddr", "expires"],
+            "headers": {
+              "hostname": "Hostname",
+              "ipaddr": "IPaddr",
+              "macaddr": "MACaddr",
+              "expires": "Expires"
+            },
+            "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
+            "dataSource=": "leases.leases.map(row => (row.expires*=1000, row))"
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-level",
+      "if": "leases = ubus('luci2.network', 'dhcp6_leases',  5000)",
+      "options": {
+        "title": "DHCPv6 Leases",
+        "value=": "leases.leases.length",
+        "unit": "leased ip",
+        "format": "number:'1.0-0'",
+        "icon": "ip-network-outline",
+        "noGraph": true,
+        "noExpand=": "!leases.leases.length"
+      },
+      "content": [
+        {
+          "widget": "table",
+          "options": {
+            "columns": ["hostname", "ipaddr", "macaddr", "expires"],
+            "headers": {
+              "hostname": "Hostname",
+              "ipaddr": "IPaddr",
+              "macaddr": "MACaddr",
+              "expires": "Expires"
+            },
+            "colFormat": ["", "", "", "date:'d HH:mm:ss'"],
+            "actions": [],
+            "dataSource=": "leases.leases"
+          }
+        }
+      ]
+    }
+  ]
+}

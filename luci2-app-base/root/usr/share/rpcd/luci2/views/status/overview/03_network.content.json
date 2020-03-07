@@ -1,0 +1,91 @@
+{
+  "widget": "set-section",
+  "options": { "title": "Network" },
+  "if": [
+    "ifs=ubus('network.interface', 'dump' , {}, ",
+    "`$.interface[?(@.route.some(r => (r.target=='0.0.0.0'|| r.target=='::')  && r.mask==0 ))]`, 5000)"
+  ],
+  "content": [
+    {
+      "widget": "set-level",
+      "for": ["$trackBy= i => i.interface, ifs"],
+      "events": {
+        "onSetup": [
+          "$parentContext.ifc=ifs.find(i => i.interface == $for.data.interface),",
+          "$parentContext.ip = ifc['ipv4-address'].slice(0,1).concat(ifc['ipv6-address'].slice(0,1))",
+          ".map( a => `${a.address}/${a.mask}`).join(', ')"
+        ]
+      },
+      "options": {
+        "value=": "ifc.interface.toUpperCase()",
+        "unit=": "`Protocol: ${ifc.proto}`",
+        "title=": "`IP: ${ip}`",
+        "noGraph": true,
+        "icon": "wan"
+      },
+      "content": [
+        {
+          "widget": "set-text",
+          "for": "ifc['ipv4-address'].slice(1).concat(ifc['ipv6-address'].slice(1))",
+          "options": { "title=": "`${$for.data.address}/${$for.data.mask}`" }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Gateway",
+            "value=": "ifc.route.filter(r => (r.target=='0.0.0.0' || r.target=='::') && r.mask==0).map(r => r.nexthop).join(', ')"
+          }
+        },
+        {
+          "widget": "set-text",
+          "if": "ifc['ipv6-prefix'].length",
+          "options": {
+            "title": "Prefix Delegated",
+            "value=": "`${ifc['ipv6-prefix'][0].address}/${ifc['ipv6-prefix'][0].mask}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "if": "ifc['dns-server'].length",
+          "options": {
+            "title": "DNS Server",
+            "value=": "ifc['dns-server'].join(', ')"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Connected",
+            "value=": "formatDuration(ifc.uptime * 1000, 'd hh:mm:ss')",
+            "description=": "ifc.expires > -1 ? `Expires ${formatDuration(ifc.expires,'D hh:mm:ss')}` : ''"
+          }
+        },
+        {
+          "widget": "set-text",
+          "events": {
+            "onSetup": "$parentContext.dev = ubus('network.device', 'status', {name: ifc.device})"
+          },
+          "options": {
+            "title=": "`Device - ${dev.type}`",
+            "value=": "ifc.device",
+            "description=": "`MAC address: ${dev.macaddr}`"
+          }
+        }
+      ]
+    },
+
+    {
+      "widget": "set-level",
+      "if": "conntrack = ubus('luci2.network', 'conntrack_count',  2000)",
+
+      "options": {
+        "title": "Connection Tracking",
+        "value=": "conntrack.count",
+        "total=": "conntrack.limit",
+        "format": "number:'1.0-0'",
+        "unit": "active",
+        "icon": "link"
+      }
+    }
+  ]
+}

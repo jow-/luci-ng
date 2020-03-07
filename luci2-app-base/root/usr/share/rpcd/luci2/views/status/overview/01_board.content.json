@@ -1,0 +1,57 @@
+{
+  "widget": "set-section",
+  "options": { "title": "Board" },
+  "content": [
+    {
+      "widget": "set-level",
+      "if": "board = ubus('system','board')",
+      "options": {
+        "value=": "board.model",
+        "title=": "board.release.description",
+        "icon": "information-variant",
+        "noGraph": true
+      },
+      "content": [
+        {
+          "widget": "set-text",
+          "options": { "title": "Hostname", "value=": "board.hostname" }
+        },
+        {
+          "widget": "set-text",
+          "options": { "title": "Kernel", "value=": "board.kernel" }
+        },
+        {
+          "widget": "set-text",
+          "options": { "title": "Architecture", "value=": "board.system" }
+        },
+        {
+          "widget": "set-text",
+          "options": { "title": "Target", "value=": "board.release.target" }
+        }
+      ]
+    },
+    {
+      "widget": "set-level",
+      "options": {
+        "title": "Local Time",
+        "icon": "clock",
+        "value=": "new Date(system_info.localtime * 1000)",
+        "format": "date:'MMM d y, HH:mm:ss':'UTC'",
+        "unit=": "system_info.tzone",
+        "noGraph": true
+      }
+    },
+    {
+      "widget": "set-level",
+      "options": {
+        "title": "Up Time",
+        "icon": "clock-fast",
+        "value=": "system_info.uptime * 1000",
+        "unit": "d h:m:s",
+        "format": "duration:'d h:mm:ss'",
+        "noGraph": true
+      }
+    },
+    "loadView('status/overview/include/board.*.json')"
+  ]
+}

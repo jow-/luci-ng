@@ -1,0 +1,95 @@
+{
+  "widget": "set-section",
+  "options": { "title": "Resources" },
+  "content": [
+    {
+      "widget": "set-container",
+      "events": {
+        "onSetup": [
+          "$parentContext.memUnit = Math.min(3, Math.floor(Math.log(system_info.memory.total)/Math.log(2)/10)) ,",
+          "$parentContext.units = ['B', 'Kb', 'Mb', 'Gb'] "
+        ]
+      },
+      "content": [
+        {
+          "widget": "set-level",
+          "options": {
+            "title": "Free Memory",
+            "icon": "memory",
+            "value=": "system_info.memory.free / 1024**memUnit",
+            "total=": "system_info.memory.total / 1024**memUnit",
+            "unit=": " units[memUnit]",
+            "format": "number:'1.1-2'"
+          },
+          "content": [
+            {
+              "widget": "set-level",
+              "for": "['buffered', 'cached', 'available']",
+              "options": {
+                "title=": "['Buffered', 'Cached', 'Available'][$for.index]",
+                "value=": "system_info.memory[$for.data] / 1024**memUnit",
+                "total=": "system_info.memory.total / 1024**memUnit",
+                "unit=": "units[memUnit]",
+                "format": "number:'1.1-2'"
+              }
+            },
+            {
+              "widget": "set-level",
+              "if": "system_info.swap.total > 0",
+              "events": {
+                "onSetup": "$parentContext.swapUnit = Math.min(3, Math.floor(Math.log(system_info.swap.total)/Math.log(2)/10)) "
+              },
+              "options": {
+                "title": "Swap Memory",
+                "value=": "system_info.swap.free / 1024**swapUnit",
+                "total=": "system_info.swap.total / 1024**swapUnit",
+                "unit=": "units[swapUnit]",
+                "format": "number:'1.1-2'"
+              }
+            }
+          ]
+        },
+        {
+          "widget": "set-level",
+          "options": {
+            "title": "Load last minute",
+            "icon": "chip",
+            "value=": "system_info.load[0] / 65535 * 100",
+            "unit": "%",
+            "format": "number:'1.1-1'"
+          },
+          "content": [
+            {
+              "widget": "set-level",
+              "for": "system_info.load.slice(1)",
+              "options": {
+                "title=": "`Load last ${$for.index ? 15 : 5} minutes`",
+                "value=": "$for.data / 65535 * 100",
+                "unit": "%",
+                "format": "number:'1.1-1'"
+              }
+            }
+          ]
+        },
+        {
+          "widget": "set-level",
+          "if": "(disk = ubus('luci2.system', 'diskfree',  5000)) && disk.root",
+          "events": {
+            "onSetup": [
+              "$parentContext.diskUnit = Math.min(2, Math.floor(Math.log(disk.root.total)/Math.log(2)/10)) ,"
+            ]
+          },
+          "options": {
+            "title": "Available Disk",
+            "value=": "disk.root.avail / 1024**diskUnit",
+            "total=": "disk.root.total / 1024**diskUnit",
+            "format": "number:'1.1-2'",
+            "unit=": "units[diskUnit+1]",
+            "icon": "sd"
+          }
+        }
+      ]
+    },
+    "loadView('status/overview/include/resources.*.json')"
+  ]
+}

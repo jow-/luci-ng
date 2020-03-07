@@ -1,0 +1,37 @@
+{
+  "widget": "set-section",
+  "if": "status = ubus('network.wireless', 'status', 5000) && (devNames = Object.keys(status).sort()) && devNames.length",
+  "options": { "title": "WiFi" },
+  "content": [
+    {
+      "widget": "set-level",
+      "for": "devNames",
+      "events": {
+        "onSetup": [
+          "$parentContext.device = status[$for.data],",
+          "$parentContext.ifname = device.interfaces.find( i => i.ifname).ifname ,",
+          "$parentContext.iwinfo = ubus('iwinfo', 'info', {device: ifname })"
+        ]
+      },
+      "options": {
+        "icon": "access-point-network",
+        "value=": "`${iwinfo.hardware.name || 'Generic 80211'}${iwinfo.hwmodes.sort().join('')}`",
+        "unit=": "$for.data",
+        "title=": [
+          "`Channel ${iwinfo.channel || device.channel} ${",
+          "iwinfo.frequency >0 ? (iwinfo.frequency/1000).toFixed(3): '' }GHz - Bitrate ${",
+          "iwinfo.bitrate >0 ? (iwinfo.bitrate/1000).toFixed(3): ''}Mbit/s`"
+        ],
+        "noGraph": true,
+        "expanded": true
+      },
+      "content": [
+        {
+          "widget": "set-expansion",
+          "for": "device.interfaces",
+          "options": { "title=": "$for.data." }
+        }
+      ]
+    }
+  ]
+}
