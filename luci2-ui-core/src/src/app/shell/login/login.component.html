@@ -4,13 +4,21 @@
 
 <form #loginForm="ngForm" mat-dialog-content novalidate (submit)="login()">
   <mat-form-field>
-    <input matInput placeholder="User" [(ngModel)]="user" name="user" required />
+    <input
+      matInput
+      placeholder="User"
+      [(ngModel)]="user"
+      name="user"
+      required
+      autocomplete="username"
+    />
   </mat-form-field>
   <mat-form-field>
     <input
       type="password"
       matInput
       placeholder="Password"
+      autocomplete="current-password"
       [(ngModel)]="password"
       name="password"
       required

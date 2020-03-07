@@ -18,6 +18,12 @@ app-shell {
 
 .footer {
   flex: 0 1 auto;
+  color: #aaaaaa;
+  padding: 6px;
+  margin-right: 36px;
+  margin-bottom: 5px;
+  font-size: 75%;
+  text-align: right;
 }
 
 mat-sidenav-container.app-content {
