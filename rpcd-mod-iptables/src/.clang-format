@@ -1,0 +1,27 @@
+BasedOnStyle: LLVM
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterEnum: false
+  AfterStruct: true
+  SplitEmptyFunction: false
+  AfterControlStatement: true
+  AfterFunction: true
+  BeforeElse: true
+
+AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: AllDefinitions
+BinPackArguments: true
+BinPackParameters: true
+IndentCaseLabels: false
+ColumnLimit: 90
+AccessModifierOffset: -4 
+AlignConsecutiveAssignments: true
+AlignTrailingComments:  true
+Cpp11BracedListStyle: false
+

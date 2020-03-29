@@ -1,0 +1,43 @@
+{
+    "configurations": [
+        {
+            "name": "ipq806x",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/ianchi/data/openwrt/sdk_ipq806x/staging_dir/target-arm_cortex-a15+neon-vfpv4_musl_eabi/usr/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/home/ianchi/data/openwrt/sdk_ipq806x/staging_dir/toolchain-arm_cortex-a15+neon-vfpv4_gcc-7.5.0_musl_eabi/bin/arm-openwrt-linux-muslgnueabi-gcc-7.5.0",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "x86_64",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/ianchi/data/openwrt/sdk_x86_64/staging_dir/target-x86_64_musl/usr/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/mnt/data/openwrt/sdk_x86_64/staging_dir/toolchain-x86_64_gcc-7.5.0_musl/bin/x86_64-openwrt-linux-musl-gcc",
+            "cStandard": "c99",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64",
+            "compilerArgs": [
+                "-Os ",
+                "-Wall ",
+                "-Werror ",
+                "--std=gnu99 ",
+                "-Wmissing-declarations"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/",
+                    "/home/ianchi/data/openwrt/sdk_x86_64/staging_dir/target-x86_64_musl/usr/include/"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}

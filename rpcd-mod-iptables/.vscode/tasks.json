@@ -1,0 +1,35 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "mod-iptables compile x86",
+            "type": "shell",
+            "command": "cd ~/data/openwrt/sdk_x86_64 && make package/rpcd-mod-iptables/{clean,compile} && cp ~/data/openwrt/sdk_x86_64/bin/packages/x86_64/luci2/rpcd-mod-iptables*.ipk ~/data/openwrt/openwrt-docker/ipk || tail  -n15 ~/data/openwrt/sdk_x86_64/logs/package/feeds/luci2/rpcd-mod-iptables/compile.txt",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "mod-iptables compile ipq",
+            "type": "shell",
+            "command": "cd ~/data/openwrt/sdk_ipq806x && make package/rpcd-mod-iptables/{clean,compile} || tail  -n15 ~/data/openwrt/sdk_ipq806x/logs/package/feeds/luci2/rpcd-mod-iptables/compile.txt",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "mod-iptables deploy x86 - docker",
+            "type": "shell",
+            "command": "scp ~/data/openwrt/sdk_x86_64/bin/packages/x86_64/luci2/rpcd-mod-iptables*.ipk root@172.17.0.2:/tmp/ && ssh root@172.17.0.2 opkg install --force-reinstall /tmp/rpcd-mod-iptables*.ipk",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "mod-iptables deploy ipq - router",
+            "type": "shell",
+            "command": "scp ~/data/openwrt/sdk_ipq806x/bin/packages/arm_cortex-a15_neon-vfpv4/luci2/rpcd-mod-iptables*.ipk root@172.25.1.1:/tmp/ && ssh root@172.25.1.1 opkg install --force-reinstall /tmp/rpcd-mod-iptables*.ipk",
+            "group": "test",
+            "problemMatcher": []
+        }
+    ]
+}
