@@ -1,0 +1,155 @@
+{
+  "widget": "set-section",
+  "if": "ubus('luci-rpc','getDSLStatus').line_state",
+  "options": { "title": "DSL" },
+  "events": {
+    "onSetup": "$parentContext.dsl = ubus('luci-rpc','getDSLStatus', 5000)"
+  },
+  "content": [
+    {
+      "widget": "set-level",
+      "options": {
+        "icon": "router-network",
+        "value=": "`${dsl.line_state} [0x${dsl.line_state_detail.toString(16)}]`",
+        "title=": "`Mode ${dsl.line_mode_s || '-'}`",
+        "noGraph": true
+      },
+      "content": [
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Line Uptime",
+            "value=": "dsl.line_uptime_s || '-'"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": { "title": "Annex", "value=": " dsl.annex_s || '-'" }
+        },
+        {
+          "widget": "set-text",
+          "options": { "title": "Profile", "value=": "dsl.profile_s || '-'" }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Data Rate",
+            "value=": "`${dsl.data_rate_down_s}/s / ${dsl.data_rate_up_s}/s`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Max. Attainable Data Rate (ATTNDR)",
+            "value=": "`${dsl.max_data_rate_down_s}/s / ${ dsl.max_data_rate_up_s}/s`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Latency",
+            "value=": "`${dsl.latency_num_down}/s / ${dsl.latency_num_up}/s`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Line Attenuation (LATN)",
+            "value=": "`${dsl.line_attenuation_down.toFixed(1)}dB / ${dsl.line_attenuation_up.toFixed(1)}dB`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Signal Attenuation (SATN)",
+            "value=": "`${dsl.signal_attenuation_down.toFixed(1)}dB / ${dsl.signal_attenuation_up.toFixed(1)}dB`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Noise Margin (SNR)",
+            "value=": "`${dsl.noise_margin_down.toFixed(1)}dB / ${dsl.noise_margin_up.toFixed(1)}dB`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Aggregate Transmit Power (ACTATP)",
+            "value=": "`${dsl.actatp_down.toFixed(1)}dB / ${dsl.actatp_up.toFixed(1)}dB`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Forward Error Correction Seconds (FECS)",
+            "value=": "`${dsl.errors_fecs_near} / ${dsl.errors_fecs_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Errored seconds (ES)",
+            "value=": "`${dsl.errors_es_near} / ${dsl.errors_es_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Severely Errored Seconds (SES)",
+            "value=": "`${dsl.errors_ses_near} / ${dsl.errors_ses_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Loss of Signal Seconds (LOSS)",
+            "value=": "`${dsl.errors_loss_near} / ${dsl.errors_loss_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Unavailable Seconds (UAS)",
+            "value=": "`${dsl.errors_uas_near} / ${dsl.errors_uas_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Header Error Code Errors (HEC)",
+            "value=": "`${dsl.errors_hec_near} / ${dsl.errors_hec_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Non Pre-emptive CRC errors (CRC_P)",
+            "value=": "`${dsl.errors_crc_p_near} / ${dsl.errors_crc_p_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Pre-emptive CRC errors (CRCP_P)",
+            "value=": "`${dsl.errors_crcp_p_near} / ${dsl.errors_crcp_p_far}`"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "ATU-C System Vendor ID",
+            "value=": "dsl.atuc_vendor_id"
+          }
+        },
+        {
+          "widget": "set-text",
+          "options": {
+            "title": "Power Management Mode",
+            "value=": "dsl.power_mode_s"
+          }
+        }
+      ]
+    }
+  ]
+}
