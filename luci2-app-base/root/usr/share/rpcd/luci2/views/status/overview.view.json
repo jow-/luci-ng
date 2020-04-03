@@ -1,7 +1,7 @@
 {
   "widget": "set-page",
   "events": {
-    "onSetup": "$parentContext.system_info = ubus('system','info', 2000)"
+    "onSetup": "$self.system_info = ubus('system','info', 2000)"
   },
   "content": ["loadView('status/overview/*.json')"]
 }

@@ -1,6 +1,8 @@
 {
   "widget": "set-page",
-  "events": { "onSetup": "$parentContext.pageContext = this, $parentContext.page = $" },
+  "events": {
+    "onSetup": "$self.pageContext = $self, $self.page = $"
+  },
   "content": [
     {
       "widget": "set-section",
@@ -37,7 +39,7 @@
     {
       "widget": "set-section",
       "if": "page.params = RxObject({})",
-      "events": { "onSetup": "$parentContext.aux = $" },
+      "events": { "onSetup": "$self.aux = $" },
       "options": { "title": "Parameters" },
       "content": [
         {
@@ -116,6 +118,7 @@
             "title": "Ubus call",
             "buttonTitle": "Execute",
             "disabled=": "!pageContext.$form.valid",
+            "spinner": "auto",
             "description=": [
               "!pageContext.$form.valid ? '' : ",
               "`ubus('${page.service}', '${page.method}' ${page.params ? ",

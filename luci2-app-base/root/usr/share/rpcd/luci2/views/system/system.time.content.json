@@ -8,7 +8,7 @@
       "buttonTitle": "Sync with Browser"
     },
     "events": {
-      "onSetup": "$parentContext.a = new Date(ubus('luci', 'getLocaltime').result * 1000 + (new Date()).getTimezoneOffset() * 60000)",
+      "onSetup": "$self.a = new Date(ubus('luci', 'getLocaltime').result * 1000 + (new Date()).getTimezoneOffset() * 60000)",
       "onClick": [
         "ubus('luci', 'setLocaltime', {localtime: Math.floor(Date.now() / 1000)}).result &&",
         "snackbar('Time changed')"

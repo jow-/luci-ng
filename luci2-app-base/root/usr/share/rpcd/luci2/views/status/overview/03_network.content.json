@@ -11,8 +11,8 @@
       "for": ["$trackBy= i => i.interface, ifs"],
       "events": {
         "onSetup": [
-          "$parentContext.ifc=ifs.find(i => i.interface == $for.data.interface),",
-          "$parentContext.ip = ifc['ipv4-address'].slice(0,1).concat(ifc['ipv6-address'].slice(0,1))",
+          "$self.ifc=ifs.find(i => i.interface == $for.data.interface),",
+          "$self.ip = ifc['ipv4-address'].slice(0,1).concat(ifc['ipv6-address'].slice(0,1))",
           ".map( a => `${a.address}/${a.mask}`).join(', ')"
         ]
       },
@@ -63,7 +63,7 @@
         {
           "widget": "set-text",
           "events": {
-            "onSetup": "$parentContext.dev = ubus('network.device', 'status', {name: ifc.device})"
+            "onSetup": "$self.dev = ubus('network.device', 'status', {name: ifc.device})"
           },
           "options": {
             "title=": "`Device - ${dev.type}`",

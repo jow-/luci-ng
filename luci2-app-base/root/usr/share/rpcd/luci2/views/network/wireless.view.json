@@ -32,7 +32,7 @@
               "widget": "set-link",
               "events": {
                 "onSetup": [
-                  "$parentContext.ifd = ifs.find( e => e.interface === $row.data['.name'])"
+                  "$self.ifd = ifs.find( e => e.interface === $row.data['.name'])"
                 ]
               },
               "options": {
@@ -65,7 +65,10 @@
           "content": [
             {
               "widget": "set-expansion",
-              "options": { "title=": "$row.data.name", "description=": "$row.data.ip" },
+              "options": {
+                "title=": "$row.data.name",
+                "description=": "$row.data.ip"
+              },
               "content": ["uciUI('dhcp', '@domain', $row.index)"]
             }
           ]

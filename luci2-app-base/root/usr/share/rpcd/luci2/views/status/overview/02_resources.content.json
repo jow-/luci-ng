@@ -6,8 +6,8 @@
       "widget": "set-container",
       "events": {
         "onSetup": [
-          "$parentContext.memUnit = Math.min(3, Math.floor(Math.log(system_info.memory.total)/Math.log(2)/10)) ,",
-          "$parentContext.units = ['B', 'Kb', 'Mb', 'Gb'] "
+          "$self.memUnit = Math.min(3, Math.floor(Math.log(system_info.memory.total)/Math.log(2)/10)) ,",
+          "$self.units = ['B', 'Kb', 'Mb', 'Gb'] "
         ]
       },
       "content": [
@@ -37,7 +37,7 @@
               "widget": "set-level",
               "if": "system_info.swap.total > 0",
               "events": {
-                "onSetup": "$parentContext.swapUnit = Math.min(3, Math.floor(Math.log(system_info.swap.total)/Math.log(2)/10)) "
+                "onSetup": "$self.swapUnit = Math.min(3, Math.floor(Math.log(system_info.swap.total)/Math.log(2)/10)) "
               },
               "options": {
                 "title": "Swap Memory",
@@ -76,7 +76,7 @@
           "if": "(disk = ubus('luci2.system', 'diskfree',  5000)) && disk.root",
           "events": {
             "onSetup": [
-              "$parentContext.diskUnit = Math.min(2, Math.floor(Math.log(disk.root.total)/Math.log(2)/10)) ,"
+              "$self.diskUnit = Math.min(2, Math.floor(Math.log(disk.root.total)/Math.log(2)/10)) ,"
             ]
           },
           "options": {

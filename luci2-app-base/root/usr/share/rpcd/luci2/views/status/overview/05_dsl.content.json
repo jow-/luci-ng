@@ -3,7 +3,7 @@
   "if": "ubus('luci-rpc','getDSLStatus').line_state",
   "options": { "title": "DSL" },
   "events": {
-    "onSetup": "$parentContext.dsl = ubus('luci-rpc','getDSLStatus', 5000)"
+    "onSetup": "$self.dsl = ubus('luci-rpc','getDSLStatus', 5000)"
   },
   "content": [
     {

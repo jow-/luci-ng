@@ -8,9 +8,9 @@
       "for": "devNames",
       "events": {
         "onSetup": [
-          "$parentContext.device = status[$for.data],",
-          "$parentContext.ifname = device.interfaces.find( i => i.ifname).ifname ,",
-          "$parentContext.iwinfo = ubus('iwinfo', 'info', {device: ifname })"
+          "$self.device = status[$for.data],",
+          "$self.ifname = device.interfaces.find( i => i.ifname).ifname ,",
+          "$self.iwinfo = ubus('iwinfo', 'info', {device: ifname })"
         ]
       },
       "options": {
