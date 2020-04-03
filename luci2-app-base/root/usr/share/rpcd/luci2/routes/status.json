@@ -32,5 +32,11 @@
     "acls": ["status"],
     "view": "status/processes",
     "index": 50
+  },
+  "status/firewall": {
+    "title": "Firewall",
+    "acls": ["status"],
+    "view": "status/firewall",
+    "index": 60
   }
 }
