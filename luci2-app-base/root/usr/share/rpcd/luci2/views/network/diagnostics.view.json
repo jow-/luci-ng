@@ -31,7 +31,11 @@
           "widget": "set-select",
           "if": "page.utility !== 'nslookup'",
           "bind": "page.protocol",
-          "options": { "title": "Protocol", "enum": ["IPv4", "IPv6"], "default": "IPv4" }
+          "options": {
+            "title": "Protocol",
+            "enum": ["IPv4", "IPv6"],
+            "default": "IPv4"
+          }
         },
         {
           "widget": "set-button",
@@ -39,13 +43,13 @@
             "title=": "`Command: ${page.utility} ${page.address}`",
             "buttonTitle": "Run",
             "disabled=": "!pageContext.$form.valid",
-            "spinner=": "page.loading"
+            "spinner": "auto"
           },
           "events": {
             "onClick": [
-              "(page.loading = true) && ",
-              "(page.result = ubus('luci2.network', `${page.utility}${page.utility !== 'nslookup' && page.protocol === 'IPv6' ? '6' : ''}`, {data: page.address})) ",
-              " && (page.loading = false)"
+              "page.result = ubus('luci2.network', ",
+              "   `${page.utility}${page.utility !== 'nslookup' && page.protocol === 'IPv6' ? '6' : ''}`,",
+              "   {data: page.address}) "
             ]
           }
         }

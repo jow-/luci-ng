@@ -19,7 +19,7 @@
   {
     "widget": "set-expansion",
     "bind": "uci.system['@timeserver'][0]",
-    "if": "ubus('file','stat', {path: '/usr/sbin/ntpd'}, { 0: null })",
+    "if": "ubus('file','stat', {path: '/usr/sbin/ntpd'}, { all: null })",
     "options": {
       "title": "Time Synchronization",
       "description=": "`NTP is ${$.enabled ? 'enabled': 'disabled'}`"

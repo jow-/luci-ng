@@ -33,7 +33,10 @@
             ]
           },
           "events": {
-            "onAction": "ubus('luci2.system','process_signal', { pid: $row.pid, signal: $action.data})"
+            "onAction": [
+              "ubus('luci2.system','process_signal', { pid: $row.pid, signal: $action.data}, e => snackbar(`Failed to restart service: ${e.message}`)) === null ",
+              "  && snackbar('Service restarted')  "
+            ]
           }
         }
       ]

@@ -66,7 +66,7 @@
         {
           "widget": "set-section",
           "options": { "title": "Leds" },
-          "if": "ubus('file', 'list', {path:'/sys/class/leds'}, '$.entries', { 0: [] } ).length",
+          "if": "ubus('file', 'list', {path:'/sys/class/leds'}, '$.entries', { all: [] } ).length",
           "content": ["uciUI('system', '@led')"]
         }
       ]
