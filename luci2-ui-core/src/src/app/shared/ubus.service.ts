@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JsonPath } from 'espression-jsonpath';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, isObservable, Observable, of, throwError } from 'rxjs';
 import {
   catchError,
   delay,
@@ -44,7 +44,7 @@ const UBUS_ERRORS = [
   providedIn: 'root',
 })
 export class UbusService implements ILogin {
-  // TODO: check acls befor calling
+  // TODO: check acls before calling
   private _sid: string | undefined;
   private _dialogRef: MatDialogRef<LoginComponent> | undefined;
 
@@ -86,13 +86,14 @@ export class UbusService implements ILogin {
     method: string,
     params?: object,
     autologin: boolean = true,
-    returnError?: { [code: number]: any }
+    // tslint:disable-next-line: ban-types
+    returnError?: { [code: number]: any } | Function
   ): Observable<T> {
-    // cache params in object, so that SID can be changed later and be seen by resuscription holding a reference
+    // cache params in object, so that SID can be changed later and be seen by resubscription holding a reference
     const jsonrpcParams = [this.sid, service, method, params || {}];
     return this._jsonrpc.request('call', jsonrpcParams).pipe(
       // all ubus calls return an array in the response in the form: [ status, response ]
-      // for successfull responses (status=0) return directly the response
+      // for successful responses (status=0) return directly the response
       // for errors throw corresponding error wrapped in IJsonrpcError
       map(r => {
         if (!Array.isArray(r))
@@ -122,9 +123,16 @@ export class UbusService implements ILogin {
         )
       ),
       catchError(e => {
-        if (returnError) {
-          if (e.code in returnError) return of(returnError[e.code]);
-          if ('0' in returnError) return of(returnError['0']);
+        if (
+          typeof returnError === 'object' &&
+          (e.code in returnError || 'all' in returnError)
+        ) {
+          let ret = returnError[e.code in returnError ? e.code : 'all'];
+          if (typeof ret === 'function') ret = ret(e);
+          return isObservable(ret) ? ret : of(ret);
+        } else if (typeof returnError === 'function') {
+          const ret = returnError(e);
+          return isObservable(ret) ? ret : of(ret);
         }
         this._snackbar.open(
           `Error calling ubus "${service} ${method}": ${e.message}`,
@@ -157,7 +165,7 @@ export class UbusService implements ILogin {
   }
 
   login(user: string, password: string): Observable<any> {
-    this.sid = ' '; // always call login with reseted SID
+    this.sid = ' '; // always call login with resete SID
     return this.call<any>(
       'session',
       'login',
@@ -196,14 +204,14 @@ export class UbusService implements ILogin {
       repeatDelay?: number | { [code: number]: string },
       errorVal?: { [code: number]: string }
     ) => {
-      if (typeof repeatDelay === 'object') {
+      if (typeof repeatDelay === 'object' || typeof repeatDelay === 'function') {
         errorVal = repeatDelay;
         repeatDelay = undefined;
       }
       if (typeof jsPathFilter === 'number') {
         repeatDelay = jsPathFilter;
         jsPathFilter = undefined;
-      } else if (typeof jsPathFilter === 'object') {
+      } else if (typeof jsPathFilter === 'object' || typeof jsPathFilter === 'function') {
         errorVal = jsPathFilter;
         jsPathFilter = undefined;
       }

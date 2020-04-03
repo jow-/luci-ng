@@ -74,16 +74,18 @@ export function rootContextFactory(
               c.reduce((ac, e) => (Array.isArray(e) ? ac.concat(...e) : ac.concat(e)), [])
             )
           ),
-      snackbar(message: string, action: string, onAction: string): true {
+      snackbar(message: string, action: string, onAction: string | (() => any)): true {
         // use 'function' to have 'this' as the calling context
 
         const snack = snackbar.open(message, action, { duration: 5000 });
         if (onAction)
           snack.onAction().subscribe(() => {
-            expr
-              .eval(onAction, this, true) // tslint:disable-line: no-invalid-this
-              .pipe(take(1))
-              .subscribe();
+            if (typeof onAction === 'string')
+              expr
+                .eval(onAction, this, true) // tslint:disable-line: no-invalid-this
+                .pipe(take(1))
+                .subscribe();
+            else if (typeof onAction === 'function') onAction();
           });
 
         return true;
