@@ -13,6 +13,7 @@
           "options": {
             "aot": true,
             "outputPath": "dist",
+            "deleteOutputPath": true,
             "index": "src/index.html",
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
@@ -20,9 +21,9 @@
             "preserveSymlinks": true,
             "assets": [
               {
-                "glob": "mdi.svg",
-                "input": "./node_modules/@mdi/angular-material",
-                "output": "/assets/"
+                "glob": "*.svg",
+                "input": "./out/icons",
+                "output": "/assets/icons/"
               },
               "src/assets",
               "src/favicon.ico",

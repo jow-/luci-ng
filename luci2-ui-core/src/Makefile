@@ -7,9 +7,15 @@
 all: build
 
 node_modules: package.json
-	npm install
+	npm ci
 
-prepare: node_modules 
+icons.yaml: ;
+
+.icons: node_modules icons.yaml
+	npm run svg
+	touch .icons
+
+prepare: node_modules .icons 
 
 build: prepare
 	npm run gen-schema
@@ -19,6 +25,8 @@ compile: build
 
 clean: 
 	rm -rf dist
+	rm -rf out
+	rm .icons
 	 
 distclean: clean
 	rm -rf node_modules

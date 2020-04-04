@@ -39,7 +39,7 @@ export class ShellComponent {
     public uci: UciModel2
   ) {
     iconRegistry.addSvgIconSet(
-      sanitizer.bypassSecurityTrustResourceUrl('assets/mdi.svg')
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/default.svg')
     );
 
     media.observe('(max-width: 599px)').subscribe(isMatched => {

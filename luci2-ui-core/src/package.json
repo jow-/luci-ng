@@ -10,8 +10,9 @@
     "lint": "ng lint --type-check && prettier -l \"src/**/*.{ts,scss,css,html,json}\" ",
     "lint-fix": "ng lint --type-check --fix && prettier --write \"src/**/*.{ts,scss,css,html,json}\" ",
     "publish": "ssh root@35.208.122.24 -p 8022 'rm -rf /www/luci-ng/*' && scp -r -P 8022 dist/* root@35.208.122.24:/www/luci-ng/",
-    "gen-schema": "rm -rf out/widgetschema && rx-json-ui g -p ./src/tsconfig.app.json -m app/app.module#AppModule out/widgetschema",
+    "gen-schema": "rx-json-ui g -r -p ./src/tsconfig.app.json -m app/app.module#AppModule out/widgetschema",
     "lint-views": "rx-json-ui l -s out/widgetschema/widgets.json schemas/views/**/*.view.json && rx-json-ui l -s out/widgetschema/widgets.content.json schemas/views/**/*.content.json && rx-json-ui l -s schemas/metaschema.json schemas/uci/*.json",
+    "svg": "rx-json-ui svg -r -i src/icons.yaml out/icons",
     "openwrt": "docker start openwrt || docker run -d --privileged -p 9443:443 -p 9080:80 -p 9022:22 --name openwrt ianchi74/openwrt:luci2-rpc"
   },
   "husky": {
@@ -45,7 +46,6 @@
     "@angular/cli": "^9.0.1",
     "@angular/compiler-cli": "^9.0.0",
     "@angular/language-service": "^9.0.0",
-    "@mdi/angular-material": "^4.9.95",
     "codelyzer": "^5.1.2",
     "husky": "^4.2.1",
     "prettier": "^1.19.1",

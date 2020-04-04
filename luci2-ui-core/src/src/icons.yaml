@@ -1,0 +1,34 @@
+---
+icons:
+  # general shell icons
+  - arrow-down-thick
+  - arrow-left
+  - arrow-up-thick
+  - chevron-down
+  - close
+  - close-circle
+  - content-save
+  - delete
+  - dots-vertical
+  - information-variant
+  - flash
+  - menu
+  - menu-right
+  - pencil
+  - play
+  - reload
+  - stop
+
+  # app-base icons
+  - access-point-network
+  - chip
+  - clock
+  - clock-fast
+  - ip-network-outline
+  - link
+  - memory
+  - router-network
+  - router-wireless
+  - sd
+  - table
+  - wan
