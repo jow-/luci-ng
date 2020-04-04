@@ -1,7 +1,10 @@
 {
   "widget": "set-section",
-  "if": "status = ubus('network.wireless', 'status', 5000) && (devNames = Object.keys(status).sort()) && devNames.length",
+  "if": "(status = ubus('network.wireless', 'status', 5000)) && (devNames = Object.keys(status).sort()) && devNames.length",
   "options": { "title": "WiFi" },
+  "events": {
+    "onSetup": "$self.hosts = ubus('luci-rpc', 'getHostHints')"
+  },
   "content": [
     {
       "widget": "set-level",
@@ -9,8 +12,8 @@
       "events": {
         "onSetup": [
           "$self.device = status[$for.data],",
-          "$self.ifname = device.interfaces.find( i => i.ifname).ifname ,",
-          "$self.iwinfo = ubus('iwinfo', 'info', {device: ifname })"
+          "$self.firstIfc = device.interfaces.find( i => i.ifname) ,",
+          "$self.iwinfo = ubus('iwinfo', 'info', {device: firstIfc.ifname })"
         ]
       },
       "options": {
@@ -18,9 +21,9 @@
         "value=": "`${iwinfo.hardware.name || 'Generic 80211'}${iwinfo.hwmodes.sort().join('')}`",
         "unit=": "$for.data",
         "title=": [
-          "`Channel ${iwinfo.channel || device.channel} ${",
-          "iwinfo.frequency >0 ? (iwinfo.frequency/1000).toFixed(3): '' }GHz - Bitrate ${",
-          "iwinfo.bitrate >0 ? (iwinfo.bitrate/1000).toFixed(3): ''}Mbit/s`"
+          "`${iwinfo.frequency >0 ? `${(iwinfo.frequency/1000).toFixed(1)}GHz - ` : '' ",
+          "}CH ${iwinfo.channel || device.config.channel} ${",
+          "iwinfo.bitrate >0 ? `- ${(iwinfo.bitrate/1000).toFixed(0)}Mbit/s` : '' }`"
         ],
         "noGraph": true,
         "expanded": true
@@ -28,8 +31,51 @@
       "content": [
         {
           "widget": "set-expansion",
-          "for": "device.interfaces",
-          "options": { "title=": "$for.data." }
+          "for": "$trackBy = e => e.ifname, device.interfaces",
+          "events": {
+            "onSetup": [
+              "$self.ifinfo= ubus('iwinfo', 'info', {device: $for.data.ifname}, {4: {}}),",
+              "$self.signal = ifinfo.quality_max > 0 ?",
+              "    Math.min(4,Math.floor( (ifinfo.quality || 0) / ifinfo.quality_max / 0.2)) : 0,",
+              "$self.assoc = ubus('iwinfo', 'assoclist', {device: $for.data.ifname}, 5000, {4: {results:[]}}).results"
+            ]
+          },
+          "options": {
+            "title=": "`${ifinfo.ssid || $for.data.config.ssid || ifinfo.bssid} - ${ifinfo.mode || ''}`",
+            "icon=": [
+              "device.disabled || !ifinfo.bssid ? 'wifi-strength-off-outline' : ",
+              "`wifi-strength-${signal || 'outline'}`"
+            ],
+            "description=": "ifinfo.encryption && ifinfo.encryption.description || 'Disabled'",
+            "value=": "`${assoc.length} associations`"
+          },
+          "content": [
+            {
+              "widget": "set-text",
+              "options": { "title": "BSSID", "value=": "ifinfo.bssid" }
+            },
+            {
+              "widget": "table",
+              "if": "assoc.length",
+              "options": {
+                "dataSource=": [
+                  "assoc.map( s => { mac: s.mac, ",
+                  "   signal: `${s.signal}${s.noise ? `/${s.noise}` : ''}`, ",
+                  "   rate: `${s.rx.rate/1000}/${s.tx.rate/1000}`,",
+                  "   ref: hosts[s.mac] && (hosts[s.mac].name || hosts[s.mac].ipv4 || hosts[s.mac].ipv6) || s.mac, ",
+                  "   host: hosts[s.mac]",
+                  "})"
+                ],
+                "columns": ["ref", "mac", "signal", "rate"],
+                "headers": {
+                  "ref": "Host",
+                  "mac": "MAC-Address",
+                  "signal": "Signal / Noise",
+                  "rate": "RX/TX Mbit/s"
+                }
+              }
+            }
+          ]
         }
       ]
     }

@@ -1,6 +1,6 @@
 {
   "widget": "set-section",
-  "options": { "title": "Board" },
+  "options": { "title": "Device" },
   "content": [
     {
       "widget": "set-level",

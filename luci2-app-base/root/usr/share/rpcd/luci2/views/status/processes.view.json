@@ -10,24 +10,37 @@
           "if": "data = ubus('luci2.system', 'process_list', 2000)",
           "options": {
             "dataSource=": "data.processes",
-            "columns": ["pid", "user", "command"],
-            "headers": { "pid": "PID", "user": "Owner", "command": "Command" },
+            "trackBy": "pid",
+            "columns": [
+              "pid",
+              "user",
+              "command",
+              "cpu_percent",
+              "vsize_percent"
+            ],
+            "headers": {
+              "pid": "PID",
+              "user": "Owner",
+              "command": "Command",
+              "vsize_percent": "Memory Usage",
+              "cpu_percent": "CPU Usage"
+            },
             "filter": true,
             "actionsHeader": "Signal",
             "actions": [
               {
                 "icon": "reload",
-                "label": "Reload - HUP",
-                "data": "1"
+                "label": "Reload (HUP)",
+                "data": 1
               },
               {
-                "icon": "close-circle ",
-                "label": "Terminate - INT",
-                "data": "15"
+                "icon": "close-circle",
+                "label": "Terminate (INT)",
+                "data": 15
               },
               {
                 "icon": "flash",
-                "label": "Kill - KILL",
+                "label": "Kill (KILL)",
                 "data": 9
               }
             ]

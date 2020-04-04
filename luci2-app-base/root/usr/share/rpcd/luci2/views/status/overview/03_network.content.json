@@ -3,7 +3,7 @@
   "options": { "title": "Network" },
   "if": [
     "ifs=ubus('network.interface', 'dump' , {}, ",
-    "`$.interface[?(@.route.some(r => (r.target=='0.0.0.0'|| r.target=='::')  && r.mask==0 ))]`, 5000)"
+    "`$.interface[?(@.route?.some(r => (r.target=='0.0.0.0'|| r.target=='::')  && r.mask==0 ))]`, 5000)"
   ],
   "content": [
     {

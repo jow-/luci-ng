@@ -73,9 +73,9 @@
               "if": "['object', 'array'].includes(page.ubusList[page.method][$for.data]) ",
               "bind": "aux[$for.data]",
               "events": {
-                "onValueChange": "page.params[$for.data] = $form.valid && $value && $value.trim() && eval($value, {}) || undefined",
+                "onValueChange": "page.params[$for.data] = $form.valid && eval($value?.trim(), {}) || undefined",
                 "onValidate": [
-                  "$value && $value.trim() && ",
+                  "$value?.trim() && ",
                   "typeof eval($value, {}) !== page.ubusList[page.method][$for.data] && ",
                   "`Must be a valid '${page.ubusList[page.method][$for.data]}'`"
                 ]
@@ -109,7 +109,7 @@
             "description": "Transformation to apply to error codes"
           },
           "events": {
-            "onValidate": "$value && typeof eval($value, {})!=='object' && `Must be a valid 'object'`"
+            "onValidate": "$value?.trim() && typeof eval($value, {}) !== 'object' && `Must be a valid 'object'`"
           }
         },
         {
@@ -129,9 +129,10 @@
           },
           "events": {
             "onClick": [
+              "page.result = '' ,",
               "page.result = ubus(page.service, page.method, ",
               "  page.params || {}, ",
-              "  page.path, page.errorVal && eval(page.errorVal, {}))"
+              "  page.path, { all: e=> (snackbar(e.message) && `Error: ${e.message}`), ...(page.errorVal && eval(page.errorVal, {}))} )"
             ]
           }
         }

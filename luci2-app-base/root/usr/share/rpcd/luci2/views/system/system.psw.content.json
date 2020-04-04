@@ -9,7 +9,8 @@
         "type": "string",
         "inputType": "password",
         "minLength": 5,
-        "required": true
+        "required": true,
+        "autocomplete": "new-password"
       }
     },
     {
@@ -19,7 +20,8 @@
         "title": "Retype password",
         "inputType": "password",
         "const=": "$.psw1",
-        "required": true
+        "required": true,
+        "autocomplete": "new-password"
       }
     },
     {
