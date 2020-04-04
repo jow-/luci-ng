@@ -21,7 +21,7 @@ define Package/luci2-app-base
   SECTION:=luci2
   CATEGORY:=LuCI2
   TITLE:=LuCI2 Base Application
-  DEPENDS:=+luci2-ui-core +rpcd-mod-iwinfo +rpcd-mod-rpcsys +luci2-rpc-bwmon +luci2-io-helper
+  DEPENDS:=+luci2-ui-core +rpcd-mod-iwinfo +rpcd-mod-rpcsys +luci2-rpc-bwmon +luci2-io-helper +rpcd-mod-iptables
 endef
 
 define Package/luci2-app-base/description
