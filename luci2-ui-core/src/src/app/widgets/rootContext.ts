@@ -142,7 +142,7 @@ export function rootContextFactory(
               }
 
               if (opt.exclude)
-                opt.include = opt.include!.filter(key => !opt.exclude!.includes(key));
+                opt.include = opt.include!.filter((key) => !opt.exclude!.includes(key));
             }
             if (typeof section === 'number') {
               schema = (<SchemaArray>schema).items;
@@ -150,7 +150,7 @@ export function rootContextFactory(
               if (opt.wrapForm)
                 return buildUI(schema, `uci.${config}['${type}'][${section}]`);
               else
-                return opt.include!.map(key =>
+                return opt.include!.map((key) =>
                   buildUI(
                     schema.properties[key],
                     `uci.${config}['${type}'][${section}].${key}`

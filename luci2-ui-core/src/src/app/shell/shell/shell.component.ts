@@ -42,7 +42,7 @@ export class ShellComponent {
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/default.svg')
     );
 
-    media.observe('(max-width: 599px)').subscribe(isMatched => {
+    media.observe('(max-width: 599px)').subscribe((isMatched) => {
       this.isMediaSmall = isMatched.matches;
       cdr.markForCheck();
     });

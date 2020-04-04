@@ -17,8 +17,8 @@ export function debug<T>(title: string): (source: Observable<T>) => Observable<T
       : source.pipe(
           tap(
             // don't log in production
-            d => console.log(title, 'next', d),
-            e => console.log(title, 'error', e),
+            (d) => console.log(title, 'next', d),
+            (e) => console.log(title, 'error', e),
             () => console.log(title, 'complete')
           )
         );

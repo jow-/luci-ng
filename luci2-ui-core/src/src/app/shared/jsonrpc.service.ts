@@ -72,7 +72,7 @@ export class JsonrpcService {
 
         // retry on http errors a maximun of {_retryCount} times waiting {_retrayDelay} milliseconds
         .pipe(
-          retryWhen(o =>
+          retryWhen((o) =>
             o.pipe(
               scan((acc, e) => {
                 if (acc >= this._retryCount) throw e;

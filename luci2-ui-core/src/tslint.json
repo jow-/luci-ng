@@ -31,7 +31,6 @@
     ],
     "forin": true,
     "import-blacklist": [true, "rxjs/Rx"],
-    "interface-name": { "options": ["always-prefix"] },
     "interface-over-type-literal": true,
     "jsdoc-format": [true, "check-multiline-start"],
     "label-position": true,
@@ -101,7 +100,9 @@
     "triple-equals": [true, "allow-null-check"],
     "typedef": [true, "call-signature", "parameter", "property-declaration"],
     "unified-signatures": true,
-    "variable-name": { "options": ["ban-keywords", "check-format", "allow-leading-underscore"] },
+    "variable-name": {
+      "options": ["ban-keywords", "check-format", "allow-leading-underscore"]
+    },
     "use-isnan": true,
 
     "template-banana-in-box": true,

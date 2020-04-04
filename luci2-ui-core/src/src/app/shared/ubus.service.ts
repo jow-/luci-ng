@@ -95,7 +95,7 @@ export class UbusService implements ILogin {
       // all ubus calls return an array in the response in the form: [ status, response ]
       // for successful responses (status=0) return directly the response
       // for errors throw corresponding error wrapped in IJsonrpcError
-      map(r => {
+      map((r) => {
         if (!Array.isArray(r))
           throw { code: 0, message: 'Invalid response format', layer: 'js' };
         if (r[0] !== 0)
@@ -108,9 +108,9 @@ export class UbusService implements ILogin {
         return r.length > 1 ? r[1] : null;
       }),
       // if there is "accessDenied" login and retry
-      retryWhen(o =>
+      retryWhen((o) =>
         o.pipe(
-          mergeMap(e =>
+          mergeMap((e) =>
             autologin &&
             e.layer === 'jsonrpc' &&
             e.code === JsonrpcErrorCodes.AccessDenied
@@ -122,7 +122,7 @@ export class UbusService implements ILogin {
           )
         )
       ),
-      catchError(e => {
+      catchError((e) => {
         if (
           typeof returnError === 'object' &&
           (e.code in returnError || 'all' in returnError)
@@ -172,7 +172,7 @@ export class UbusService implements ILogin {
       { username: user, password, timeout: 900 },
       false
     ).pipe(
-      map(s => {
+      map((s) => {
         // save new token on successful login
         this.sid = s && s.ubus_rpc_session;
         window.localStorage.setItem('ubus-sid', this.sid);
@@ -228,10 +228,10 @@ export class UbusService implements ILogin {
       let result = this.call<any>(service, method, params, true, errorVal);
 
       if (repeatDelay && typeof repeatDelay === 'number')
-        result = result.pipe(repeatWhen(o => o.pipe(delay(<number>repeatDelay))));
+        result = result.pipe(repeatWhen((o) => o.pipe(delay(<number>repeatDelay))));
       if (jsPathFilter && typeof jsPathFilter === 'string')
         result = result.pipe(
-          map(res => this._jsPath.query(res, <string>jsPathFilter).values)
+          map((res) => this._jsPath.query(res, <string>jsPathFilter).values)
         );
 
       return result.pipe(shareReplay({ bufferSize: 1, refCount: true }));

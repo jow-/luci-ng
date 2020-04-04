@@ -28,13 +28,13 @@ export class UciService {
     return forkJoin([
       this._ubus
         .call<IUciConfigData>('uci', 'get', { config })
-        .pipe(map(r => (r && r.values) || {})),
+        .pipe(map((r) => (r && r.values) || {})),
       this._ubus
         .call<{ content: any[] }>('luci2.file', 'read_json', {
           glob: `/usr/share/rpcd/luci2/uci/${config}.json`,
         })
         .pipe(
-          map(res => res?.content[0]),
+          map((res) => res?.content[0]),
           debug('schema get'),
           catchError(() => of({})),
           debug('schema')
@@ -46,7 +46,7 @@ export class UciService {
   addSection(param: IUciAddSectionParam): Observable<string> {
     return this._ubus
       .call<IUciAddSectionRet>('uci', 'add', param)
-      .pipe(map(r => (r && r.section) || ''));
+      .pipe(map((r) => (r && r.section) || ''));
   }
 
   set(param: IUciSetParam): Observable<null> {

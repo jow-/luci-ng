@@ -42,8 +42,8 @@ export class MenuService {
 
     this._pending = this._ubus.call<any>('luci2.ui', 'menu').pipe(
       // tslint:disable-next-line:prefer-object-spread
-      map(r => this._toChildArray(this._toChildTree(Object.assign(r.menu, FIXED_MENU)))),
-      map(root => {
+      map((r) => this._toChildArray(this._toChildTree({ ...r.menu, ...FIXED_MENU }))),
+      map((root) => {
         console.log(this._routes);
         this._router.resetConfig(this._routes);
 

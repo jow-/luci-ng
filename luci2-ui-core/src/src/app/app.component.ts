@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   constructor(private _menuService: MenuService, private _cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this._menuService.loadMenu().subscribe(m => {
+    this._menuService.loadMenu().subscribe((m) => {
       this.menu = m;
       this._cdr.markForCheck();
     });

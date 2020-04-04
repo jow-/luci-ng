@@ -70,7 +70,7 @@ export class UciModel2 {
           let result: IUciSectionData | undefined;
           // tslint:disable-next-line: forin
           for (const type in target) {
-            result = target[type].find(sec => sec['.name'] === prop);
+            result = target[type].find((sec) => sec['.name'] === prop);
             if (result) return result;
           }
         }
@@ -95,14 +95,14 @@ export class UciModel2 {
 
   save(): Observable<any> {
     return combineLatest(
-      Object.keys(this.configs).map(config => this.saveConfig(config))
+      Object.keys(this.configs).map((config) => this.saveConfig(config))
     ).pipe(debug('uci save'));
   }
   saveConfig(config: string): Observable<any> {
     if (!(config in this.configs)) return EMPTY;
 
     return combineLatest(
-      Object.keys(this.configs[config]).map(type => this.saveSections(config, type))
+      Object.keys(this.configs[config]).map((type) => this.saveSections(config, type))
     ).pipe(
       switchMap(() => this._uci.apply()),
       switchMap(() => this._uci.changes(config)),
@@ -117,12 +117,12 @@ export class UciModel2 {
     const updated = <IUciSectionData[]>this.configs[config][type];
 
     original
-      .filter(oldSec => !updated.find(newSec => newSec['.name'] === oldSec['.name']))
-      .forEach(sect => obs.push(this._uci.delete({ config, section: sect['.name'] })));
+      .filter((oldSec) => !updated.find((newSec) => newSec['.name'] === oldSec['.name']))
+      .forEach((sect) => obs.push(this._uci.delete({ config, section: sect['.name'] })));
 
     updated
-      .filter(newSec => typeof newSec['.index'] === 'undefined')
-      .forEach(sect => {
+      .filter((newSec) => typeof newSec['.index'] === 'undefined')
+      .forEach((sect) => {
         const values: any = {};
         for (const key in sect) {
           if (key.charAt(0) !== '.') values[key] = sect[key];
@@ -131,8 +131,8 @@ export class UciModel2 {
       });
 
     updated
-      .filter(newSec => typeof newSec['.index'] !== 'undefined')
-      .forEach(sect => (obs = obs.concat(this.saveOptions(config, type, sect))));
+      .filter((newSec) => typeof newSec['.index'] !== 'undefined')
+      .forEach((sect) => (obs = obs.concat(this.saveOptions(config, type, sect))));
 
     return combineLatest(obs);
   }
@@ -146,20 +146,20 @@ export class UciModel2 {
 
     const section = newSec['.name'];
     let options: string[] = [];
-    const oldSec = this._orig[config][type].find(sec => sec['.name'] === section);
+    const oldSec = this._orig[config][type].find((sec) => sec['.name'] === section);
 
     if (!oldSec) return obs;
 
-    const oldKeys = Object.keys(oldSec).filter(k => k.charAt(0) !== '.');
-    const newKeys = Object.keys(newSec).filter(k => k.charAt(0) !== '.');
+    const oldKeys = Object.keys(oldSec).filter((k) => k.charAt(0) !== '.');
+    const newKeys = Object.keys(newSec).filter((k) => k.charAt(0) !== '.');
 
     // delete options
-    options = oldKeys.filter(key => !newKeys.includes(key));
+    options = oldKeys.filter((key) => !newKeys.includes(key));
     if (options.length) obs.push(this._uci.delete({ config, section, options }));
 
     // add & update options
 
-    options = newKeys.filter(key => {
+    options = newKeys.filter((key) => {
       if (Array.isArray(newSec[key]) && Array.isArray(oldSec[key])) {
         if (newSec[key].length !== oldSec[key].length) return true;
 
@@ -171,7 +171,7 @@ export class UciModel2 {
 
     if (options.length) {
       const values: any = {};
-      options.forEach(key => (values[key] = newSec[key]));
+      options.forEach((key) => (values[key] = newSec[key]));
       obs.push(this._uci.set({ config, section, values }));
     }
 

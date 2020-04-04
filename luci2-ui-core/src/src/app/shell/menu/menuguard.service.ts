@@ -30,6 +30,6 @@ export class MenuGuardService implements CanActivate {
     // load menu definitions and routes, and renavigate
     return this._menuService
       .loadMenu()
-      .pipe(map(_ => (this._router.navigateByUrl(_state.url), false)));
+      .pipe(map(() => (this._router.navigateByUrl(_state.url), false)));
   }
 }

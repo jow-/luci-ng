@@ -4,7 +4,7 @@
  */
 
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { IJsonrpcError } from '../../shared/jsonrpc.interface';
 
@@ -28,7 +28,7 @@ export class LoginComponent {
 
   login(): void {
     this._loginService.login(this.user, this.password).subscribe(
-      s => this._dialogRef.close(s),
+      (s) => this._dialogRef.close(s),
       (e: IJsonrpcError) => {
         this.errorMessage =
           e.layer === 'ubus' && e.code === 6

@@ -60,7 +60,7 @@ export class CgiService {
         responseType: 'blob',
       })
       .pipe(
-        map(file => this.save(file, 'backup.tar.gz')),
+        map((file) => this.save(file, 'backup.tar.gz')),
         catchError((e: HttpErrorResponse) => {
           this.snackbar.open('Error downloading backup', 'close', {
             duration: 5000,
