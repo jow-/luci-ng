@@ -3,9 +3,7 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "",
-    "types": [],
-    "paths": { "rx-json-ui": ["./rx-json-ui/src/public_api"] },
-    "preserveSymlinks": true
+    "types": []
   },
   "files": ["main.ts", "polyfills.ts"]
 }
