@@ -50,13 +50,23 @@
           ]
         },
         {
-          "widget": "set-level",
+          "widget": "set-chart",
+          "if": "system_info",
           "options": {
             "title": "Load last minute",
             "icon": "chip",
             "value=": "system_info.load[0] / 65535 * 100",
             "unit": "%",
-            "format": "number:'1.1-1'"
+            "format": "number:'1.1-1'",
+            "maxSpan": 600000,
+            "initData=": [
+              "[ {x:zero = Date.now() - 10 * 60000, y: first = Math.max(15 * system_info.load[2] - 5 * system_info.load[1], 0)/10/ 65535 * 100},",
+              "  {x:zero + 2 * 60000, y: first},",
+              "  {x:zero + 4 * 60000, y: second = Math.max(5 * system_info.load[1] - 1 * system_info.load[0], 0)/4/ 65535 * 100},",
+              "  {x:zero + 6 * 60000, y: second},",
+              "  {x:zero + 8 * 60000, y: second},",
+              "  {x:zero + 10* 60000, y: system_info.load[0]/ 65535 * 100} ]"
+            ]
           },
           "content": [
             {
