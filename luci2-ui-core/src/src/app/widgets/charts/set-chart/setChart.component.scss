@@ -1,0 +1,32 @@
+/**
+ * Copyright (c) 2018 Adrian Panella <ianchi74@outlook.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
+.set-row-chart {
+  display: block;
+  height: 52px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+  max-width: 28%;
+}
+
+.ct-series-a .ct-line {
+  stroke: #3f51b5;
+}
+.ct-series-a .ct-area {
+  fill: #3f51b5;
+}
+
+set-chart > .set-row-flex > .set-icon-container {
+  border-radius: 36px;
+  background-color: #aaa;
+
+  .set-icon {
+    color: white;
+  }
+}

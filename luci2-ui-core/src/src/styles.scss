@@ -3,6 +3,8 @@
 // Include custom Material theming.
 @import './styles/main.scss';
 
+@import '~chartist/dist/chartist.min.css';
+
 // style for the legacy error message
 #legacy {
   font-size: 24px;

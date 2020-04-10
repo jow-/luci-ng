@@ -14,6 +14,7 @@ import {
   WidgetsCoreModule,
 } from 'rx-json-ui';
 
+import { ChartsWidgetsModule } from './charts/charts.module';
 import { PopupDialogComponent } from './popup/popup.component';
 import { rootContextProvider } from './rootContext';
 
@@ -21,6 +22,7 @@ import { rootContextProvider } from './rootContext';
 @NgModule({
   imports: [
     MaterialModule,
+    ChartsWidgetsModule,
     CommonWidgetsModule,
     FormFieldWidgetsModule,
     SettingsWidgetsModule,
