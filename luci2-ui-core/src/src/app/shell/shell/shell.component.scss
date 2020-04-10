@@ -9,6 +9,7 @@ app-shell {
 .app-bar {
   position: relative;
   z-index: 10;
+  flex: 0 0 auto;
 }
 
 .main-content {
@@ -16,6 +17,37 @@ app-shell {
   min-height: 100%;
 }
 
+.app-bar-menu {
+  margin-right: 4px;
+}
+.app-bar-separator {
+  flex: 1 1 auto;
+}
+
+.app-bar-button {
+  flex: 0 0 auto;
+}
+
+.app-bar-title {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-size: 1.4em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.app-bar-title img {
+  padding-top: 5px;
+  padding-right: 2px;
+  height: 30px;
+}
+
+.mat-icon.app-bar-logo {
+  height: 48px;
+  width: 48px;
+  color: #c5cae9;
+}
 .footer {
   flex: 0 1 auto;
   color: #aaaaaa;

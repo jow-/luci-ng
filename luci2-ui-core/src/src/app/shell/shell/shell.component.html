@@ -1,5 +1,6 @@
 <mat-toolbar class="app-bar mat-elevation-z6" color="primary">
   <button
+    class="app-bar-menu"
     mat-icon-button
     (click)="nav.open()"
     [style.display]="isMediaSmall ? 'block' : 'none'"
@@ -7,14 +8,66 @@
     <mat-icon svgIcon="menu"></mat-icon>
   </button>
 
-  <button mat-icon-button (click)="saveUCI()" [disabled]="saving">
-    <mat-icon svgIcon="content-save"></mat-icon>
-  </button>
+  <div class="app-bar-title">
+    <img src="assets/openwrt.svg" />
+    <mat-icon svgIcon="access-point" class="app-bar-logo"></mat-icon>
+  </div>
+  <div class="app-bar-separator"></div>
+
+  <div class="app-bar-buttons">
+    <button mat-icon-button [matMenuTriggerFor]="menuSave" aria-label="Save Options">
+      <mat-icon
+        svgIcon="content-save-edit-outline"
+        matBadge="*"
+        matBadgeColor="warn"
+        matBadgeSize="small"
+      ></mat-icon>
+    </button>
+
+    <mat-menu #menuSave="matMenu">
+      <button mat-menu-item (click)="saveUCI()" [disabled]="saving">
+        <mat-icon svgIcon="content-save"></mat-icon>
+        <span>Save Changes</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon svgIcon="undo"></mat-icon>
+        <span>Revert Changes</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon svgIcon="format-list-bulleted"></mat-icon>
+        <span>Show Changes</span>
+      </button>
+    </mat-menu>
+
+    <button mat-icon-button [matMenuTriggerFor]="menuPower" aria-label="Power Options">
+      <mat-icon svgIcon="power-settings"></mat-icon>
+    </button>
+
+    <mat-menu #menuPower="matMenu">
+      <div mat-menu-item>
+        <mat-icon svgIcon="sync"></mat-icon>
+        <span style="padding-right: 8px;">Auto Refresh</span>
+        <mat-slide-toggle [(ngModel)]="ubus.autorefresh"></mat-slide-toggle>
+      </div>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon svgIcon="logout-variant"></mat-icon>
+        <span>Logout</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon svgIcon="lock-reset"></mat-icon>
+        <span>Change Pasword</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon svgIcon="reload"></mat-icon>
+        <span>Reboot</span>
+      </button>
+    </mat-menu>
+  </div>
 </mat-toolbar>
 
 <mat-sidenav-container class="app-content">
   <mat-sidenav #nav [mode]="isMediaSmall ? 'over' : 'side'" [opened]="!isMediaSmall">
-    <app-nav-menu [nodes]="menu"></app-nav-menu>
+    <app-nav-menu [nodes]="menu" [drawer]="nav"></app-nav-menu>
   </mat-sidenav>
 
   <div class="main-content">

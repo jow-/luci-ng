@@ -1,8 +1,41 @@
 @import './../../../styles/_components.scss';
 
 app-login {
+  display: block;
+  padding-left: 12px;
+  padding-right: 12px;
+
+  .mat-dialog-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: $mediumgray;
+  }
+  .mat-dialog-title mat-icon {
+    height: 60px;
+    width: 60px;
+    flex: 0 0 auto;
+  }
+  .mat-dialog-title span {
+    flex: 0 0 auto;
+  }
+  .mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+  }
+
+  .mat-dialog-actions {
+    justify-content: flex-end;
+  }
+}
+
+.cdk-overlay-pane.login-dialog {
   @include media-query(sm) {
     height: 100vh;
     width: 100vw;
+    mat-dialog-container {
+      border-radius: 0px;
+    }
   }
 }

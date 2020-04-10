@@ -1,6 +1,7 @@
 ---
 icons:
   # general shell icons
+  - account
   - arrow-down-thick
   - arrow-left
   - arrow-up-thick
@@ -8,18 +9,31 @@ icons:
   - close
   - close-circle
   - content-save
+  - content-save-edit-outline
   - delete
   - dots-vertical
   - information-variant
   - flash
+  - format-list-bulleted
+  - lock-outline
+  - lock-reset
+  - logout-variant
   - menu
   - menu-right
+  - palette
   - pencil
   - play
+  - power-settings
   - reload
+  - refresh
   - stop
+  - sync
+  - sync-off
+  - translate
+  - undo
 
   # app-base icons
+  - access-point
   - access-point-network
   - chip
   - clock

@@ -10,6 +10,7 @@ import {
   OnChanges,
   ViewEncapsulation,
 } from '@angular/core';
+import { MatDrawer } from '@angular/material/sidenav';
 
 import { IMenuNode } from '../shell.interface';
 
@@ -24,7 +25,8 @@ export class NavItemComponent implements OnChanges {
   level = 1;
   @Input()
   node!: IMenuNode;
-
+  @Input()
+  drawer: MatDrawer | undefined;
   isExpanded = false;
   classes: { [index: string]: boolean } = {};
   nodeChilds: IMenuNode[] = [];

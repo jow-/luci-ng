@@ -14,6 +14,7 @@ import {
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
+import { UbusService } from '../../shared/ubus.service';
 import { UciModel2 } from '../../uci/uci';
 import { IMenuItem } from '../menu/menu.interface';
 
@@ -36,7 +37,8 @@ export class ShellComponent {
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     public cdr: ChangeDetectorRef,
-    public uci: UciModel2
+    public uci: UciModel2,
+    public ubus: UbusService
   ) {
     iconRegistry.addSvgIconSet(
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/default.svg')
@@ -53,5 +55,9 @@ export class ShellComponent {
     this.uci
       .save()
       .subscribe({ complete: () => ((this.saving = false), this.cdr.markForCheck()) });
+  }
+
+  logout(): void {
+    this.ubus.logout().subscribe();
   }
 }

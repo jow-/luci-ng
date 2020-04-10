@@ -17,6 +17,9 @@ import {
   retryWhen,
   shareReplay,
   tap,
+  switchMap,
+  filter,
+  take,
 } from 'rxjs/operators';
 
 import { ILogin } from '../shell/login/ILogin.interface';
@@ -52,6 +55,10 @@ export class UbusService implements ILogin {
 
   private _jsPath = new JsonPath();
 
+  private _autorefresh = true;
+
+  private _refreshSubject = new BehaviorSubject(true);
+
   constructor(
     private _jsonrpc: JsonrpcService,
     private _dialog: MatDialog,
@@ -76,6 +83,15 @@ export class UbusService implements ILogin {
 
   get user(): Observable<string> {
     return this._user.asObservable();
+  }
+
+  get autorefresh(): boolean {
+    return this._autorefresh;
+  }
+
+  set autorefresh(value: boolean) {
+    this._autorefresh = !!value;
+    this._refreshSubject.next(this._autorefresh);
   }
   list(params: any): Observable<any[]> {
     return this._jsonrpc.request('list', params);
@@ -153,6 +169,10 @@ export class UbusService implements ILogin {
       data: this,
       disableClose: true,
       hasBackdrop: true,
+      closeOnNavigation: false,
+      panelClass: 'login-dialog',
+      maxHeight: '100vh',
+      maxWidth: '100vw',
     };
 
     if (!this._dialogRef) this._dialogRef = this._dialog.open(LoginComponent, opts);
@@ -183,11 +203,23 @@ export class UbusService implements ILogin {
     );
   }
 
+  logout(): Observable<null> {
+    return this.call<null>('session', 'destroy', undefined, false).pipe(
+      map(() => {
+        this.sid = '';
+        window.localStorage.removeItem('ubus-sid');
+        this._user.next('');
+        return null;
+      })
+    );
+  }
+
   loadView(glob: string): Observable<[]> {
     return this.call('luci2.file', 'read_json', {
       glob: `/usr/share/rpcd/luci2/views/${glob}`,
     }).pipe(map((res: any) => res?.content || []));
   }
+
   callFactory(): (
     service: string,
     method: string,
@@ -228,7 +260,19 @@ export class UbusService implements ILogin {
       let result = this.call<any>(service, method, params, true, errorVal);
 
       if (repeatDelay && typeof repeatDelay === 'number')
-        result = result.pipe(repeatWhen((o) => o.pipe(delay(<number>repeatDelay))));
+        result = result.pipe(
+          repeatWhen((o) =>
+            o.pipe(
+              delay(<number>repeatDelay),
+              switchMap(() =>
+                this._refreshSubject.asObservable().pipe(
+                  filter((s) => s),
+                  take(1)
+                )
+              )
+            )
+          )
+        );
       if (jsPathFilter && typeof jsPathFilter === 'string')
         result = result.pipe(
           map((res) => this._jsPath.query(res, <string>jsPathFilter).values)

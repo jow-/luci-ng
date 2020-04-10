@@ -5,6 +5,7 @@
 
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -34,6 +35,7 @@ import { ShellComponent } from './shell/shell.component';
     RouterModule,
     WidgetsModule,
     MaterialModule,
+    MatBadgeModule,
     MatSidenavModule,
   ],
   declarations: [ShellComponent, NavMenuComponent, NavItemComponent, LoginComponent],
