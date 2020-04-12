@@ -5,6 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
+import { formatDate, formatNumber } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -175,6 +176,13 @@ export function rootContextFactory(
         return result;
       },
       formatDuration,
+      formatDate: (
+        value: string | number | Date,
+        format: string,
+        tz: string | undefined
+      ) => formatDate(value, format, 'en-us', tz),
+      formatNumber: (value: number, digits: string | undefined) =>
+        formatNumber(value, 'en-us', digits),
     },
     undefined,
     true
