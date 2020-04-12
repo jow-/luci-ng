@@ -11,15 +11,14 @@ import { BehaviorSubject, isObservable, Observable, of, throwError } from 'rxjs'
 import {
   catchError,
   delay,
+  filter,
   map,
-  mergeMap,
   repeatWhen,
   retryWhen,
   shareReplay,
-  tap,
   switchMap,
-  filter,
   take,
+  tap,
 } from 'rxjs/operators';
 
 import { ILogin } from '../shell/login/ILogin.interface';
@@ -34,10 +33,10 @@ const UBUS_ERRORS = [
   'Invalid command', // UBUS_STATUS_INVALID_COMMAND,
   'Invalid argument', // UBUS_STATUS_INVALID_ARGUMENT,
   'Method not found', // UBUS_STATUS_METHOD_NOT_FOUND,
-  'Not found', // UBUS_STATUS_NOT_FOUND,
-  'No data', // UBUS_STATUS_NO_DATA,
+  'Resource not found', // UBUS_STATUS_NOT_FOUND,
+  'No data received', // UBUS_STATUS_NO_DATA,
   'Permission denied', // UBUS_STATUS_PERMISSION_DENIED,
-  'Timeout', // UBUS_STATUS_TIMEOUT,
+  'Request timeout', // UBUS_STATUS_TIMEOUT,
   'Not supported', // UBUS_STATUS_NOT_SUPPORTED,
   'Unknown error', // UBUS_STATUS_UNKNOWN_ERROR,
   'Connection failed', // UBUS_STATUS_CONNECTION_FAILED,
@@ -51,7 +50,7 @@ export class UbusService implements ILogin {
   private _sid: string | undefined;
   private _dialogRef: MatDialogRef<LoginComponent> | undefined;
 
-  private _user: BehaviorSubject<string>;
+  private _user = new BehaviorSubject('');
 
   private _jsPath = new JsonPath();
 
@@ -66,16 +65,18 @@ export class UbusService implements ILogin {
   ) {
     this._jsonrpc.setUrl('/ubus');
 
-    // reuse last saved session id
+    // try reuse last saved session id
     this.sid = window.localStorage.getItem('ubus-sid') || '';
 
-    this._user = new BehaviorSubject('');
-
-    // TODO: test if session is ok and get current user
+    // check if still valid and retrieve username (login if necessary)
+    this.call('session', 'get', undefined, true, { all: {} })
+      .pipe(map((session: any) => (this.userName = session?.values?.username)))
+      .subscribe();
   }
 
   set sid(sid: string) {
     this._sid = /^[0-9a-fA-F]{32}$/.test(sid) ? sid : '00000000000000000000000000000000';
+    window.localStorage.setItem('ubus-sid', this._sid);
   }
   get sid(): string {
     return this._sid || '';
@@ -83,6 +84,10 @@ export class UbusService implements ILogin {
 
   get user(): Observable<string> {
     return this._user.asObservable();
+  }
+
+  set userName(name: string) {
+    this._user.next(typeof name === 'string' ? name : '');
   }
 
   get autorefresh(): boolean {
@@ -103,7 +108,7 @@ export class UbusService implements ILogin {
     params?: object,
     autologin: boolean = true,
     // tslint:disable-next-line: ban-types
-    returnError?: { [code: number]: any } | Function
+    returnError?: { all?: any; [code: number]: any } | Function
   ): Observable<T> {
     // cache params in object, so that SID can be changed later and be seen by resubscription holding a reference
     const jsonrpcParams = [this.sid, service, method, params || {}];
@@ -126,16 +131,33 @@ export class UbusService implements ILogin {
       // if there is "accessDenied" login and retry
       retryWhen((o) =>
         o.pipe(
-          mergeMap((e) =>
-            autologin &&
-            e.layer === 'jsonrpc' &&
-            e.code === JsonrpcErrorCodes.AccessDenied
-              ? this.loginDialog().pipe(
-                  tap(() => (jsonrpcParams[0] = this.sid)),
-                  debug('loginDialog')
-                )
-              : throwError(e)
-          )
+          switchMap((outerError) => {
+            if (
+              autologin &&
+              outerError.layer === 'jsonrpc' &&
+              outerError.code === JsonrpcErrorCodes.AccessDenied
+            ) {
+              // check if session expired or just insufficient privileges
+              return this.call('session', 'get', undefined, false).pipe(
+                map((s: any) => {
+                  // if we are here with a username it was a valid session with really permission problems
+                  outerError.accessDenied = !!s.values.username;
+                  console.log('AccessDenied');
+                  throw outerError;
+                }),
+                catchError((innerError) => {
+                  console.log('innerError', innerError);
+                  if (innerError.accessDenied) {
+                    delete innerError.accessDenied;
+                    return throwError(innerError);
+                  }
+                  return this.loginDialog().pipe(
+                    tap(() => (jsonrpcParams[0] = this.sid))
+                  );
+                })
+              );
+            } else return throwError(outerError);
+          })
         )
       ),
       catchError((e) => {
@@ -150,13 +172,18 @@ export class UbusService implements ILogin {
           const ret = returnError(e);
           return isObservable(ret) ? ret : of(ret);
         }
-        this._snackbar.open(
-          `Error calling ubus "${service} ${method}": ${e.message}`,
-          'close',
-          {
-            duration: 5000,
-          }
-        );
+        if (
+          autologin ||
+          e.layer !== 'jsonrpc' ||
+          e.code !== JsonrpcErrorCodes.AccessDenied
+        )
+          this._snackbar.open(
+            `Error calling ubus "${service} ${method}": ${e.message}`,
+            'close',
+            {
+              duration: 5000,
+            }
+          );
         return throwError(e);
       }),
 
@@ -185,7 +212,7 @@ export class UbusService implements ILogin {
   }
 
   login(user: string, password: string): Observable<any> {
-    this.sid = ' '; // always call login with resete SID
+    this.sid = ' '; // always call login with reset SID
     return this.call<any>(
       'session',
       'login',
@@ -194,9 +221,10 @@ export class UbusService implements ILogin {
     ).pipe(
       map((s) => {
         // save new token on successful login
-        this.sid = s && s.ubus_rpc_session;
-        window.localStorage.setItem('ubus-sid', this.sid);
-        this._user.next(s && s.data && s.data.username);
+        if (!s || !s.data) return '';
+
+        this.sid = s.ubus_rpc_session;
+        this.userName = s.data.username;
         return this.sid;
       }),
       debug('login')

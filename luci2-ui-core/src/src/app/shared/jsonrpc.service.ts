@@ -61,7 +61,7 @@ export class JsonrpcService {
    *
    * TODO: batch jsonrpc calls are not supported
    */
-  private _post(reqData: any): Observable<IJsonrpcResponse> {
+  private _post(reqData: JsonrpcRequest): Observable<IJsonrpcResponse> {
     if (!this._url) throw new Error('Jsonrpc: url not initialized');
 
     return (
@@ -88,13 +88,19 @@ export class JsonrpcService {
               code: e.status,
               message: e.statusText,
               data: e.error,
+              request: { method: reqData.method, params: reqData.params },
               layer: 'http',
             };
           }),
 
           // check if there is an inner jsonrpc error to rethrow; if not emit result
           map((r: IJsonrpcResponse) => {
-            if (r.error) throw { ...r.error, layer: 'jsonrpc' };
+            if (r.error)
+              throw {
+                ...r.error,
+                layer: 'jsonrpc',
+                request: { method: reqData.method, params: reqData.params },
+              };
             return r.result;
           }),
 
