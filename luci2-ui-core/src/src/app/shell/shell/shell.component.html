@@ -53,11 +53,8 @@
         <mat-icon svgIcon="logout-variant"></mat-icon>
         <span>Logout</span>
       </button>
-      <button mat-menu-item>
-        <mat-icon svgIcon="lock-reset"></mat-icon>
-        <span>Change Pasword</span>
-      </button>
-      <button mat-menu-item>
+
+      <button mat-menu-item (click)="reboot()">
         <mat-icon svgIcon="reload"></mat-icon>
         <span>Reboot</span>
       </button>

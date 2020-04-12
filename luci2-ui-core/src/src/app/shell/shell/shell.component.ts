@@ -11,11 +11,15 @@ import {
   Input,
   ViewEncapsulation,
 } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { of } from 'rxjs/internal/observable/of';
+import { switchMap } from 'rxjs/operators';
 
 import { UbusService } from '../../shared/ubus.service';
 import { UciModel2 } from '../../uci/uci';
+import { PopupDialogComponent } from '../../widgets/popup/popup.component';
 import { IMenuItem } from '../menu/menu.interface';
 
 @Component({
@@ -38,7 +42,8 @@ export class ShellComponent {
     sanitizer: DomSanitizer,
     public cdr: ChangeDetectorRef,
     public uci: UciModel2,
-    public ubus: UbusService
+    public ubus: UbusService,
+    public dialog: MatDialog
   ) {
     iconRegistry.addSvgIconSet(
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/default.svg')
@@ -59,5 +64,21 @@ export class ShellComponent {
 
   logout(): void {
     this.ubus.logout().subscribe();
+  }
+
+  reboot(): void {
+    this.dialog
+      .open(PopupDialogComponent, {
+        data: {
+          message: 'Are you sure you want to restart the device?',
+          okLabel: 'OK',
+          cancelLabel: 'Cancel',
+        },
+      })
+      .afterClosed()
+      .pipe(
+        switchMap((res) => (res ? this.ubus.call('luci2.system', 'reboot') : of(false)))
+      )
+      .subscribe();
   }
 }
