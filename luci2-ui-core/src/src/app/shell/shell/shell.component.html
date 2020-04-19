@@ -47,7 +47,7 @@
       <div mat-menu-item>
         <mat-icon svgIcon="sync"></mat-icon>
         <span style="padding-right: 8px;">Auto Refresh</span>
-        <mat-slide-toggle [(ngModel)]="ubus.autorefresh"></mat-slide-toggle>
+        <mat-slide-toggle [(ngModel)]="appState.pollState"></mat-slide-toggle>
       </div>
       <button mat-menu-item (click)="logout()">
         <mat-icon svgIcon="logout-variant"></mat-icon>

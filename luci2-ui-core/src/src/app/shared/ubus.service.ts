@@ -3,11 +3,12 @@
  * Licensed under the MIT license.
  */
 
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JsonPath } from 'espression-jsonpath';
-import { BehaviorSubject, isObservable, Observable, of, throwError } from 'rxjs';
+import { GET_OBSERVABLE } from 'espression-rx';
+import { isObservable, Observable, of, throwError } from 'rxjs';
 import {
   catchError,
   delay,
@@ -21,6 +22,7 @@ import {
   tap,
 } from 'rxjs/operators';
 
+import { AppState, APP_STATE } from '../app.service';
 import { ILogin } from '../shell/login/ILogin.interface';
 import { LoginComponent } from '../shell/login/login.component';
 
@@ -50,27 +52,24 @@ export class UbusService implements ILogin {
   private _sid: string | undefined;
   private _dialogRef: MatDialogRef<LoginComponent> | undefined;
 
-  private _user = new BehaviorSubject('');
-
   private _jsPath = new JsonPath();
 
-  private _autorefresh = true;
-
-  private _refreshSubject = new BehaviorSubject(true);
-
   constructor(
+    @Inject(APP_STATE) private _appState: AppState,
     private _jsonrpc: JsonrpcService,
     private _dialog: MatDialog,
     private _snackbar: MatSnackBar
   ) {
     this._jsonrpc.setUrl('/ubus');
 
+    this._appState.pollState = true;
+
     // try reuse last saved session id
     this.sid = window.localStorage.getItem('ubus-sid') || '';
 
     // check if still valid and retrieve username (login if necessary)
     this.call('session', 'get', undefined, true, { all: {} })
-      .pipe(map((session: any) => (this.userName = session?.values?.username)))
+      .pipe(map((session: any) => (this._appState.userName = session?.values?.username)))
       .subscribe();
   }
 
@@ -82,22 +81,6 @@ export class UbusService implements ILogin {
     return this._sid || '';
   }
 
-  get user(): Observable<string> {
-    return this._user.asObservable();
-  }
-
-  set userName(name: string) {
-    this._user.next(typeof name === 'string' ? name : '');
-  }
-
-  get autorefresh(): boolean {
-    return this._autorefresh;
-  }
-
-  set autorefresh(value: boolean) {
-    this._autorefresh = !!value;
-    this._refreshSubject.next(this._autorefresh);
-  }
   list(params: any): Observable<any[]> {
     return this._jsonrpc.request('list', params);
   }
@@ -224,7 +207,7 @@ export class UbusService implements ILogin {
         if (!s || !s.data) return '';
 
         this.sid = s.ubus_rpc_session;
-        this.userName = s.data.username;
+        this._appState.userName = s.data.username;
         return this.sid;
       }),
       debug('login')
@@ -236,7 +219,7 @@ export class UbusService implements ILogin {
       map(() => {
         this.sid = '';
         window.localStorage.removeItem('ubus-sid');
-        this._user.next('');
+        this._appState.userName = '';
         return null;
       })
     );
@@ -293,7 +276,7 @@ export class UbusService implements ILogin {
             o.pipe(
               delay(<number>repeatDelay),
               switchMap(() =>
-                this._refreshSubject.asObservable().pipe(
+                this._appState[GET_OBSERVABLE]('pollState').pipe(
                   filter((s) => s),
                   take(1)
                 )

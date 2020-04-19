@@ -23,6 +23,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 
+import { AppState, APP_STATE } from '../app.service';
 import { CgiService } from '../shared/cgi.service';
 import { UbusService } from '../shared/ubus.service';
 import { UciModel2 } from '../uci/uci';
@@ -41,6 +42,7 @@ export const rootContextProvider = {
     MatSnackBar,
     MatDialog,
     CgiService,
+    APP_STATE,
   ],
 };
 
@@ -51,6 +53,7 @@ export function rootContextFactory(
   http: HttpClient,
   snackbar: MatSnackBar,
   dialog: MatDialog,
+  cgi: CgiService,
   cgi: CgiService
 ): Context {
   const jsonPath = new JsonPath();
@@ -64,7 +67,7 @@ export function rootContextFactory(
       uci: uci.configs,
       uciLoad: uci.loadConfig.bind(uci),
       cgi,
-      $user: ubus.user,
+      $user: appSate[GET_OBSERVABLE]('userName'),
       jsonPath: (obj: object, path: string) => jsonPath.query(obj, path).values,
       load: (url: string) => http.get(url).pipe(catchError(() => of(undefined))),
       loadView: (glob: string) =>

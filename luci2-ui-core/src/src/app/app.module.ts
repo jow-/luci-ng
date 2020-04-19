@@ -8,16 +8,17 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { RxObject } from 'espression-rx';
 import { RoutedWidgetComponent } from 'rx-json-ui';
 
 import { AppComponent } from './app.component';
-import { JsonrpcService } from './shared/jsonrpc.service';
-import { UbusService } from './shared/ubus.service';
+import { APP_STATE } from './app.service';
 import { ViewsResolverService } from './shared/viewsresolver.service';
-import { MenuService } from './shell/menu/menu.service';
 import { MenuGuardService } from './shell/menu/menuguard.service';
 import { ShellModule } from './shell/shell.module';
 import { WidgetsModule } from './widgets';
+
+const appState = RxObject({});
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,7 +40,12 @@ import { WidgetsModule } from './widgets';
     ),
     WidgetsModule,
   ],
-  providers: [JsonrpcService, UbusService, MenuService],
+  providers: [
+    {
+      provide: APP_STATE,
+      useValue: appState,
+    },
+  ],
   entryComponents: [RoutedWidgetComponent],
   bootstrap: [AppComponent],
 })

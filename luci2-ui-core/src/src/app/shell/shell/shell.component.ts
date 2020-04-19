@@ -8,6 +8,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  Inject,
   Input,
   ViewEncapsulation,
 } from '@angular/core';
@@ -17,6 +18,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/operators';
 
+import { AppState, APP_STATE } from '../../app.service';
 import { UbusService } from '../../shared/ubus.service';
 import { UciModel2 } from '../../uci/uci';
 import { PopupDialogComponent } from '../../widgets/popup/popup.component';
@@ -43,7 +45,8 @@ export class ShellComponent {
     public cdr: ChangeDetectorRef,
     public uci: UciModel2,
     public ubus: UbusService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    @Inject(APP_STATE) public appState: AppState
   ) {
     iconRegistry.addSvgIconSet(
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/default.svg')
