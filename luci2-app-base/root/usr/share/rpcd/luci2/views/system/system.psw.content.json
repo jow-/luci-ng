@@ -37,9 +37,9 @@
       },
       "events": {
         "onClick": [
-          "ubus('luci2.system', 'password_set', {user:$user, password: $.pss1}) === null ? ",
-          "  $dlg.close() && snackbar('Password successfully changed') : ",
-          "  scnackbar('Failed to change the system password')"
+          "ubus('rpc-sys', 'password_set', {user:$user, password: $.psw1, extra: 'test'}, e => ",
+          "     snackbar(`Failed to change the system password: ${e.message}`) ) === null && ",
+          "  $dlg.close() && snackbar('Password successfully changed')  "
         ]
       }
     }

@@ -45,24 +45,22 @@
           "timezone": {
             "type": "string",
             "title": "Time Zone Info",
-            "description": "The time zone that date and time should be rendered in by default.",
+            "description": "Encoded time zone information.",
             "default": "UTC"
           },
           "zonename": {
-            "title": "Timezone Name",
-            "description": "The time zone that date and time should be rendered in by default.",
-            "depends=": "tz=ubus('luci', 'getTimezones')",
             "type": "string",
+            "title": "Timezone",
+            "description": "Name of the time zone to use to render time.",
+            "depends=": "tz=ubus('luci', 'getTimezones')",
             "ui": {
               "widget": "set-autocomplete",
               "events": {
-                "onValueChange": "$.timezone = tz && $value in tz && tz[$value].tzstring || ''"
+                "onValueChange": "$.timezone = tz?.[$value]?.tzstring ?? ''"
               }
             },
             "default": "UTC",
-            "enum=": "Object.keys(tz).sort()",
-
-            "propKey": "name"
+            "enum=": "Object.keys(tz).concat('UTC').sort()"
           },
           "buffersize": {
             "title": "Kernel log Buffersize",
@@ -100,10 +98,10 @@
             "format": "path"
           },
           "log_ip": {
-            "title": "Remote Syslog Server IP",
+            "title": "Remote Syslog Server",
 
             "type": "string",
-            "format": "ipv4",
+            "format": "host",
             "depends=": "$.log_remote",
             "required=": "!!$.log_remote"
           },
@@ -117,14 +115,14 @@
             "depends=": "$.log_remote"
           },
           "log_prefix": {
-            "title": "Log prefix (remote)",
+            "title": "Remote Log Prefix",
             "description": "Adds a prefix to all log messages send over network",
             "type": "string",
             "depends=": "$.log_remote"
           },
           "log_proto": {
             "title": "Protocol",
-            "description": "Sets the protocol to use for the connection",
+            "description": "Protocol to use for the connection",
             "type": "string",
             "enum": ["tcp", "udp"],
             "default": "udp",

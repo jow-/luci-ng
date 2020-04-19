@@ -4,7 +4,7 @@
     {
       "widget": "span",
       "options": {
-        "text=": "$.files[0].name || 'Select file'"
+        "text=": "$.files?.[0].name || 'Select file'"
       }
     },
     {
@@ -25,7 +25,7 @@
       },
       "events": {
         "onClick": [
-          "cgi.upload('/tmp/testfile','666', $.files[0]) && ",
+          "cgi.upload('/tmp/backup.tar.gz','666', $.files[0]) && ",
           "$dlg.close() && snackbar(`uploading ${$.files[0].name}`) "
         ]
       }

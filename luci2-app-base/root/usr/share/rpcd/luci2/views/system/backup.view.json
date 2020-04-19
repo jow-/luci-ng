@@ -40,11 +40,10 @@
       "content": [
         {
           "widget": "table",
-          "if": "data = ubus('luci2.system', 'backup_list')",
+          "if": "data = ubus('luci2.system', 'backup_list').files",
           "options": {
-            "columns": ["0"],
-            "headers": { "0": "File" },
-            "dataSource=": "map(data.files, '[$value]')",
+            "columns": ["File"],
+            "dataSource=": "data.map( File => {File})",
             "filter": true
           }
         }

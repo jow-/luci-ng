@@ -8,6 +8,7 @@
       "uciUI('system', '@system', 0, 'log_buffer_size')",
       {
         "widget": "set-expansion",
+        "bind": "uci.system['@system'][0]",
         "options": {
           "title": "File Log",
           "description=": "$.log_file ? `Logging to ${$.log_file}` : 'Disabled'"
@@ -39,50 +40,17 @@
     "options": {
       "title": "Cron Log"
     },
+    "events": { "onSetup": "$self.system0= uci.system['@system'][0]" },
     "content": [
       {
         "widget": "set-toggle",
-        "bind": "$.start",
+        "for": "['Log Job Start', 'Log Job End', 'Log Failed Jobs', 'Log PID for all Jobs']",
+        "bind": "$[$for.index]",
         "events": {
-          "onInit": "$.start = system0.cronloglevel & 1",
-          "onValueChange": "$value ? system0.cronloglevel |= 1 : system0.cronloglevel &= ~1"
+          "onInit": "$[$for.index] = system0.cronloglevel & (2 ** $for.index), console.log(2 ** $for.index)",
+          "onValueChange": "console.log(system0 | (2 ** $for.index) , $value ,$value ? system0.cronloglevel |= (2 ** $for.index) : system0.cronloglevel &= ~(2 ** $for.index))"
         },
-        "options": {
-          "title": "Log Job Start"
-        }
-      },
-      {
-        "widget": "set-toggle",
-        "bind": "$.end",
-        "events": {
-          "onInit": "$.end = system0.cronloglevel & 2",
-          "onValueChange": "$value ? system0.cronloglevel |= 2 : system0.cronloglevel &= ~2"
-        },
-        "options": {
-          "title": "Log Job End"
-        }
-      },
-      {
-        "widget": "set-toggle",
-        "bind": "$.failed",
-        "events": {
-          "onInit": "$.failed = system0.cronloglevel & 4",
-          "onValueChange": "$value ? system0.cronloglevel |= 4 : system0.cronloglevel &= ~4"
-        },
-        "options": {
-          "title": "Log Failed Jobs"
-        }
-      },
-      {
-        "widget": "set-toggle",
-        "bind": "$.pid",
-        "events": {
-          "onInit": "$.pid = system0.cronloglevel & 8",
-          "onValueChange": "$value ? system0.cronloglevel |= 8 : system0.cronloglevel &= ~8"
-        },
-        "options": {
-          "title": "Log PID for all Jobs"
-        }
+        "options": { "title=": "$for.data" }
       }
     ]
   }

@@ -1,10 +1,11 @@
 [
   {
     "widget": "set-popup",
+    "if": "$user",
     "options": {
       "title": "Password",
-      "description": "Changes the administrator password for accessing the device",
-      "popupTitle": "Change Password"
+      "description=": "`Changes password for current user (${$user})`",
+      "popupTitle=": "`Change Password for '${$user}'`"
     },
     "content": ["loadView('system/system.psw.content.json')"]
   },
@@ -16,15 +17,5 @@
       "description=": "`${uci.dropbear['@dropbear'].length} instances`"
     },
     "content": ["loadView('system/system.dropbear.content.json')"]
-  },
-  {
-    "widget": "set-button",
-    "options": {
-      "title": "Restart Device",
-      "buttonTitle": "Reboot"
-    },
-    "events": {
-      "onClick": "popupMsg('Are you sure you want to restart the device?', true) && ubus('luci2.system', 'reboot')"
-    }
   }
 ]

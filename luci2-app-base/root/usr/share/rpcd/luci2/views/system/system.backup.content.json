@@ -1,14 +1,5 @@
 [
   {
-    "widget": "set-popup",
-    "options": {
-      "title": "Firmware",
-      "description": "Flash new firmware image",
-      "popupTitle": "Flash"
-    },
-    "content": ["loadView('system/system.firmware.content.json')"]
-  },
-  {
     "widget": "set-button",
     "options": {
       "title": "Backup",
@@ -27,6 +18,15 @@
       "description": "List files/folder to keep & backup",
       "link": "system/backup"
     }
+  },
+  {
+    "widget": "set-popup",
+    "options": {
+      "title": "Firmware",
+      "description": "Flash new firmware image",
+      "popupTitle": "Flash"
+    },
+    "content": ["loadView('system/system.firmware.content.json')"]
   },
   {
     "widget": "set-expansion",
