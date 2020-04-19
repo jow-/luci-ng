@@ -105,6 +105,10 @@ export function rootContextFactory(
 
         return dialog
           .open(PopupDialogComponent, {
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            panelClass: 'wdg-popup',
+
             data: { message, okLabel, cancelLabel },
           })
           .afterClosed();

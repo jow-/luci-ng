@@ -32,8 +32,9 @@ app-login {
 
 .cdk-overlay-pane.login-dialog {
   @include media-query(sm) {
-    height: 100vh;
-    width: 100vw;
+    margin-top: 112px;
+    height: 100%;
+    width: 100%;
     mat-dialog-container {
       border-radius: 0px;
     }

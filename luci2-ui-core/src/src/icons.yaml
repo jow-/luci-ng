@@ -2,6 +2,8 @@
 icons:
   # general shell icons
   - account
+  - alert-circle-outline
+  - alert-outline
   - arrow-down-thick
   - arrow-left
   - arrow-up-thick
@@ -12,7 +14,9 @@ icons:
   - content-save-edit-outline
   - delete
   - dots-vertical
+  - help-circle-outline
   - information-variant
+  - information-outline
   - flash
   - format-list-bulleted
   - lock-outline

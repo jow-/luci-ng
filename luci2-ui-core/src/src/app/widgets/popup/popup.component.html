@@ -1,11 +1,13 @@
 <div mat-dialog-content>
-  {{ data.message }}
+  <mat-icon [svgIcon]="data.icon" *ngIf="data.icon" class="app-popup-icon"></mat-icon>
+  <span>{{ data.message }}</span>
+  <mat-spinner *ngIf="data.spinner" class="app-popup-spinner" diameter="36"></mat-spinner>
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions *ngIf="data.cancelLabel || data.okLabel">
   <button mat-button [mat-dialog-close]="false" *ngIf="data.cancelLabel">
     {{ data.cancelLabel }}
   </button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial *ngIf="data.okLabel">
     {{ data.okLabel }}
   </button>
 </div>

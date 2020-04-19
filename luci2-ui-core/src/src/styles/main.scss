@@ -11,3 +11,15 @@
 
 // import typography specific css
 @import './typography.scss';
+
+.cdk-overlay-pane.app-popup-panel {
+  @include media-query(sm) {
+    //margin-top: 56px;
+    //align-self: stretch;
+    width: 100%;
+
+    mat-dialog-container {
+      border-radius: 0px;
+    }
+  }
+}

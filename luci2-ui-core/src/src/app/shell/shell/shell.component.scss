@@ -2,6 +2,7 @@
 
 app-shell {
   flex: 1 1 auto;
+  overflow: hidden;
 
   @include flex-container(column, stretch);
 }
