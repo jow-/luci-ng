@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JsonPath } from 'espression-jsonpath';
-import { RxObject } from 'espression-rx';
+import { GET_OBSERVABLE, RxObject } from 'espression-rx';
 import {
   buildUI,
   Context,
@@ -25,11 +25,11 @@ import { catchError, map, take } from 'rxjs/operators';
 
 import { AppState, APP_STATE } from '../app.service';
 import { CgiService } from '../shared/cgi.service';
+import { ReconnectService } from '../shared/reconnect.service';
 import { UbusService } from '../shared/ubus.service';
 import { UciModel2 } from '../uci/uci';
 
-import { PopupDialogComponent } from './popup/popup.component';
-
+import { APP_POPUP_OPTS, PopupDialogComponent } from './popup/popup.component';
 export const rootContextProvider = {
   // tslint:disable-line:naming-convention
   provide: ROOT_EXPR_CONTEXT,
@@ -42,6 +42,7 @@ export const rootContextProvider = {
     MatSnackBar,
     MatDialog,
     CgiService,
+    ReconnectService,
     APP_STATE,
   ],
 };
@@ -54,7 +55,8 @@ export function rootContextFactory(
   snackbar: MatSnackBar,
   dialog: MatDialog,
   cgi: CgiService,
-  cgi: CgiService
+  reconnect: ReconnectService,
+  appSate: AppState
 ): Context {
   const jsonPath = new JsonPath();
   return Context.create(
@@ -105,9 +107,7 @@ export function rootContextFactory(
 
         return dialog
           .open(PopupDialogComponent, {
-            maxWidth: '100vw',
-            maxHeight: '100vh',
-            panelClass: 'wdg-popup',
+            ...APP_POPUP_OPTS,
 
             data: { message, okLabel, cancelLabel },
           })
@@ -190,6 +190,7 @@ export function rootContextFactory(
       ) => formatDate(value, format, 'en-us', tz),
       formatNumber: (value: number, digits: string | undefined) =>
         formatNumber(value, 'en-us', digits),
+      reconnect: reconnect.reconnect.bind(reconnect),
     },
     undefined,
     true

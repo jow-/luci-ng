@@ -19,9 +19,13 @@ import { of } from 'rxjs/internal/observable/of';
 import { switchMap } from 'rxjs/operators';
 
 import { AppState, APP_STATE } from '../../app.service';
+import { ReconnectService } from '../../shared/reconnect.service';
 import { UbusService } from '../../shared/ubus.service';
 import { UciModel2 } from '../../uci/uci';
-import { PopupDialogComponent } from '../../widgets/popup/popup.component';
+import {
+  APP_POPUP_OPTS,
+  PopupDialogComponent,
+} from '../../widgets/popup/popup.component';
 import { IMenuItem } from '../menu/menu.interface';
 
 @Component({
@@ -46,6 +50,7 @@ export class ShellComponent {
     public uci: UciModel2,
     public ubus: UbusService,
     public dialog: MatDialog,
+    public reconnect: ReconnectService,
     @Inject(APP_STATE) public appState: AppState
   ) {
     iconRegistry.addSvgIconSet(
@@ -72,6 +77,7 @@ export class ShellComponent {
   reboot(): void {
     this.dialog
       .open(PopupDialogComponent, {
+        ...APP_POPUP_OPTS,
         data: {
           message: 'Are you sure you want to restart the device?',
           okLabel: 'OK',
@@ -80,7 +86,15 @@ export class ShellComponent {
       })
       .afterClosed()
       .pipe(
-        switchMap((res) => (res ? this.ubus.call('luci2.system', 'reboot') : of(false)))
+        switchMap((res) =>
+          res
+            ? this.ubus
+                .call('system', 'reboot')
+                .pipe(
+                  switchMap(() => this.reconnect.reconnect([window.location.host], false))
+                )
+            : of(false)
+        )
       )
       .subscribe();
   }
