@@ -1,32 +1,25 @@
 {
   "status": {
     "title": "Status",
-    "index": 10
-  },
-  "status/overview": {
-    "title": "Overview",
+    "index": 10,
     "acls": ["status"],
     "view": "status/overview",
-    "index": 10
+    "hideChilds": true
   },
+  "status/overview": {
+    "title": "Status",
+    "index": 10,
+    "acls": ["status"],
+    "view": "status/overview"
+  },
+
   "status/routes": {
     "title": "Routes",
     "acls": ["status"],
     "view": "status/routes",
     "index": 20
   },
-  "status/syslog": {
-    "title": "System Log",
-    "acls": ["status"],
-    "view": "status/syslog",
-    "index": 30
-  },
-  "status/dmesg": {
-    "title": "Kernel Log",
-    "acls": ["status"],
-    "view": "status/dmesg",
-    "index": 40
-  },
+
   "status/processes": {
     "title": "Processes",
     "acls": ["status"],
@@ -38,5 +31,11 @@
     "acls": ["status"],
     "view": "status/firewall",
     "index": 60
+  },
+  "logs": {
+    "title": "Logs",
+    "acls": ["status"],
+    "view": "status/logs",
+    "index": 12
   }
 }

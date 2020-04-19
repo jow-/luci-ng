@@ -1,58 +1,49 @@
 {
-  "widget": "set-page",
+  "widget": "set-subpage",
+
+  "options": { "title": "Running Processes" },
   "content": [
     {
-      "widget": "set-section",
-      "options": { "title": "Running Processes" },
-      "content": [
-        {
-          "widget": "table",
-          "if": "data = ubus('luci2.system', 'process_list', 2000)",
-          "options": {
-            "dataSource=": "data.processes",
-            "trackBy": "pid",
-            "columns": [
-              "pid",
-              "user",
-              "command",
-              "cpu_percent",
-              "vsize_percent"
-            ],
-            "headers": {
-              "pid": "PID",
-              "user": "Owner",
-              "command": "Command",
-              "vsize_percent": "Memory Usage",
-              "cpu_percent": "CPU Usage"
-            },
-            "filter": true,
-            "actionsHeader": "Signal",
-            "actions": [
-              {
-                "icon": "reload",
-                "label": "Reload (HUP)",
-                "data": 1
-              },
-              {
-                "icon": "close-circle",
-                "label": "Terminate (INT)",
-                "data": 15
-              },
-              {
-                "icon": "flash",
-                "label": "Kill (KILL)",
-                "data": 9
-              }
-            ]
+      "widget": "table",
+
+      "options": {
+        "dataSource=": "data.processes",
+        "trackBy": "pid",
+        "columns": ["pid", "user", "command", "cpu_percent", "vsize_percent"],
+        "headers": {
+          "pid": "PID",
+          "user": "Owner",
+          "command": "Command",
+          "vsize_percent": "Memory Usage",
+          "cpu_percent": "CPU Usage"
+        },
+        "filter": true,
+        "actionsHeader": "Signal",
+        "actions": [
+          {
+            "icon": "reload",
+            "label": "Reload (HUP)",
+            "data": 1
           },
-          "events": {
-            "onAction": [
-              "ubus('luci2.system','process_signal', { pid: $row.pid, signal: $action.data}, e => snackbar(`Failed to restart service: ${e.message}`)) === null ",
-              "  && snackbar('Service restarted')  "
-            ]
+          {
+            "icon": "close-circle",
+            "label": "Terminate (INT)",
+            "data": 15
+          },
+          {
+            "icon": "flash",
+            "label": "Kill (KILL)",
+            "data": 9
           }
-        }
-      ]
+        ]
+      },
+      "events": {
+        "onSetup": "$self.data = ubus('luci2.system', 'process_list', 2000)",
+        "onAction": [
+          "ubus('luci2.system','process_signal', { pid: $row.pid, signal: $action.data}, e => snackbar(`Failed to restart service: ${e.message}`)) === null ",
+          "  && snackbar('Service restarted')  "
+        ]
+      }
     }
   ]
 }

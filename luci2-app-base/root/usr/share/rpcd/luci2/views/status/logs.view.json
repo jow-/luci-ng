@@ -1,0 +1,22 @@
+{
+  "widget": "set-page",
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "Logs" },
+      "content": [
+        {
+          "widget": "tabs",
+
+          "options": {
+            "tabLabels": ["System", "Kernel"]
+          },
+          "content": [
+            "loadView('status/syslog.content.json')",
+            "loadView('status/dmesg.content.json')"
+          ]
+        }
+      ]
+    }
+  ]
+}

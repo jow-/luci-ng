@@ -86,6 +86,24 @@
         "unit": "active",
         "icon": "link"
       }
+    },
+    {
+      "widget": "set-level",
+      "options": {
+        "value": "Routes",
+        "link": "status/routes",
+        "noGraph": true,
+        "icon": "directions-fork"
+      }
+    },
+    {
+      "widget": "set-level",
+      "options": {
+        "value": "Firewall",
+        "link": "status/firewall",
+        "noGraph": true,
+        "icon": "security-network"
+      }
     }
   ]
 }

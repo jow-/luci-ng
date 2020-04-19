@@ -42,12 +42,15 @@ icons:
   - chip
   - clock
   - clock-fast
+  - directions-fork
   - ip-network-outline
   - link
   - memory
+  - monitor-dashboard
   - router-network
   - router-wireless
   - sd
+  - security-network
   - table
   - wan
   - wifi-strength-1

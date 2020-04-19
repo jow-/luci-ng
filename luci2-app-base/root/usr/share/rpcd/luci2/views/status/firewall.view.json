@@ -1,30 +1,25 @@
 {
-  "widget": "set-page",
+  "widget": "set-subpage",
+  "options": { "title": "Firewall Status" },
   "content": [
     {
-      "widget": "set-section",
-      "options": { "title": "Firewall Status" },
+      "widget": "tabs",
+
+      "options": {
+        "tabLabels": ["IPv4", "IPv6"]
+      },
       "content": [
         {
-          "widget": "tabs",
-
-          "options": {
-            "tabLabels": ["IPv4", "IPv6"]
-          },
-          "content": [
-            {
-              "widget": "set-container",
-              "if": "fw = ubus('iptables', 'list', 10000), tables = Object.keys(fw)",
-              "events": { "onSetup": "$self.command = '/usr/sbin/iptables'" },
-              "content": ["loadView('status/firewall.content.json')"]
-            },
-            {
-              "widget": "set-container",
-              "if": "fw = ubus('iptables', 'list6', 10000), tables = Object.keys(fw)",
-              "events": { "onSetup": "$self.command = '/usr/sbin/ip6tables'" },
-              "content": ["loadView('status/firewall.content.json')"]
-            }
-          ]
+          "widget": "set-container",
+          "if": "fw = ubus('iptables', 'list', 10000), tables = Object.keys(fw)",
+          "events": { "onSetup": "$self.command = '/usr/sbin/iptables'" },
+          "content": ["loadView('status/firewall.content.json')"]
+        },
+        {
+          "widget": "set-container",
+          "if": "fw = ubus('iptables', 'list6', 10000), tables = Object.keys(fw)",
+          "events": { "onSetup": "$self.command = '/usr/sbin/ip6tables'" },
+          "content": ["loadView('status/firewall.content.json')"]
         }
       ]
     }
