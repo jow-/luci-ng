@@ -9,3 +9,7 @@ app-root {
 
   @include flex-container(column, stretch);
 }
+
+wdg-widget {
+  flex: 1 1 auto;
+}

@@ -5,22 +5,20 @@ app-shell {
   overflow: hidden;
 
   @include flex-container(column, stretch);
+  .mat-toolbar.app-bar {
+    padding: 0 8px;
+  }
 }
 
 .app-bar {
   position: relative;
   z-index: 10;
   flex: 0 0 auto;
+  .app-bar-menu {
+    margin-right: 4px;
+  }
 }
 
-.main-content {
-  padding: 0px;
-  min-height: 100%;
-}
-
-.app-bar-menu {
-  margin-right: 4px;
-}
 .app-bar-separator {
   flex: 1 1 auto;
 }
@@ -49,8 +47,14 @@ app-shell {
   width: 48px;
   color: #c5cae9;
 }
+
+.main-content {
+  flex: 1 0 auto;
+  padding: 0px;
+}
+
 .footer {
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   color: #aaaaaa;
   padding: 6px;
   margin-right: 36px;
@@ -60,11 +64,21 @@ app-shell {
 }
 
 mat-sidenav-container.app-content {
+  flex: 1 1 auto;
   overflow: hidden;
+}
+.app-content mat-sidenav-content {
+  overflow-x: hidden;
+  overflow-y: auto;
   flex: 1 1 auto;
 
   display: flex;
   flex-direction: column;
+}
+
+.main-content {
+  overflow: hidden;
+  @include flex-container(column, stretch);
 }
 
 mat-sidenav {
