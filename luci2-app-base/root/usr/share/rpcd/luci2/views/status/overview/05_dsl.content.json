@@ -7,12 +7,11 @@
   },
   "content": [
     {
-      "widget": "set-level",
+      "widget": "set-expansion",
       "options": {
         "icon": "router-network",
-        "value=": "`${dsl.line_state} [0x${dsl.line_state_detail.toString(16)}]`",
-        "title=": "`Mode ${dsl.line_mode_s || '-'}`",
-        "noGraph": true
+        "title=": "`${dsl.line_state} [0x${dsl.line_state_detail.toString(16)}]`",
+        "description=": "`Mode ${dsl.line_mode_s || '-'}`"
       },
       "content": [
         {

@@ -101,11 +101,10 @@
       ]
     },
     {
-      "widget": "set-level",
+      "widget": "set-link",
       "options": {
-        "value": "Process List",
+        "title": "Process List",
         "link": "status/processes",
-        "noGraph": true,
         "icon": "monitor-dashboard"
       }
     },

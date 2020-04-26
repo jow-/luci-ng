@@ -1,5 +1,6 @@
 {
   "widget": "set-page",
+  "options": { "class": "status-overview" },
   "events": {
     "onSetup": "$self.system_info = ubus('system','info', 2000)"
   },

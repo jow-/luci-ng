@@ -7,7 +7,7 @@
   ],
   "content": [
     {
-      "widget": "set-level",
+      "widget": "set-expansion",
       "for": ["$trackBy= i => i.interface, ifs"],
       "events": {
         "onSetup": [
@@ -17,10 +17,9 @@
         ]
       },
       "options": {
-        "value=": "ifc.interface.toUpperCase()",
-        "unit=": "`Protocol: ${ifc.proto}`",
-        "title=": "`IP: ${ip}`",
-        "noGraph": true,
+        "title=": "ifc.interface.toUpperCase()",
+        "subtitle=": "`Protocol: ${ifc.proto}`",
+        "description=": "`IP: ${ip}`",
         "icon": "wan"
       },
       "content": [
@@ -88,20 +87,18 @@
       }
     },
     {
-      "widget": "set-level",
+      "widget": "set-link",
       "options": {
-        "value": "Routes",
+        "title": "Routes",
         "link": "status/routes",
-        "noGraph": true,
         "icon": "directions-fork"
       }
     },
     {
-      "widget": "set-level",
+      "widget": "set-link",
       "options": {
-        "value": "Firewall",
+        "title": "Firewall",
         "link": "status/firewall",
-        "noGraph": true,
         "icon": "security-network"
       }
     }

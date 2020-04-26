@@ -6,14 +6,12 @@
   },
   "content": [
     {
-      "widget": "set-level",
+      "widget": "set-expansion",
       "options": {
-        "title": "DHCP Leases",
-        "value=": "leases.dhcp_leases.length",
-        "unit": "leased ip",
-        "format": "number:'1.0-0'",
+        "description": "DHCP Leases",
+        "title=": "formatNumber(leases.dhcp_leases.length, '1.0-0')",
+        "subtitle": "leased ip",
         "icon": "ip-network-outline",
-        "noGraph": true,
         "noExpand=": "!leases.dhcp_leases.length"
       },
       "content": [
@@ -34,14 +32,12 @@
       ]
     },
     {
-      "widget": "set-level",
+      "widget": "set-expansion",
       "options": {
-        "title": "DHCPv6 Leases",
-        "value=": "leases.dhcp6_leases.length",
-        "unit": "leased ip",
-        "format": "number:'1.0-0'",
+        "description": "DHCPv6 Leases",
+        "title=": "formatNumber(leases.dhcp6_leases.length, '1.0-0')",
+        "subtitle": "leased ip",
         "icon": "ip-network-outline",
-        "noGraph": true,
         "noExpand=": "!leases.dhcp6_leases.length"
       },
       "content": [

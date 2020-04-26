@@ -35,7 +35,7 @@
     }
   },
   {
-    "widget": "set-level",
+    "widget": "set-expansion",
     "for": "tables",
     "events": {
       "onSetup": [
@@ -46,13 +46,13 @@
       ]
     },
     "options": {
-      "value=": "$for.data.toUpperCase()",
-      "unit": "Table",
-      "title=": [
+      "class": "status-overview",
+      "title=": "$for.data.toUpperCase()",
+      "subtitle": "Table",
+      "value=": [
         "` ${allChains.length} Chains ${",
         "     $.hide && allChains.length > usedChains.length  ? `(${allChains.length - usedChains.length} empty)` : ''}`"
       ],
-      "noGraph": true,
       "icon": "table"
     },
     "content": [

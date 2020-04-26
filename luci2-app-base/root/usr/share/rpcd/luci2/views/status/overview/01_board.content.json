@@ -3,18 +3,20 @@
   "options": { "title": "Device" },
   "content": [
     {
-      "widget": "set-level",
+      "widget": "set-expansion",
       "if": "board = ubus('system','board')",
       "options": {
-        "value=": "board.model",
-        "title=": "board.release.description",
-        "icon": "information-variant",
-        "noGraph": true
+        "title=": "board.model",
+        "description=": "board.release.description",
+        "icon": "information-variant"
       },
       "content": [
         {
           "widget": "set-text",
-          "options": { "title": "Hostname", "value=": "board.hostname" }
+          "options": {
+            "title": "Hostname",
+            "value=": "board.hostname"
+          }
         },
         {
           "widget": "set-text",
@@ -31,25 +33,21 @@
       ]
     },
     {
-      "widget": "set-level",
+      "widget": "set-text",
       "options": {
-        "title": "Local Time",
+        "description": "Local Time",
         "icon": "clock",
-        "value=": "new Date(system_info.localtime * 1000)",
-        "format": "date:'MMM d y, HH:mm:ss':'UTC'",
-        "unit=": "system_info.tzone",
-        "noGraph": true
+        "title=": "formatDate(system_info.localtime * 1000, 'MMM d y, HH:mm:ss', 'UTC')",
+        "subtitle=": "system_info.tzone"
       }
     },
     {
-      "widget": "set-level",
+      "widget": "set-text",
       "options": {
-        "title": "Up Time",
+        "description": "Up Time",
         "icon": "clock-fast",
-        "value=": "system_info.uptime * 1000",
-        "unit": "d h:m:s",
-        "format": "duration:'d h:mm:ss'",
-        "noGraph": true
+        "title=": "formatDuration(system_info.uptime * 1000, 'd h:mm:ss')",
+        "subtitle": "d h:m:s"
       }
     },
     "loadView('status/overview/include/board.*.json')"

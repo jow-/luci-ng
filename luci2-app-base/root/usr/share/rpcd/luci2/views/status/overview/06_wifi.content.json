@@ -7,7 +7,7 @@
   },
   "content": [
     {
-      "widget": "set-level",
+      "widget": "set-expansion",
       "for": "devNames",
       "events": {
         "onSetup": [
@@ -18,14 +18,13 @@
       },
       "options": {
         "icon": "access-point-network",
-        "value=": "`${iwinfo.hardware.name || 'Generic 80211'}${iwinfo.hwmodes.sort().join('')}`",
-        "unit=": "$for.data",
-        "title=": [
+        "title=": "`${iwinfo.hardware.name || 'Generic 80211'}${iwinfo.hwmodes.sort().join('')}`",
+        "subtitle=": "$for.data",
+        "description=": [
           "`${iwinfo.frequency >0 ? `${(iwinfo.frequency/1000).toFixed(1)}GHz - ` : '' ",
           "}CH ${iwinfo.channel || device.config.channel} ${",
           "iwinfo.bitrate >0 ? `- ${(iwinfo.bitrate/1000).toFixed(0)}Mbit/s` : '' }`"
         ],
-        "noGraph": true,
         "expanded": true
       },
       "content": [
