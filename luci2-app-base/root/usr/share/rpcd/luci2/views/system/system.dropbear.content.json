@@ -13,18 +13,7 @@
           "title=": "`Listen on ${$row.data.Interface || 'all'}:${$row.data.Port}`"
         },
         "content": [
-          "uciUI('dropbear', '@dropbear', $row.index, ['enable', 'Port'])",
-          {
-            "widget": "set-select",
-            "bind": "$row.data.Interface",
-            "options": {
-              "title": "Interface",
-              "description": "Leave empty to listen on all interfaces",
-              "propKey": "interface",
-              "type": "string",
-              "enum=": "ubus('network.interface', 'dump', {} , `$.interface[?(@.device!='lo')]`)"
-            }
-          },
+          "uciUI('dropbear', '@dropbear', $row.index, ['enable', 'Port', 'Interface', 'PasswordAuth', 'RootLogin', 'GatewayPorts'])",
           {
             "widget": "set-link",
             "options": {
@@ -39,10 +28,12 @@
   {
     "widget": "set-expansion",
     "if": [
-      "sshKeys = RxObject([]),",
-      "ubus('luci2.system', 'sshkeys_get', undefined, {4: {keys: []}}).keys.map( value => (",
-      "m=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec(value), ",
-      "sshKeys.push({row: value, key: m[4], type: m[1], hash: m[2], ending: m[3]})))"
+      "$self.data = $,",
+      "$self.reSSH = /^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/,",
+      "$.sshKeys = [],",
+      "$.sshKeys = ubus('luci2.system', 'sshkeys_get', undefined, {4: {keys: []}}).keys.map( value => (",
+      "   m=reSSH.exec(value), ",
+      "   {row: value, key: m[4], type: m[1], hash: m[2], ending: m[3]}))"
     ],
     "options": {
       "title": "SSH Keys",
@@ -52,9 +43,18 @@
       {
         "widget": "table",
         "options": {
-          "dataSource=": "sshKeys",
+          "dataSource=": "data.sshKeys",
           "columns": ["key", "type", "ending"],
-          "headers": { "key": "Remote", "type": "Type", "ending": "Hash End" }
+          "headers": { "key": "Remote", "type": "Type", "ending": "Hash End" },
+          "actions": [{ "icon": "delete", "label": "Delete" }]
+        },
+        "events": {
+          "onAction": [
+            "popupMsg(`Are you sure you want to delete key '...${$row.ending}' for '${$row.key}'?`, 'Cancel', 'Delete') ",
+            "  && data.sshKeys.splice($index, 1) && ",
+            "ubus('luci2.system', 'sshkeys_set' , {keys: data.sshKeys.map(k => k.row) }) === null",
+            " && snackbar('Keys updated')"
+          ]
         }
       },
       {
@@ -63,16 +63,18 @@
           "title": "NEW",
           "popupTitle": "New SSH key"
         },
-        "events": { "onSetup": "$tmp.key = ''" },
         "content": {
           "main": [
             {
               "widget": "textarea",
-              "bind": "$tmp.key",
+              "bind": "$.key",
+              "events": { "onSetup": "$.key = ''" },
+
               "options": {
                 "title": "Key",
                 "type": "string",
-                "pattern": "!/^([^ ]+) ([^ ]*([^ ]{8})) ([^ ]+)$/.test($value) && 'Invalid key format'"
+                "pattern": "^[^ ]+ [^ ]*[^ ]{8} [^ ]+$",
+                "required": true
               }
             }
           ],
@@ -90,9 +92,10 @@
               },
               "events": {
                 "onClick": [
-                  "m=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec($tmp.key),",
-                  "sshKeys.push({row: $tmp.key, key: m[4], type: m[1], hash: m[2], ending: m[3]}),",
-                  "console.log(sshKeys), $dlg.close()"
+                  "m=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec($.key),",
+                  "data.sshKeys.push({row: $.key, key: m[4], type: m[1], hash: m[2], ending: m[3]}),",
+                  "ubus('luci2.system', 'sshkeys_set' , {keys: data.sshKeys.map(k => k.row) }) === null",
+                  "&& $dlg.close() && snackbar('SSH Key added')"
                 ]
               }
             }
