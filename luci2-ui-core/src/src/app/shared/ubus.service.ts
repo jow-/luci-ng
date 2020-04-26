@@ -54,6 +54,8 @@ export class UbusService implements ILogin {
 
   private _jsPath = new JsonPath();
 
+  private _viewCache = new Map<string, any[]>();
+
   constructor(
     @Inject(APP_STATE) private _appState: AppState,
     private _jsonrpc: JsonrpcService,
@@ -225,10 +227,20 @@ export class UbusService implements ILogin {
     );
   }
 
-  loadView(glob: string): Observable<[]> {
-    return this.call('luci2.file', 'read_json', {
+  loadView(glob: string): Observable<any[]> {
+    // first try to reuse cache
+    const view = this._viewCache.get(glob);
+    if (view) return of(view);
+
+    return this.call<{ content?: any[] }>('luci2.file', 'read_json', {
       glob: `/usr/share/rpcd/luci2/views/${glob}`,
-    }).pipe(map((res: any) => res?.content || []));
+    }).pipe(
+      map(({ content }) => {
+        content = content || [];
+        this._viewCache.set(glob, content);
+        return content;
+      })
+    );
   }
 
   callFactory(): (
