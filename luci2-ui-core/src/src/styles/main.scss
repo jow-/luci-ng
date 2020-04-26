@@ -1,5 +1,3 @@
-@import '~rx-json-ui/styles';
-
 // import global themes
 @import './app-theme';
 
@@ -8,9 +6,6 @@
 
 // import global mixins
 @import './mixins';
-
-// import typography specific css
-@import './typography.scss';
 
 .cdk-overlay-pane.app-popup-panel {
   @include media-query(sm) {

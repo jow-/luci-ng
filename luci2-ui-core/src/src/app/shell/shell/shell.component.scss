@@ -28,9 +28,6 @@ app-shell {
 }
 
 .app-bar-title {
-  font-family: 'Roboto Condensed';
-  font-style: normal;
-  font-size: 1.4em;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -58,7 +55,7 @@ app-shell {
   color: #aaaaaa;
   padding: 6px;
   margin-bottom: 5px;
-  font-size: 75%;
+  font-size: 80%;
 
   display: flex;
   justify-content: center;

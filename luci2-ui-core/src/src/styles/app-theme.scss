@@ -9,10 +9,65 @@ $warn: mat-palette($mat-red);
 
 $theme: mat-light-theme($primary, $accent, $warn);
 
+// use a lighter default text (std is 0.87)
+$theme: map-merge(
+  $theme,
+  (
+    foreground:
+      map-merge(
+        map_get($theme, foreground),
+        (
+          text: rgba(black, 0.75),
+        )
+      ),
+  )
+);
+
 // TODO: include by component only used ones?
 @include angular-material-theme($theme);
+$typography: mat-typography-config();
+@include mat-base-typography($typography);
 
 // APP Theming
-
 @import './../app/shell/nav-menu/_nav-menu.theming.scss';
 @include nav-menu-theme($theme);
+
+// default font
+body {
+  @include mat-typography-level-to-styles($typography, body-1);
+}
+
+// settings theming
+
+@import '~rx-json-ui/src/lib/material/settings/styles/settings.theme.scss';
+@import '~rx-json-ui/src/lib/material/settings/styles/settings.typography.scss';
+
+// general theme and for subrows
+*,
+.set-row-content .set-row-main {
+  @include settings-widget-theme($theme);
+  @include settings-widget-typography($typography);
+
+  .set-row-label {
+    text-transform: none;
+  }
+  .set-row-subtitle {
+    text-transform: none;
+  }
+}
+
+// theme for first level of status-overview
+.status-overview {
+  @include settings-widget-typography($typography, title, body-1);
+
+  .set-row-label {
+    text-transform: capitalize;
+  }
+  .set-row-subtitle {
+    text-transform: uppercase;
+  }
+
+  .set-row-subtitle {
+    @include mat-typography-level-to-styles($typography, body-1);
+  }
+}
