@@ -1,21 +1,44 @@
 {
   "widget": "set-subpage",
+  "events": { "onSetup": "$.hide = true" },
 
   "options": { "title": "Running Processes" },
   "content": [
     {
+      "widget": "set-toggle",
+      "bind": "$.hide",
+      "options": { "title": "Hide Worker Threads" }
+    },
+    {
       "widget": "table",
 
       "options": {
-        "dataSource=": "data.processes",
+        "dataSource=": "$.hide ? data.processes.filter( p => p.stat[1]!='W') : data.processes",
         "trackBy": "pid",
-        "columns": ["pid", "user", "command", "cpu_percent", "vsize_percent"],
+        "columns": [
+          "pid",
+          "user",
+          "command",
+          "cpu_percent",
+          "vsize_percent",
+          "ppid",
+          "stat"
+        ],
+        "columns_sm": [
+          "pid",
+          "user",
+          "command",
+          "cpu_percent",
+          "vsize_percent"
+        ],
         "headers": {
           "pid": "PID",
           "user": "Owner",
           "command": "Command",
           "vsize_percent": "Memory Usage",
-          "cpu_percent": "CPU Usage"
+          "cpu_percent": "CPU Usage",
+          "ppid": "Parent PID",
+          "stat": "STAT"
         },
         "filter": true,
         "actionsHeader": "Signal",
