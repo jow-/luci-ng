@@ -55,7 +55,7 @@
             },
             {
               "widget": "table",
-              "if": "assoc.length",
+              "if": "assoc.length && hosts",
               "options": {
                 "dataSource=": [
                   "assoc.map( s => { mac: s.mac, ",
@@ -69,7 +69,7 @@
                 "headers": {
                   "ref": "Host",
                   "mac": "MAC-Address",
-                  "signal": "Signal / Noise",
+                  "signal": "Signal/ Noise",
                   "rate": "RX/TX Mbit/s"
                 }
               }
