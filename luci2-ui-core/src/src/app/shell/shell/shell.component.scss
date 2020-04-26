@@ -57,15 +57,23 @@ app-shell {
   flex: 0 0 auto;
   color: #aaaaaa;
   padding: 6px;
-  margin-right: 36px;
   margin-bottom: 5px;
   font-size: 75%;
+
+  display: flex;
+  justify-content: center;
+}
+
+.footer-content {
+  flex: 0 1 680px;
   text-align: right;
 }
 
 mat-sidenav-container.app-content {
   flex: 1 1 auto;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .app-content mat-sidenav-content {
   overflow-x: hidden;
