@@ -6,7 +6,7 @@
  */
 
 import { NgModule } from '@angular/core';
-import { MaterialModule, WidgetsCoreModule } from 'rx-json-ui';
+import { BaseSettingsModule, MaterialModule, WidgetsCoreModule } from 'rx-json-ui';
 
 import { SetChartWidgetComponent } from './set-chart/setChart.component';
 
@@ -15,6 +15,7 @@ export { SetChartWidgetComponent } from './set-chart/setChart.component';
 @NgModule({
   imports: [
     MaterialModule,
+    BaseSettingsModule,
 
     WidgetsCoreModule.forRoot({
       widgets: [{ type: 'set-chart', component: SetChartWidgetComponent }],

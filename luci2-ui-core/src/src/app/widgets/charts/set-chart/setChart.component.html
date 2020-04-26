@@ -1,41 +1,12 @@
-<div class="set-row-flex" (click)="toggle()">
-  <div class="set-icon-container" *ngIf="options.icon">
-    <mat-icon [svgIcon]="options.icon" class="set-icon"></mat-icon>
-  </div>
-
-  <div class="set-row-label">
-    <div class="set-row-title set-level-value">
-      <span>{{ options.value || 0 | format: options.format }}</span>
-      <span *ngIf="options.total">/{{ options.total | format: options.format }}</span>
-      <span class="set-level-unit">{{ options.unit }}</span>
-    </div>
-    <div class="set-row-description set-level-title">
-      <h5>{{ options.title }}</h5>
-    </div>
-  </div>
-  <div class="set-row-chart ct-chart" #rowChart></div>
-  <div
-    class="set-row-ctrl"
-    [ngClass]="{
-      expanded: expanded,
-      collapsed: !expanded,
-      hidden: options.noExpand || !content?.main.length
-    }"
-  >
-    <mat-icon svgIcon="chevron-down" class="rotating-icon"></mat-icon>
-  </div>
-</div>
-
-<div
-  class="set-expansion-content"
-  [ngClass]="{ expanded: expanded, collapsed: !expanded }"
+<set-base
+  [icon]="options.icon"
+  [title]="getTitle()"
+  [subtitle]="options.unit"
+  [description]="options.title"
+  [expanded]="options.expanded"
+  [noExpand]="options.noExpand"
+  [content]="content?.main"
+  [context]="context"
 >
-  <div *ngIf="content?.main.length && expanded" class="set-subrows">
-    <ng-container
-      *ngFor="let element of content!.main"
-      [wdgWidget]="element"
-      [parentContext]="context"
-    >
-    </ng-container>
-  </div>
-</div>
+  <div class="set-row-chart ct-chart" #rowChart></div>
+</set-base>

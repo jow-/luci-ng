@@ -6,6 +6,7 @@
  */
 
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -14,9 +15,14 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import * as Chartist from 'chartist';
-import { BaseWidget, MainSlotContentDef } from 'rx-json-ui';
+import {
+  BaseWidget,
+  CommonOptionsDef,
+  formatValue,
+  MainSlotContentDef,
+} from 'rx-json-ui';
 
-export interface SetChartWidgetOptions {
+export interface SetChartWidgetOptions extends CommonOptionsDef {
   value: number;
   total: number;
   icon: string;
@@ -42,7 +48,7 @@ export interface SetChartWidgetOptions {
 })
 export class SetChartWidgetComponent
   extends BaseWidget<SetChartWidgetOptions, MainSlotContentDef>
-  implements OnDestroy {
+  implements OnDestroy, AfterViewInit {
   @ViewChild('rowChart') chartElement: ElementRef | undefined;
 
   chartData: Array<{ x: number; y: number }> | undefined;
@@ -60,19 +66,13 @@ export class SetChartWidgetComponent
     },
     axisY: { showGrid: false, showLabel: false, offset: 0 },
   };
-  expanded = false;
   private chart: Chartist.IChartistLineChart | undefined;
 
   dynOnAfterBind(): void {
-    this.map('expanded', (e) => (this.expanded = !!e));
-
     this.map('value', (v) => {
       if (!this.chartData) return;
       this.chartData.push({ x: Date.now(), y: v });
     });
-  }
-  toggle(): void {
-    this.expanded = !this.expanded;
   }
 
   dynOnChange(): void {
@@ -89,7 +89,10 @@ export class SetChartWidgetComponent
       this.chartData.splice(0, first - 1);
       (this.chartOpt.axisX as any).highLow = { low: min, high: last };
     }
+    this.drawChart();
+  }
 
+  drawChart(): void {
     if (this.chartElement) {
       if (!this.chart)
         this.chart = new Chartist.Line(
@@ -104,6 +107,11 @@ export class SetChartWidgetComponent
         );
     }
   }
+  ngAfterViewInit(): void {
+    // dynOnChange fires the first time before the view is initialized, so no reference to the native element
+    // is available yet. Once the view is initialized, draw the chart.
+    this.drawChart();
+  }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
@@ -112,5 +120,11 @@ export class SetChartWidgetComponent
       this.chart.detach();
       this.chart = undefined;
     }
+  }
+
+  getTitle(): string {
+    return `${formatValue(this.options.value, this.options.format)}${
+      this.options.total ? `/${formatValue(this.options.total, this.options.format)}` : ''
+    }`;
   }
 }
