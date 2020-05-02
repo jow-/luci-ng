@@ -17,8 +17,10 @@ import {
   ESpression,
   Expressions,
   formatDuration,
+  formatHuman,
   ROOT_EXPR_CONTEXT,
   SchemaArray,
+  toHumanReadable,
 } from 'rx-json-ui';
 import { Observable, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
@@ -192,6 +194,8 @@ export function rootContextFactory(
       formatNumber: (value: number, digits: string | undefined) =>
         formatNumber(value, 'en-us', digits),
       reconnect: reconnect.reconnect.bind(reconnect),
+      toHumanReadable,
+      formatHuman,
     },
     undefined,
     true
