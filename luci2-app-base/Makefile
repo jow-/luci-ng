@@ -36,6 +36,9 @@ Build/Compile = $(Build/Compile/Default)
 define Package/luci2-app-base/install
 	$(INSTALL_DIR) $(1)/usr/share
 	$(CP) ./root/usr/share/* $(1)/usr/share/
+
+  $(INSTALL_DIR) $(1)/www/luci2/assets/modules
+	$(CP) ./root/www/luci2/modules/* $(1)/www/luci2/assets/modules/
 endef
 
 $(eval $(call BuildPackage,luci2-app-base))

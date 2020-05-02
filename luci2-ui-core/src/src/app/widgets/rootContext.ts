@@ -63,6 +63,7 @@ export function rootContextFactory(
     undefined,
     undefined,
     {
+      modules: {},
       console,
       ubus: ubus.callFactory(),
       ubusList: ubus.list.bind(ubus),

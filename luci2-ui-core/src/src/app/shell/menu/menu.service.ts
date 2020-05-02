@@ -139,7 +139,7 @@ export class MenuService {
     } else {
       route.component = RoutedWidgetComponent;
       route.resolve = { widgetDef: ViewsResolverService };
-      route.data = { view: item.view };
+      route.data = { view: item.view, module: item.module };
     }
 
     this._routes.push(route);
