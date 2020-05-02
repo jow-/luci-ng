@@ -29,33 +29,37 @@
     "widget": "set-expansion",
     "if": [
       "$self.data = $,",
-      "$self.reSSH = /^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/,",
       "$.sshKeys = [],",
-      "$.sshKeys = ubus('luci2.system', 'sshkeys_get', undefined, {4: {keys: []}}).keys.map( value => (",
-      "   m=reSSH.exec(value), ",
-      "   {row: value, key: m[4], type: m[1], hash: m[2], ending: m[3]}))"
+      "$.sshKeys = ubus('luci2.system', 'sshkeys_get', undefined, {4: {keys: []}}).keys.map( value => modules.ssh.decode(value))"
     ],
     "options": {
       "title": "SSH Keys",
-      "description": "Manage authorization keys for passwordless logins"
+      "description": "Manage authorization keys for passwordless logins",
+      "value=": "`${data.sshKeys?.length ?? 0} keys`"
     },
     "content": [
       {
-        "widget": "table",
-        "options": {
-          "dataSource=": "data.sshKeys",
-          "columns": ["key", "type", "ending"],
-          "headers": { "key": "Remote", "type": "Type", "ending": "Hash End" },
-          "actions": [{ "icon": "delete", "label": "Delete" }]
-        },
+        "widget": "set-rowarray",
+        "bind": "data.sshKeys",
+
         "events": {
-          "onAction": [
-            "popupMsg(`Are you sure you want to delete key '...${$row.ending}' for '${$row.key}'?`, 'Cancel', 'Delete') ",
-            "  && data.sshKeys.splice($index, 1) && ",
-            "ubus('luci2.system', 'sshkeys_set' , {keys: data.sshKeys.map(k => k.row) }) === null",
+          "onDeleteRow": [
+            "popupMsg(`Are you sure you want to delete key '...${$row.ending}' for '${$row.comment}'?`, 'Cancel', 'Delete') ",
+            "  && data.sshKeys.splice($idx, 1) && ",
+            "ubus('luci2.system', 'sshkeys_set' , {keys: data.sshKeys.map(k => k.raw) }) === null",
             " && snackbar('Keys updated')"
           ]
-        }
+        },
+        "content": [
+          {
+            "widget": "set-text",
+            "options": {
+              "title=": "$row.data.comment",
+              "description=": "`${$row.data.type || 'Invalid key' } - ${$row.data.curve || `${$row.data.bits} bits`}`",
+              "value=": "$row.data.ending"
+            }
+          }
+        ]
       },
       {
         "widget": "set-popup",
@@ -68,12 +72,14 @@
             {
               "widget": "textarea",
               "bind": "$.key",
-              "events": { "onSetup": "$.key = ''" },
+              "events": {
+                "onSetup": "$.key = ''",
+                "onValidate": "modules.ssh.decode($value) === null && 'Invalid key format'"
+              },
 
               "options": {
                 "title": "Key",
                 "type": "string",
-                "pattern": "^[^ ]+ [^ ]*[^ ]{8} [^ ]+$",
                 "required": true
               }
             }
@@ -92,9 +98,8 @@
               },
               "events": {
                 "onClick": [
-                  "m=/^([^ ]*) ([^ ]*([^ ]{8})) ([^ ]*)$/.exec($.key),",
-                  "data.sshKeys.push({row: $.key, key: m[4], type: m[1], hash: m[2], ending: m[3]}),",
-                  "ubus('luci2.system', 'sshkeys_set' , {keys: data.sshKeys.map(k => k.row) }) === null",
+                  "data.sshKeys.push(modules.ssh.decode($.key)),",
+                  "ubus('luci2.system', 'sshkeys_set' , {keys: data.sshKeys.map(k => k.raw) }) === null",
                   "&& $dlg.close() && snackbar('SSH Key added')"
                 ]
               }

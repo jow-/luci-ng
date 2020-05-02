@@ -9,6 +9,7 @@
     "title": "System",
     "acls": ["system"],
     "view": "system/system",
+    "module": "ssh",
     "index": 10
   },
   "system/admin": {
@@ -23,13 +24,7 @@
     "view": "system/users",
     "index": 30
   },
-  "system/software": {
-    "title": "Software",
-    "acls": ["software"],
-    "files": ["/bin/opkg"],
-    "view": "system/software",
-    "index": 40
-  },
+
   "system/backup": {
     "title": "Backup",
     "acls": ["backup"],
@@ -68,5 +63,24 @@
     "view": "system/ssh",
     "param": "id",
     "index": 90
+  },
+  "apps": {
+    "title": "Apps",
+    "index": 30,
+    "hideChilds": true,
+    "view": "apps/apps"
+  },
+  "apps/apps": {
+    "title": "Apps",
+    "index": 10,
+    "hideChilds": true,
+    "view": "apps/apps"
+  },
+  "apps/software": {
+    "title": "Software",
+    "acls": ["software"],
+    "files": ["/bin/opkg"],
+    "view": "apps/software",
+    "index": 40
   }
 }
