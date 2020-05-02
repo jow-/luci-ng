@@ -4,35 +4,57 @@
   "options": { "title": "Init Scripts" },
   "content": [
     {
-      "widget": "table",
-      "if": "data = ubus('luci2.system', 'init_list')",
+      "widget": "set-popup-file",
       "options": {
-        "columns": ["start", "stop", "name"],
-        "headers": { "start": "Start Priority", "stop": "Stop Priority", "name": "Name" },
-        "dataSource=": "data.initscripts",
-        "disableSort": false,
-        "filter": true,
-        "actions": [
-          {
-            "icon": "reload",
-            "label": "Restart",
-            "data": "restart"
-          },
-          {
-            "icon": "play",
-            "label": "Start",
-            "data": "start"
-          },
-          {
-            "icon": "stop",
-            "label": "Stop",
-            "data": "stop"
-          }
-        ]
-      },
-      "events": {
-        "onAction": "ubus('luci2.system','init_action', { name: $row.name, action: $action.data})"
+        "title": "Local Startup",
+        "description": "Commands to execute them at the end of the boot process",
+        "path": "/etc/rc.local"
       }
+    },
+    {
+      "widget": "set-expansion",
+      "options": {
+        "title": "Init Scripts",
+        "expanded": true,
+        "noExpand": true
+      },
+      "content": [
+        {
+          "widget": "table",
+          "if": "data = ubus('luci2.system', 'init_list')",
+          "options": {
+            "columns": ["start", "stop", "name"],
+            "headers": {
+              "start": "Start Priority",
+              "stop": "Stop Priority",
+              "name": "Name"
+            },
+            "dataSource=": "data.initscripts",
+            "disableSort": false,
+            "filter": true,
+            "actions": [
+              {
+                "icon": "reload",
+                "label": "Restart",
+                "data": "restart"
+              },
+              {
+                "icon": "play",
+                "label": "Start",
+                "data": "start"
+              },
+              {
+                "icon": "stop",
+                "label": "Stop",
+                "data": "stop"
+              }
+            ]
+          },
+          "events": {
+            "onAction": "ubus('luci2.system','init_action', { name: $row.name, action: $action.data})"
+          }
+        }
+      ]
     }
   ]
 }

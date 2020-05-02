@@ -25,7 +25,8 @@
     "if": "ubus('file','stat', {path: '/usr/sbin/ntpd'}, { all: null })",
     "options": {
       "title": "Time Synchronization",
-      "description=": "`NTP is ${$.enabled === false || !$.server?.length ? 'disabled' : 'enabled' }`"
+      "value=": "$.enabled && $?.server.length ? $.server[0] + ($.server.length >1 ? ` (+${$.server.length-1})` : '') : 'disabled'",
+      "description": "Use NTP server"
     },
     "content": [
       {

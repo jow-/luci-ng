@@ -1,49 +1,50 @@
 {
-  "widget": "form",
-  "content": [
-    {
-      "widget": "span",
-      "options": {
-        "text=": "$.files[0].name || 'Select file'"
-      }
-    },
-    {
-      "widget": "file-button",
-      "bind": "$.files",
-      "options": {
-        "title": "Select"
+  "widget": "set-popup",
+  "options": {
+    "title": "Firmware",
+    "description": "Flash new firmware image",
+    "popupTitle": "Flash"
+  },
+  "content": {
+    "main": [
+      {
+        "widget": "set-file",
+        "bind": "$.files",
+        "options": {
+          "title": "Select image file",
+          "description=": "JSON.stringify($.result)",
+          "buttonTitle": "Select"
+        },
+        "events": {
+          "onSetup": "$.result = null",
+          "onAdded": "$.result = cgi.upload('/tmp/backup.tar.gz','0400', $.files[0])"
+        }
       },
-      "events": {
-        "onInit": "$.result = null",
-        "onAdded": "$.result = cgi.upload('/tmp/backup.tar.gz','0400', $.files[0])"
+      {
+        "widget": "set-toggle",
+        "bind": "$.keep",
+        "options": {
+          "title": "Keep settings",
+          "default": true
+        }
       }
-    },
-    {
-      "widget": "span",
-      "options": {
-        "text=": "JSON.stringify($.result) "
-      }
-    },
-    {
-      "widget": "toggle",
-      "bind": "$.keep",
-      "options": {
-        "title": "Keep settings",
-        "default": true
-      }
-    },
-    {
-      "widget": "button",
-      "options": { "title": "Cancel" },
-      "events": { "onClick": "$dlg.close()" }
-    },
-    {
-      "widget": "button",
-      "options": {
-        "title": "Upload",
-        "disabled=": "!$.files || !$.files.length"
+    ],
+    "actions": [
+      {
+        "widget": "button",
+        "options": { "title": "Cancel" },
+        "events": { "onClick": "$dlg.close()" }
       },
-      "events": { "onClick": " $dlg.close() && snackbar(`flashing device`) " }
-    }
-  ]
+      {
+        "widget": "button",
+        "options": {
+          "title": "Upload",
+          "disabled=": "!$.files || !$.files.length"
+        },
+        "events": {
+          "onClick": " $dlg.close() && snackbar(`flashing device`) "
+        }
+      }
+    ]
+  }
 }

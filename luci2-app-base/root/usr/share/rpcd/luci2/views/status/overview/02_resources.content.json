@@ -5,10 +5,7 @@
     {
       "widget": "set-container",
       "events": {
-        "onSetup": [
-          "$self.memUnit = Math.min(3, Math.floor(Math.log(system_info.memory.total)/Math.log(2)/10)) ,",
-          "$self.units = ['B', 'Kb', 'Mb', 'Gb'] "
-        ]
+        "onSetup": "$self.mem = toHumanReadable(system_info.memory.total)"
       },
       "content": [
         {
@@ -16,9 +13,9 @@
           "options": {
             "title": "Free Memory",
             "icon": "memory",
-            "value=": "system_info.memory.free / 1024**memUnit",
-            "total=": "system_info.memory.total / 1024**memUnit",
-            "unit=": " units[memUnit]",
+            "value=": "system_info.memory.free / mem.factor",
+            "total=": "mem.value",
+            "unit=": " mem.unit",
             "format": "number:'1.1-2'"
           },
           "content": [
@@ -27,9 +24,9 @@
               "for": "['buffered', 'cached', 'available']",
               "options": {
                 "title=": "['Buffered', 'Cached', 'Available'][$for.index]",
-                "value=": "system_info.memory[$for.data] / 1024**memUnit",
-                "total=": "system_info.memory.total / 1024**memUnit",
-                "unit=": "units[memUnit]",
+                "value=": "system_info.memory[$for.data] / mem.factor",
+                "total=": "mem.value",
+                "unit=": "mem.unit",
                 "format": "number:'1.1-2'"
               }
             },
@@ -37,13 +34,13 @@
               "widget": "set-level",
               "if": "system_info.swap.total > 0",
               "events": {
-                "onSetup": "$self.swapUnit = Math.min(3, Math.floor(Math.log(system_info.swap.total)/Math.log(2)/10)) "
+                "onSetup": "$self.swapHR = toHumanReadable(system_info.swap.total)"
               },
               "options": {
                 "title": "Swap Memory",
-                "value=": "system_info.swap.free / 1024**swapUnit",
-                "total=": "system_info.swap.total / 1024**swapUnit",
-                "unit=": "units[swapUnit]",
+                "value=": "system_info.swap.free / swapHR.factor",
+                "total=": "swapHR.value",
+                "unit=": "swapHR.unit",
                 "format": "number:'1.1-2'"
               }
             }
@@ -85,16 +82,14 @@
           "widget": "set-level",
           "if": "(disk = ubus('luci2.system', 'diskfree',  5000)) && disk.root",
           "events": {
-            "onSetup": [
-              "$self.diskUnit = Math.min(2, Math.floor(Math.log(disk.root.total)/Math.log(2)/10)) ,"
-            ]
+            "onSetup": "$self.diskHR = toHumanReadable(disk.root.total)"
           },
           "options": {
             "title": "Available Disk",
-            "value=": "disk.root.avail / 1024**diskUnit",
-            "total=": "disk.root.total / 1024**diskUnit",
+            "value=": "disk.root.avail / diskHR.factor",
+            "total=": "diskHR.value",
             "format": "number:'1.1-2'",
-            "unit=": "units[diskUnit+1]",
+            "unit=": "diskHR.unit",
             "icon": "sd"
           }
         }

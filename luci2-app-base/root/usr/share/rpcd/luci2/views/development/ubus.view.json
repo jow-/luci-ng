@@ -76,7 +76,7 @@
                 "onValueChange": "page.params[$for.data] = $form.valid && eval($value?.trim(), {}) || undefined",
                 "onValidate": [
                   "$value?.trim() && ",
-                  "typeof eval($value, {}) !== page.ubusList[page.method][$for.data] && ",
+                  "(typeof eval($value, {}) !== 'object' || page.ubusList[page.method][$for.data] === 'array' && !Array.isArray(eval($value, {}))) && ",
                   "`Must be a valid '${page.ubusList[page.method][$for.data]}'`"
                 ]
               },

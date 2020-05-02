@@ -19,30 +19,14 @@
       "link": "system/backup"
     }
   },
-  {
-    "widget": "set-popup",
-    "options": {
-      "title": "Firmware",
-      "description": "Flash new firmware image",
-      "popupTitle": "Flash"
-    },
-    "content": ["loadView('system/system.firmware.content.json')"]
-  },
+  "loadView('system/system.firmware.content.json')",
   {
     "widget": "set-expansion",
     "options": {
       "title": "Restore"
     },
     "content": [
-      {
-        "widget": "set-popup",
-        "options": {
-          "title": "From backup",
-          "description": "Upload a previously generated backup archive",
-          "popupTitle": "Restore Backup"
-        },
-        "content": ["loadView('system/system.restore.content.json')"]
-      },
+      "loadView('system/system.flash.restore.content.json')",
       {
         "widget": "set-button",
         "if": "ubus('luci2.system', 'reset_test' ).supported",
@@ -52,7 +36,7 @@
           "buttonTitle": "Reset"
         },
         "events": {
-          "onClick": "popupMsg('This will erase all current configuration.\\nAre you sure?') && ubus('luci2.system', 'reset_start' )"
+          "onClick": "popupMsg('This will erase all current configuration.\\nAre you sure?') && ubus('luci2.system', 'reset_start' ) && reconnect()"
         }
       },
       {

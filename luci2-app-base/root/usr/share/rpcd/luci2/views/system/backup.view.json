@@ -5,37 +5,20 @@
   },
   "content": [
     {
-      "widget": "set-popup",
-      "if": "$tmp.backupConfig = ubus('luci2.system', 'backup_config_get' ).config",
+      "widget": "set-popup-file",
       "options": {
         "title": "Files to include",
-        "popupTitle": "Files to include"
-      },
-      "content": [
-        {
-          "widget": "textarea",
-          "bind": "$tmp.backupConfig"
-        },
-        {
-          "widget": "button",
-          "options": { "title": "Cancel" },
-          "events": {
-            "onClick": "$dlg.close()"
-          }
-        },
-        {
-          "widget": "button",
-          "options": { "title": "Update" },
-          "events": {
-            "onClick": "ubus('luci2.system', 'backup_config_set', { data:$tmp.backupConfig }) === null && $dlg.close() && snackbar('Configuration updated')"
-          }
-        }
-      ]
+        "popupTitle": "Files to include",
+        "path": "/etc/sysupgrade.conf"
+      }
     },
     {
       "widget": "set-expansion",
       "options": {
-        "title": "Generated list"
+        "title": "Generated list",
+        "description": "Detail of files to backup (changed configuration files, essential base files and user defined)",
+        "expanded": true,
+        "noExpand": true
       },
       "content": [
         {

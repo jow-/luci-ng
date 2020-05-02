@@ -14,7 +14,12 @@
     "if": "ubus('file', 'stat', {path:'/etc/config/dropbear'}, { all: null } ) && uciLoad('dropbear')",
     "options": {
       "title": "SSH Access",
-      "description=": "`${uci.dropbear['@dropbear'].length} instances`"
+      "value=": [
+        "uci.dropbear['@dropbear'].length ? ",
+        "`${uci.dropbear['@dropbear'][0].Interface || 'all'}:${uci.dropbear['@dropbear'][0].Port}${",
+        "uci.dropbear['@dropbear'].length > 1 ? `(+${uci.dropbear['@dropbear'].length-1})` : ''}`",
+        " : 'Disabled'"
+      ]
     },
     "content": ["loadView('system/system.dropbear.content.json')"]
   }

@@ -37,11 +37,12 @@
           }
         },
         {
-          "widget": "set-link",
+          "widget": "set-popup-file",
           "options": {
             "title": "Scheduled Tasks",
             "description": "Manage Crontab tasks",
-            "link": "system/schedule"
+            "path": "/etc/crontabs/root",
+            "create": true
           }
         }
       ]

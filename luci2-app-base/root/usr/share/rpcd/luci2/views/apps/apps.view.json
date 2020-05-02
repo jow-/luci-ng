@@ -22,11 +22,31 @@
           }
         },
         {
-          "widget": "set-link",
+          "widget": "set-expansion",
           "options": {
-            "title": "Configure",
+            "title": "Advanced",
             "description": "Change feeds' source and advanced install options"
-          }
+          },
+          "content": [
+            {
+              "widget": "set-popup-file",
+              "options": { "title": "Configuration", "path": "/etc/opkg.conf" }
+            },
+            {
+              "widget": "set-popup-file",
+              "options": {
+                "title": "Custom Repositories",
+                "path": "/etc/opkg/customfeeds.conf"
+              }
+            },
+            {
+              "widget": "set-popup-file",
+              "options": {
+                "title": "Distribution Repositories",
+                "path": "/etc/opkg/distfeeds.conf"
+              }
+            }
+          ]
         }
       ]
     },

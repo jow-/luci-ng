@@ -11,7 +11,7 @@
         "bind": "uci.system['@system'][0]",
         "options": {
           "title": "File Log",
-          "description=": "$.log_file ? `Logging to ${$.log_file}` : 'Disabled'"
+          "value=": "$.log_file ? $.log_file : 'Disabled'"
         },
         "content": ["uciUI('system', '@system', 0, ['log_file', 'log_size'])"]
       },
@@ -20,7 +20,7 @@
         "bind": "$.log_remote",
         "options": {
           "title": "Remote Logging",
-          "description": "Log messages to server in addition to the local destination."
+          "description": "Log to server in addition to the local destination."
         },
         "content": [
           "uciUI('system', '@system', 0, ['log_ip', 'log_port', 'log_proto', 'log_hostname', 'log_trailer_null', 'log_prefix'])"

@@ -40,9 +40,7 @@
     "events": {
       "onSetup": [
         "$self.allChains = fw[$for.data], ",
-        "$self.usedChains = allChains.filter(ch => ch.rules.length),",
-        "$self.unitsB = ['B', 'Kb', 'Mb', 'Gb', 'Tb'], ",
-        "$self.unitsP = [ '', 'K', 'M'] "
+        "$self.usedChains = allChains.filter(ch => ch.rules.length),"
       ]
     },
     "options": {
@@ -60,19 +58,15 @@
         "widget": "set-expansion",
         "for": "$trackBy = (idx, ch) => ch.chain , !$.hide ? allChains : usedChains",
         "events": {
-          "onSetup": [
-            "$self.chain = $for.data, ",
-            "uP = chain.packets && Math.min(2, Math.floor(Math.log(chain.packets)/Math.log(10)/3)),",
-            "$self.packets = `${(chain.packets / 1000 ** uP).toFixed(0)}${unitsP[uP]}`,",
-            "uB=chain.bytes && Math.min(4, Math.floor(Math.log(chain.bytes)/Math.log(2)/10)),",
-            "$self.bytes = `${(chain.bytes / 1024 ** uB).toFixed(1)}${unitsB[uB]}`"
-          ]
+          "onSetup": "$self.chain = $for.data "
         },
         "options": {
           "title=": "chain.chain",
           "description=": [
             "chain.policy ? ",
-            "   `Policy ${chain.policy} - ${packets} Packets - ${bytes} Traffic` :",
+            "   `Policy ${chain.policy} - ${",
+            "      formatHuman(chain.packets, '1.0-0', 10 , [ '', 'K', 'M'])} Packets - ${",
+            "      formatHuman(chain.bytes, '1.1-1')} Traffic` :",
             "   `${chain.references} References`"
           ],
           "value=": "`${chain.rules.length} rules`",
@@ -86,8 +80,6 @@
                 "re = /^(?:\\s*\\/\\*)?(?: !fw3:?\\s*)?(.*)(?:\\*\\/)$/ ,",
                 "chain.rules.map( r => ",
                 "{ ...r, ",
-                " pkts: (uP=r.packets && Math.min(2, Math.floor(Math.log(r.packets)/Math.log(10)/3)),`${(r.packets / 1000 ** uP).toFixed(0)}${unitsP[uP]}`),",
-                " traf: (uB=r.bytes && Math.min(4, Math.floor(Math.log(r.bytes)/Math.log(2)/10)),`${(r.bytes / 1024 ** uB).toFixed(0)}${unitsB[uB]}`),",
                 " proto: `${r.inv_proto ? '!' : ''}${r.proto}`,",
                 " iniface: `${r.inv_in_iface ? '!' : ''}${r.in_iface}`,",
                 " outiface: `${r.inv_out_iface ? '!' : ''}${r.out_iface}`,",
@@ -99,8 +91,8 @@
               ],
               "title": "Rules",
               "headers": {
-                "pkts": "Pkts.",
-                "traf": "Traffic",
+                "packets": "Pkts.",
+                "bytes": "Traffic",
                 "target": "Target",
                 "proto": "Proto",
                 "iniface": "In",
@@ -111,8 +103,8 @@
                 "comment": "Comment"
               },
               "columns": [
-                "pkts",
-                "traf",
+                "packets",
+                "bytes",
                 "target",
                 "proto",
                 "iniface",
@@ -121,7 +113,8 @@
                 "dstaddr",
                 "options",
                 "comment"
-              ]
+              ],
+              "colFormat": ["HUMAN:'1.0-0':10:['','K','M']", "HUMAN:'1.0-0'"]
             }
           }
         ]

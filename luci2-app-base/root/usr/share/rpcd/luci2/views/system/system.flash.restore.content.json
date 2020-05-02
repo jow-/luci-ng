@@ -1,0 +1,73 @@
+{
+  "widget": "set-popup",
+  "options": {
+    "title": "From backup",
+    "description": "Upload a previously generated backup archive",
+    "popupTitle": "Restore Backup"
+  },
+  "events": {
+    "onClose": "$result || ubus('file', 'remove', {path: '/tmp/backup.tar.gz'}, { all: '' })"
+  },
+  "content": {
+    "main": [
+      {
+        "widget": "set-file",
+        "bind": "$.files",
+        "options": {
+          "title": "Select backup file",
+          "buttonTitle": "Select",
+          "spinner": "auto"
+        },
+        "events": {
+          "onAdded": [
+            "$.check = null , $.files?.length && ($.result = cgi.upload('/tmp/backup.tar.gz','0400', $.files[0])) ",
+            "&& ($.check = ubus('file', 'exec', { command: '/bin/tar', params: [ '-tzf', '/tmp/backup.tar.gz' ]})).code !==0 ",
+            "&& snackbar('The uploaded backup archive is in an invalid format')"
+          ]
+        }
+      },
+      {
+        "widget": "set-text",
+        "if": "$.check?.code === 0 ",
+        "options": {
+          "title": "File:",
+          "subtitle=": "$.files?.[0].name",
+          "description=": "`Checksum: ${$.result.checksum}`",
+          "value=": "formatHuman($.result.size, '1.0-2')"
+        }
+      },
+      {
+        "widget": "set-expansion",
+        "bind": "$",
+        "if": "$.check?.code === 0 ",
+        "options": {
+          "title": "Backup content",
+          "description": "Image appears to be valid.",
+          "value=": "`${$.check.stdout.trim().split('\\n').length} files`"
+        },
+        "content": [
+          { "widget": "code", "options": { "text=": "$.check.stdout" } }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "widget": "button",
+        "options": { "title": "Cancel" },
+        "events": {
+          "onClick": "$dlg.close()  && $.result && ubus('file', 'remove', {path: '/tmp/backup.tar.gz'})"
+        }
+      },
+      {
+        "widget": "button",
+        "options": {
+          "title": "Restore",
+          "disabled=": "!$.files?.length || $.check?.code !== 0"
+        },
+        "events": {
+          "onClick": " $dlg.close(true) && snackbar(`flashing device`) "
+        }
+      }
+    ]
+  }
+}
