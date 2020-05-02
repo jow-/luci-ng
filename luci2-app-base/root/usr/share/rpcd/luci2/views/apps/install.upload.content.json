@@ -1,0 +1,54 @@
+{
+  "widget": "set-popup",
+  "options": {
+    "title": "Upload package",
+    "description": "Install package from local computer",
+    "popupTitle": "Upload Package"
+  },
+  "events": {
+    "onClose": "$result || ubus('file', 'remove', {path: '/tmp/upload.ipk'}, { all: '' })"
+  },
+  "content": {
+    "main": [
+      {
+        "widget": "set-file",
+        "bind": "$.files",
+        "options": {
+          "title": "Select app file to upload",
+          "buttonTitle": "Browse"
+        },
+        "events": {
+          "onSetup": "$.result = null",
+          "onAdded": "$.result = cgi.upload('/tmp/upload.ipk', '0400', $.files[0])"
+        }
+      },
+      {
+        "widget": "set-text",
+        "if": "$.files?.length && $.result",
+        "options": {
+          "title": "File:",
+          "subtitle=": "$.files[0].name",
+          "description=": "`Checksum: ${$.result.checksum}`",
+          "value=": "formatHuman($.result.size, '1.1-1')"
+        }
+      }
+    ],
+    "actions": [
+      {
+        "widget": "button",
+        "options": { "title": "Cancel" },
+        "events": { "onClick": "$dlg.close()" }
+      },
+      {
+        "widget": "button",
+        "options": {
+          "title": "Upload",
+          "disabled=": "!$.files?.length"
+        },
+        "events": {
+          "onClick": " $dlg.close(true) && snackbar(`TODO: Install package`) "
+        }
+      }
+    ]
+  }
+}

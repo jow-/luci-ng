@@ -25,7 +25,7 @@
     {
       "widget": "set-section",
       "options": {
-        "title": "Programs & Tasks"
+        "title": "Services & Tasks"
       },
       "content": [
         {
@@ -34,14 +34,6 @@
             "title": "Startup",
             "description": "Manage installed init scripts",
             "link": "system/startup"
-          }
-        },
-        {
-          "widget": "set-link",
-          "options": {
-            "title": "Software",
-            "description": "Install & manage programs",
-            "link": "system/software"
           }
         },
         {

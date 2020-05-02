@@ -1,0 +1,44 @@
+{
+  "widget": "set-page",
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "General" },
+      "content": [
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Install",
+            "description": "Add new programs",
+            "link": "apps/install"
+          }
+        },
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Manage",
+            "description": "Manage installed programs",
+            "link": "apps/software"
+          }
+        },
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Configure",
+            "description": "Change feeds' source and advanced install options"
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Apps" },
+      "content": [
+        {
+          "widget": "set-link",
+          "options": { "title": "Some App", "value": "running" }
+        }
+      ]
+    }
+  ]
+}

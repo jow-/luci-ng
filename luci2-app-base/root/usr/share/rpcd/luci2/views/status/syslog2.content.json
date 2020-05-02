@@ -1,0 +1,28 @@
+{
+  "widget": "table",
+  "events": {
+    "onSetup": [
+      "$self.re = /^([^:[]*)(?:\\[([0-9]+)\\])?:\\s*(.*)$/i ,",
+      "$self.log = ubus('log', 'read', {stream:false, oneshot:false}, 10000).log.reverse().map( r => (",
+      "  m=re.exec(r.msg),",
+      "  m ? { ...r, msg: m[3], pid: m[2], process: m[1] } : r",
+      "))"
+    ]
+  },
+  "options": {
+    "dataSource=": "log",
+    "columns": ["time", "priority", "pid", "process", "msg"],
+    "columns_sm": ["time", "process", "msg"],
+    "headers": {
+      "time": "Date",
+      "type": "Type",
+      "pid": "PID",
+      "process": "Process",
+      "msg": "Message"
+    },
+    "colFormat": ["date:'MMM-dd HH:mm:ss':'UTC'"],
+    "pageSizes": [10, 20, 50],
+    "filter": true,
+    "disableSort": ["msg"]
+  }
+}

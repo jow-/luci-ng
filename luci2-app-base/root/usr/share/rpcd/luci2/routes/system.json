@@ -82,5 +82,12 @@
     "files": ["/bin/opkg"],
     "view": "apps/software",
     "index": 40
+  },
+  "apps/install": {
+    "title": "Install",
+    "acls": ["software"],
+    "files": ["/bin/opkg"],
+    "view": "apps/install",
+    "index": 40
   }
 }

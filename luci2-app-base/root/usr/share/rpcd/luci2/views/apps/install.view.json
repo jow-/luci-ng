@@ -1,0 +1,55 @@
+{
+  "widget": "set-subpage",
+
+  "events": {
+    "onSetup": "$.trigger = 1, $self.list = $.trigger && ubus('luci2.opkg', 'list') || {}"
+  },
+
+  "options": { "title": "Install Apps" },
+  "content": [
+    "loadView('apps/install.upload.content.json')",
+    {
+      "widget": "set-button",
+      "options": {
+        "title": "Update feeds",
+        "description": "Download updated list of packages",
+        "buttonTitle": "Update",
+        "spinner": "auto"
+      },
+      "events": {
+        "onClick": "(ubus('luci2.opkg', 'update').code === 0) && $.trigger++ && snackbar('List updated successfully')"
+      }
+    },
+    {
+      "widget": "set-expansion",
+      "options": {
+        "title": "Install from feeds",
+        "expanded": true,
+        "noExpand": true,
+        "value=": "console.log('list', list) , `${list?.total ?? 0} packages`"
+      },
+      "content": [
+        {
+          "widget": "table",
+          "options": {
+            "columns": ["0", "1", "2", "3"],
+            "headers": {
+              "0": "Package",
+              "1": "Version",
+              "2": "Size",
+              "3": "Description"
+            },
+            "dataSource=": "list?.packages || []",
+            "colFormat": ["", "", "HUMAN:'1.1-1'"],
+            "filter": true,
+            "pageSizes": [25, 50, 100, 200],
+            "actions": [{ "icon": "plus-box", "label": "Install" }]
+          },
+          "events": {
+            "onAction": "ubus('luci2.opkg','install', { package: $row[0]})"
+          }
+        }
+      ]
+    }
+  ]
+}
