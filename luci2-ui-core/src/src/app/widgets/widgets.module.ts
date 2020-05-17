@@ -5,6 +5,7 @@
 
 import { NgModule } from '@angular/core';
 import {
+  BaseSettingsModule,
   CommonWidgetsModule,
   ESpression,
   Expressions,
@@ -16,7 +17,10 @@ import {
 
 import { ChartsWidgetsModule } from './charts/charts.module';
 import { PopupDialogComponent } from './popup/popup.component';
+import { SetPopupFileWidgetComponent } from './popup_file/popup_file.component';
 import { rootContextProvider } from './rootContext';
+
+export { SetPopupFileWidgetComponent } from './popup_file/popup_file.component';
 
 /** Module containing all Widget components */
 @NgModule({
@@ -26,9 +30,13 @@ import { rootContextProvider } from './rootContext';
     CommonWidgetsModule,
     FormFieldWidgetsModule,
     SettingsWidgetsModule,
+    BaseSettingsModule,
+    WidgetsCoreModule.forRoot({
+      widgets: [{ type: 'set-popup-file', component: SetPopupFileWidgetComponent }],
+    }),
   ],
-  declarations: [PopupDialogComponent],
-  exports: [WidgetsCoreModule, MaterialModule],
+  declarations: [PopupDialogComponent, SetPopupFileWidgetComponent],
+  exports: [WidgetsCoreModule, MaterialModule, SetPopupFileWidgetComponent],
   entryComponents: [PopupDialogComponent],
 
   providers: [

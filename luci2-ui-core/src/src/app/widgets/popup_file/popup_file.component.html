@@ -1,0 +1,13 @@
+<set-base
+  [icon]="options.icon"
+  [title]="options.title"
+  [subtitle]="options.subtitle"
+  [description]="options.description"
+  [value]="options.value"
+  (click)="openPopup()"
+  [ngClass]="{ 'cursor-pointer': !!options.path }"
+>
+  <div class="set-row-ctrl">
+    <mat-icon svgIcon="menu-right"></mat-icon>
+  </div>
+</set-base>
