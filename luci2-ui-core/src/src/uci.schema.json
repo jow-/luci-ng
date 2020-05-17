@@ -5,7 +5,7 @@
   },
 
   "allOf": [
-    { "$ref": "./dist/widgetschema/schema.json#/definitions" },
+    { "$ref": "../out/widgetschema/schema.json#/definitions" },
     {
       "type": "object",
 
@@ -18,7 +18,7 @@
           },
           "additionalProperties": {
             "title": "Typed Section",
-            "$ref": "./dist/widgetschema/schema.json#/definitions/SchemaArray"
+            "$ref": "../out/widgetschema/schema.json#/definitions/SchemaArray"
           }
         }
       },
