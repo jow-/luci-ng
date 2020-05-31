@@ -57,6 +57,12 @@ export class ShellComponent {
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/default.svg')
     );
 
+    // OpenWrt brand icons (logo & wordmark)
+    iconRegistry.addSvgIconSetInNamespace(
+      'openwrt',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/openwrt.svg')
+    );
+
     media.observe('(max-width: 599px)').subscribe((isMatched) => {
       this.isMediaSmall = isMatched.matches;
       cdr.markForCheck();

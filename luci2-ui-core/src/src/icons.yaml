@@ -60,3 +60,10 @@ icons:
   - wifi-strength-4
   - wifi-strength-off-outline
   - wifi-strength-outline
+---
+namespace: openwrt
+keepClassName: true
+source: ./src/icons/
+icons:
+  - logo
+  - wordmark

@@ -3,11 +3,39 @@
 @include mat-core();
 
 // Define theme
-$primary: mat-palette($mat-indigo);
-$accent: mat-palette($mat-red, 700, 600, 800);
 $warn: mat-palette($mat-red);
 
-$theme: mat-light-theme($primary, $accent, $warn);
+$mat-primary: (
+  main: #004271,
+  lighter: #b0c9db,
+  darker: #002b49,
+  200: #004271,
+  300: #004271,
+  // For slide toggle,
+    contrast:
+    (
+      main: $light-primary-text,
+      lighter: $dark-primary-text,
+      darker: $light-primary-text,
+    ),
+);
+$theme-primary: mat-palette($mat-primary, main, lighter, darker);
+$mat-accent: (
+  main: #00a3e1,
+  lighter: #b3e3f6,
+  darker: #0088d5,
+  200: #00a3e1,
+  // For slide toggle,
+    contrast:
+    (
+      main: $light-primary-text,
+      lighter: $dark-primary-text,
+      darker: $light-primary-text,
+    ),
+);
+$theme-accent: mat-palette($mat-accent, main, lighter, darker);
+
+$theme: mat-light-theme($theme-primary, $theme-accent, $warn);
 
 // use a lighter default text (std is 0.87)
 $theme: map-merge(

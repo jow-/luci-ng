@@ -7,6 +7,7 @@ app-shell {
   @include flex-container(column, stretch);
   .mat-toolbar.app-bar {
     padding: 0 8px;
+    background-color: #002b49;
   }
 }
 
@@ -30,7 +31,15 @@ app-shell {
 .app-bar-title {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
+
+  .text {
+    fill: white;
+  }
+
+  .accent {
+    fill: #00a3e1;
+  }
 }
 
 .app-bar-title img {
@@ -40,9 +49,14 @@ app-shell {
 }
 
 .mat-icon.app-bar-logo {
-  height: 48px;
-  width: 48px;
-  color: #c5cae9;
+  width: 36px;
+  height: 44px;
+  padding: 10px;
+}
+.mat-icon.app-bar-wordmark {
+  padding-bottom: 8px;
+  height: 29px;
+  width: 130px;
 }
 
 .main-content {
