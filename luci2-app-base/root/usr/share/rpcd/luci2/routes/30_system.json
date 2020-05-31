@@ -1,7 +1,7 @@
 {
   "system": {
     "title": "System",
-    "index": 20,
+    "index": 30,
     "hideChilds": true,
     "view": "system/system"
   },
@@ -63,31 +63,5 @@
     "view": "system/ssh",
     "param": "id",
     "index": 90
-  },
-  "apps": {
-    "title": "Apps",
-    "index": 30,
-    "hideChilds": true,
-    "view": "apps/apps"
-  },
-  "apps/apps": {
-    "title": "Apps",
-    "index": 10,
-    "hideChilds": true,
-    "view": "apps/apps"
-  },
-  "apps/software": {
-    "title": "Software",
-    "acls": ["software"],
-    "files": ["/bin/opkg"],
-    "view": "apps/software",
-    "index": 40
-  },
-  "apps/install": {
-    "title": "Install",
-    "acls": ["software"],
-    "files": ["/bin/opkg"],
-    "view": "apps/install",
-    "index": 40
   }
 }

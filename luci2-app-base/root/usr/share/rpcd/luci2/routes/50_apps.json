@@ -1,0 +1,28 @@
+{
+  "apps": {
+    "title": "Apps",
+    "index": 50,
+    "hideChilds": true,
+    "view": "apps/apps"
+  },
+  "apps/apps": {
+    "title": "Apps",
+    "index": 10,
+    "hideChilds": true,
+    "view": "apps/apps"
+  },
+  "apps/software": {
+    "title": "Software",
+    "acls": ["software"],
+    "files": ["/bin/opkg"],
+    "view": "apps/software",
+    "index": 40
+  },
+  "apps/install": {
+    "title": "Install",
+    "acls": ["software"],
+    "files": ["/bin/opkg"],
+    "view": "apps/install",
+    "index": 40
+  }
+}

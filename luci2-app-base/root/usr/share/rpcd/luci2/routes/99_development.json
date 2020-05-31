@@ -1,0 +1,22 @@
+{
+  "development": {
+    "title": "Development",
+    "index": 900,
+    "view": "development/ubus"
+  },
+  "development/ubus": {
+    "title": "UBUS",
+    "index": 10,
+    "view": "development/ubus"
+  },
+  "development/uci": {
+    "title": "UCI",
+    "index": 20,
+    "view": "development/uci"
+  },
+  "development/browser": {
+    "title": "Browser",
+    "index": 30,
+    "view": "development/browser"
+  }
+}

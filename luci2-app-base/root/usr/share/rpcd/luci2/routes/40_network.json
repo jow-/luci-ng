@@ -1,7 +1,7 @@
 {
   "network": {
     "title": "Network",
-    "index": 30
+    "index": 40
   },
   "network/interfaces": {
     "title": "Interfaces",

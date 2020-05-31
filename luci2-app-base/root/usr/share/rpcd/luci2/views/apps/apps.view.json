@@ -30,12 +30,17 @@
           "content": [
             {
               "widget": "set-popup-file",
-              "options": { "title": "Configuration", "path": "/etc/opkg.conf" }
+              "options": {
+                "title": "Configuration",
+                "description": "Global Settings (opkg.conf)",
+                "path": "/etc/opkg.conf"
+              }
             },
             {
               "widget": "set-popup-file",
               "options": {
                 "title": "Custom Repositories",
+                "description": "Additional package feeds (opkg/customfeeds.conf)",
                 "path": "/etc/opkg/customfeeds.conf"
               }
             },
@@ -43,6 +48,7 @@
               "widget": "set-popup-file",
               "options": {
                 "title": "Distribution Repositories",
+                "description": "",
                 "path": "/etc/opkg/distfeeds.conf"
               }
             }
