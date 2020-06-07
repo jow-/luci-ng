@@ -1,0 +1,71 @@
+{
+  "widget": "set-page",
+  "events": {
+    "onSetup": "$self.pageContext = $self, $self.page = $"
+  },
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "File Browser" },
+      "content": [
+        {
+          "widget": "set-input",
+          "bind": "page.path",
+          "options": {
+            "title": "Path",
+            "type": "string",
+            "format": "path",
+            "required": true
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "File Browser" },
+      "events": {
+        "onSetup": "$self.entries = ubus('file','list', { path: page.path }, {all: {entries: []}}).entries"
+      },
+      "content": [
+        {
+          "widget": "table",
+          "events": {},
+          "options": {
+            "dataSource=": [
+              "entries.map(e => {...e, perm: (e.mode & 0x1FF).toString(8)}).sort( (a, b) => ",
+              " a.type > b.type ? 1 : a.type < b.type ? -1 : ",
+              " a.name > b.name ? 1 : a.name < b.name ? -1 : 0)"
+            ],
+            "columns": ["type", "name", "perm", "size"],
+            "headers": {
+              "type": "Type",
+              "name": "Name",
+              "mode": "Mode",
+              "perm": "Permission",
+              "size": "Size"
+            },
+            "colFormat": [null, null, null, "human:'1.1-1'"],
+            "filter": true,
+            "actions": [
+              {
+                "icon": "delete",
+                "label": "Remove",
+                "data": 1
+              },
+              {
+                "icon": "view",
+                "label": "View",
+                "data": 2
+              },
+              {
+                "icon": "pencil",
+                "label": "Edit",
+                "data": 3
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
