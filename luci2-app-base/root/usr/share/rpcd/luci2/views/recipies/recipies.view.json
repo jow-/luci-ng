@@ -1,0 +1,20 @@
+{
+  "widget": "set-page",
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "Recipies" },
+      "content": [
+        {
+          "widget": "set-autocomplete",
+          "bind": "$.topic",
+          "options": {
+            "title": "Topic",
+            "description": "Imagine a stepper configured from json",
+            "enum": ["s"]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "recipies": {
+    "title": "Recipies",
+    "index": 20,
+    "acls": ["status"],
+    "hideChilds": true,
+    "view": "recipies/recipies"
+  },
+  "recipies/recipies": {
+    "title": "Recipies",
+    "index": 10,
+    "acls": ["status"],
+    "view": "recipies/recipies"
+  }
+}
