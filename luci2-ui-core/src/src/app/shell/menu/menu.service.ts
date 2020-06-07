@@ -14,20 +14,6 @@ import { ViewsResolverService } from '../../shared/viewsresolver.service';
 
 import { IMenu, IMenuItem, IMenuItemArr, IMenuItemObj } from './menu.interface';
 
-const FIXED_MENU = {
-  development: { title: 'Development', index: 999 },
-  'development/ubus': {
-    title: 'Ubus tester',
-    view: 'development/ubus',
-    index: 0,
-  },
-  'development/Uci': {
-    title: 'Uci Schema viewer',
-    view: 'development/uci',
-    index: 1,
-  },
-};
-
 @Injectable()
 export class MenuService {
   private _routes: Routes = [];
@@ -42,7 +28,7 @@ export class MenuService {
 
     this._pending = this._ubus.call<any>('luci2.ui', 'menu').pipe(
       // tslint:disable-next-line:prefer-object-spread
-      map((r) => this._toChildArray(this._toChildTree({ ...r.menu, ...FIXED_MENU }))),
+      map((r) => this._toChildArray(this._toChildTree({ ...r.menu }))),
       map((root) => {
         console.log(this._routes);
         this._router.resetConfig(this._routes);
