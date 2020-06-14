@@ -34,10 +34,8 @@ export class UciService {
           glob: `/usr/share/rpcd/luci2/uci/${config}.json`,
         })
         .pipe(
-          map((res) => res?.content[0]),
-          debug('schema get'),
-          catchError(() => of({})),
-          debug('schema')
+          map((res) => res?.content[0] ?? {}),
+          catchError(() => of({}))
         ),
     ]).pipe(debug('forkJoin UCI'));
   }

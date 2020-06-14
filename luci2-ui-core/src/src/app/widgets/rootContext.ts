@@ -118,7 +118,6 @@ export function rootContextFactory(
       },
       RxObject,
       $tmp: RxObject({}),
-      buildUI,
       uciUI: (
         config: string,
         type?: string,
