@@ -60,7 +60,10 @@
           "widget": "set-section",
           "options": { "title": "Leds" },
           "if": "ubus('file', 'list', {path:'/sys/class/leds'}, { all: null } )?.entries.length ",
-          "content": ["uciUI('system', '@led')"]
+          "events": {
+            "onSetup": "$self.leds = ubus('luci2.system','led_list').leds"
+          },
+          "content": ["loadView('system/system.led.content.json')"]
         }
       ]
     }

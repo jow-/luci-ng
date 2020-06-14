@@ -1,0 +1,23 @@
+[
+  {
+    "widget": "set-rowarray",
+    "bind": "uci.system['@led']",
+    "events": {
+      "onNewRow": "{}",
+      "onDeleteRow": "popupMsg('Are you sure you want to delete this Led?', true)"
+    },
+
+    "content": [
+      {
+        "widget": "set-expansion",
+        "options": {
+          "title=": "$row.data.name ?? ''",
+          "description=": "$row.data.sysfs ?? ''",
+          "value=": "$row.data.trigger ?? ''"
+        },
+
+        "content": ["uciUI('system', '@led', $row.index)"]
+      }
+    ]
+  }
+]

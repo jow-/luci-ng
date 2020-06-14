@@ -1,0 +1,27 @@
+{
+  "type": "object",
+
+  "depends=": "$.trigger==='morse'",
+
+  "properties": {
+    "dev": {
+      "title": "Device",
+      "description": "Name of the network/usb device which status should be reflected",
+      "type": "string",
+      "required": true,
+      "enum=": "ubus('luci2.network', 'device_list', '$.devices[*].device')"
+    },
+    "delay": {
+      "title": "Delay",
+      "description": "Dit length in milliseconds",
+      "type": "integer",
+      "minimum": 0,
+      "default": 150
+    },
+    "message": {
+      "title": "Message",
+      "description": "The message to signal",
+      "type": "string"
+    }
+  }
+}

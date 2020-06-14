@@ -1,0 +1,22 @@
+{
+  "type": "object",
+
+  "depends=": "$.trigger==='timer'",
+
+  "properties": {
+    "delayon": {
+      "title": "Delay ON",
+      "description": "How long (ms) the LED should be on",
+      "type": "integer",
+      "required": true,
+      "minimum": 0
+    },
+    "delayoff": {
+      "title": "Delay OFF",
+      "description": "How long (ms) the LED should be off",
+      "type": "integer",
+      "required": true,
+      "minimum": 0
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "object",
+
+  "depends=": "$.trigger==='netdev'",
+
+  "properties": {
+    "dev": {
+      "title": "Device",
+      "description": "Name of the network device which status should be reflected",
+      "type": "string",
+      "required": true,
+      "enum=": "ubus('luci2.network', 'device_list', '$.devices[*].device')"
+    },
+    "mode": {
+      "title": "Mode",
+      "description": "One or more of link, tx, or rx, seperated by spaces",
+      "type": "string",
+      "required": true,
+      "enum": ["link", "tx", "rx"],
+      "default": "link"
+    }
+  }
+}
