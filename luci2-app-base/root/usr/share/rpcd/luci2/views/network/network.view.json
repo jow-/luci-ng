@@ -38,13 +38,39 @@
               "options": {
                 "title=": "`${$row.data['.name'].toUpperCase()} - ${ifd.up ? 'up': 'down'}`",
                 "description=": [
-                  "`IPv4 ${ifd['ipv4-address'][0].address}/${ifd['ipv4-address'][0].mask}${",
-                  "ifd['ipv4-address'].length>1 ? ` +${ifd['ipv4-address'].length-1}` : '' }`"
+                  "ifd['ipv4-address']?.length ? `IPv4 ${ifd['ipv4-address'][0].address}/${ifd['ipv4-address'][0].mask}${",
+                  "ifd['ipv4-address'].length>1 ? ` +${ifd['ipv4-address'].length-1}` : '' }` : ''"
                 ],
                 "link=": "`network/interfaces/${$row.index}`"
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Switch" },
+      "content": [
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Switch configuration",
+            "link": "network/switch"
+          }
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Tools" },
+      "content": [
+        {
+          "widget": "set-link",
+          "options": {
+            "title": "Diagnostics",
+            "link": "network/diagnostics"
+          }
         }
       ]
     },

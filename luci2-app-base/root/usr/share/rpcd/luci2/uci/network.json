@@ -291,6 +291,9 @@
       "type": "array",
       "items": {
         "type": "object",
+        "title=": "`VLAN ID ${$.vlan}`",
+        "value=": "$.ports",
+        "description=": "$.device",
         "properties": {
           "device": { "type": "string", "title": "Device", "required": true },
           "vlan": {

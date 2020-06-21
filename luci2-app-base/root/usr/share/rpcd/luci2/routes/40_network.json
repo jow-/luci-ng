@@ -1,7 +1,15 @@
 {
   "network": {
     "title": "Network",
-    "index": 40
+    "index": 40,
+    "hideChilds": true,
+    "view": "network/network"
+  },
+  "network/network": {
+    "title": "Network",
+    "acls": ["network"],
+    "view": "network/network",
+    "index": 1
   },
   "network/interfaces": {
     "title": "Interfaces",
@@ -22,19 +30,6 @@
     "files": ["/sbin/swconfig"],
     "view": "network/switch",
     "index": 30
-  },
-  "network/hosts": {
-    "title": "Hostnames",
-    "acls": ["hostnames"],
-    "files": ["/etc/config/dhcp"],
-    "view": "network/hosts",
-    "index": 50
-  },
-  "network/routes": {
-    "title": "Routes",
-    "acls": ["routes"],
-    "view": "network/routes",
-    "index": 70
   },
   "network/diagnostics": {
     "title": "Diagnostics",

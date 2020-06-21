@@ -1,0 +1,25 @@
+{
+  "widget": "set-page",
+
+  "content": [
+    {
+      "widget": "set-section",
+      "options": { "title": "Switch" },
+      "content": [
+        "uciUI('network','@switch', 0, {exclude: ['enable_vlan', '.name']})"
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Vlan" },
+      "content": [
+        "uciUI('network', '@switch', 0,  ['enable_vlan'])",
+        {
+          "widget": "set-container",
+          "if": "uci.network['@switch'][0].enable_vlan",
+          "content": ["uciUI('network','@switch_vlan')"]
+        }
+      ]
+    }
+  ]
+}
