@@ -55,6 +55,31 @@ export class UciModel2 {
       type = `@${type}`;
 
       if (!config[type]) config[type] = RxObject([]);
+
+      // normalize UCI data
+      const schema = (this.schemas[configName] as SchemaObject)?.properties?.[type];
+      if (
+        schema &&
+        schema.type === 'array' &&
+        !Array.isArray(schema?.items) &&
+        schema.items?.type === 'object' &&
+        schema.items.properties
+      ) {
+        // coerce to boolean (uci saves as '1')
+        for (const key in rawConfigData[prop]) {
+          if (schema.items.properties[key]?.type === 'boolean')
+            rawConfigData[prop][key] = ['1', 'yes', 'true'].includes(
+              rawConfigData[prop][key]
+            );
+        }
+
+        // setup defaults to have proper in-memory representation before creating widget
+        for (const key in schema.items.properties) {
+          if (!(key in rawConfigData[prop]) && 'default' in schema.items.properties[key])
+            rawConfigData[prop][key] = (schema.items.properties[key] as any).default;
+        }
+      }
+
       config[type].push(RxObject(rawConfigData[prop], true));
 
       // deep clone data to later test for changes
