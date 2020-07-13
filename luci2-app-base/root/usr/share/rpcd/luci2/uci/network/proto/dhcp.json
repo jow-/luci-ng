@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "title": "DHCP",
+  "description": "DHCP client2",
+  "depends=": "$.proto==='dhcp'",
+  "$onLoad": "store.set('proto', 'dhcp', 'DHCP client'), console.log('register dhcp')",
+
+  "allOf": [
+    {
+      "type": "object",
+      "title": "Advanced",
+
+      "properties": {
+        "clientid": {
+          "title": "Client ID",
+          "description": "ID to send when requesting DHCP",
+          "type": "string",
+          "format": "hex"
+        },
+        "vendorid": {
+          "title": "Vendor ID",
+          "description": "Vendor Class to send when requesting DHCP",
+          "type": "string"
+        },
+        "macaddr": {
+          "title": "Override MAC address",
+          "type": "string",
+          "format": "macaddr"
+        },
+        "mtu": {
+          "title": "Override MTU",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9200
+        },
+        "metric": {
+          "title": "Use gateway metric",
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  ],
+  "properties": {
+    "hostname": {
+      "title": "DHCP Server",
+      "description": "Hostname to send when requesting DHCP",
+      "type": "string",
+      "format": "host"
+    },
+    "broadcast": {
+      "title": "Use broadcast flag",
+      "description": "Required for certain ISPs, e.g. Charter with DOCSIS 3",
+      "type": "boolean",
+      "default": false
+    },
+    "defaultroute": {
+      "title": "Use default gateway",
+      "description": "If unchecked, no default route is configured",
+      "type": "boolean",
+      "default": true
+    },
+    "peerdns": {
+      "title": "Use DNS servers advertised by peer",
+      "description": "If unchecked, the advertised DNS server addresses are ignored",
+      "type": "boolean",
+      "default": true
+    },
+    "dns": {
+      "title": "Use custom DNS servers",
+      "type": "string",
+      "format": "ipaddr",
+      "depends=": "!$.peerdns"
+    }
+  }
+}

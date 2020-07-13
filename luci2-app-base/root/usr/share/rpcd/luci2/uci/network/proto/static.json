@@ -1,0 +1,105 @@
+{
+  "type": "object",
+  "description": "Static address",
+  "title": "Static",
+  "depends=": "$.proto==='static'",
+
+  "$onLoad": "store.set('proto', 'static', 'Static address'), console.log('register static')",
+
+  "ui": { "exclude": ["macaddr", "mtu", "metric"] },
+  "properties": {
+    "ipaddr": {
+      "type": "array",
+      "title": "IPv4 address",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "ipv4"
+      }
+    },
+    "netmask": {
+      "type": "string",
+      "title": "IPv4 netmask",
+      "format": "netmask4"
+    },
+    "gateway": {
+      "type": "string",
+      "title": "IPv4 gateway",
+      "format": "ipv4"
+    },
+    "broadcast": {
+      "type": "string",
+      "title": "IPv4 broadcast",
+      "format": "ipv4"
+    },
+    "dns": {
+      "type": "array",
+      "title": "Use custom DNS servers",
+      "items": {
+        "type": "string",
+        "format": "host"
+      }
+    },
+
+    "ip6assign": {
+      "title": "IPv6 assignment length",
+      "description": "Assign a part of given length of every public IPv6-prefix to this interface",
+      "type": "integer",
+      "maximum": 64,
+      "minimum": 0
+    },
+    "ip6hint": {
+      "title": "IPv6 assignment hint",
+      "description": "Assign prefix parts using this hexadecimal subprefix ID for this interface",
+      "type": "string",
+      "depends=": "$.ip6assign >=33",
+      "pattern": "^(0x)?[0-9a-fA-F]{1,8}$",
+      "messages": { "pattern": "`Expecting a hexadecimal assignment hint`" }
+    },
+    "ip6addr": {
+      "type": "array",
+      "title": "IPv6 address",
+      "items": {
+        "type": "string",
+        "format": "ipv6"
+      },
+      "depends=": "$.ip6assign == ''"
+    },
+    "ip6gw": {
+      "type": "string",
+      "title": "IPv6 gateway",
+      "format": "ipv6",
+      "depends=": "$.ip6assign == ''"
+    },
+    "ip6prefix": {
+      "title": "IPv6 routed prefix",
+      "description": "Public prefix routed to this device for distribution to clients",
+      "type": "string",
+      "format": "ipv6",
+      "depends=": "$.ip6assign == ''"
+    },
+    "ip6ifaceid": {
+      "title": "IPv6 suffix",
+      "description": "Optional. Allowed values: 'eui64', 'random', fixed value like '::1' or '::1:2'. When IPv6 prefix (like 'a:b:c:d::') is received from a delegating server, use the suffix (like '::1') to form the IPv6 address ('a:b:c:d::1') for the interface",
+      "type": "string",
+      "format": "ip6hostid"
+    },
+
+    "macaddr": {
+      "title": "Override MAC address",
+      "type": "string",
+      "format": "macaddr"
+    },
+    "mtu": {
+      "title": "Override MTU",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9200
+    },
+    "metric": {
+      "title": "Use gateway metric",
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

@@ -65,7 +65,7 @@
             "depends=": "$.type"
           },
 
-          "protocol": {
+          "proto": {
             "type": "string",
             "title": "Protocol"
           },

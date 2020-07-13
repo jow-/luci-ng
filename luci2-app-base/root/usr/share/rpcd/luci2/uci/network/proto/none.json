@@ -1,0 +1,7 @@
+{
+  "type": "object",
+  "description": "Unmanaged",
+
+  "depends=": "$.proto==='none'",
+  "$onLoad": "store.set('proto', 'none', 'Unmanaged'), console.log('register dhcp')"
+}
