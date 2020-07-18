@@ -24,7 +24,7 @@ export class JsonrpcRequest implements IJsonrpcRequest {
 
 /**
  * Service to handle raw jsonrpc calls
- * It is a thin wrapp over http calls handling the request/response formatting
+ * It is a thin wrap over http calls handling the request/response formatting
  * It adds retry interceptors for http errors and jsonrpc errors
  */
 // tslint:disable-next-line:max-classes-per-file
@@ -38,7 +38,7 @@ export class JsonrpcService {
   });
 
   private _url = '';
-  private _retrayDelay = 2500;
+  private _retryDelay = 2500;
   private _retryCount = 3;
 
   constructor(private _http: HttpClient) {}
@@ -56,7 +56,7 @@ export class JsonrpcService {
   /**
    * 	 * Wrapper arround Http post, to:
    * + set options
-   * + add retry behaviour on http errors
+   * + add retry behavior on http errors
    * + convert jsonrpc errors to rejections
    *
    * TODO: batch jsonrpc calls are not supported
@@ -70,7 +70,7 @@ export class JsonrpcService {
           headers: JsonrpcService._headers,
         })
 
-        // retry on http errors a maximun of {_retryCount} times waiting {_retrayDelay} milliseconds
+        // retry on http errors a maximum of {_retryCount} times waiting {_retryDelay} milliseconds
         .pipe(
           retryWhen((o) =>
             o.pipe(
@@ -78,7 +78,7 @@ export class JsonrpcService {
                 if (acc >= this._retryCount) throw e;
                 return ++acc;
               }, 0),
-              delay(this._retrayDelay)
+              delay(this._retryDelay)
             )
           ),
 
