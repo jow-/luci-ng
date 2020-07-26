@@ -3,331 +3,326 @@
   "title": "DHCP configurations",
   "properties": {
     "@dnsmasq": {
-      "title": "dnsmasq",
+      "title": "DHCP & DNS",
       "description": "General dnsmasq and DHCP server options",
       "type": "array",
       "items": {
         "type": "object",
-        "ui": {
-          "include": [
-            [
-              "domainneeded",
-              "authoritative",
-              "local",
-              "domain",
-              "logqueries",
-              "server",
-              "rebind_protection",
-              "rebind_localhost",
-              "rebind_domain",
-              "localservice",
-              "nonwildcard",
-              "interface",
-              "notinterface"
-            ],
-            ["readethers", "leasefile", "noresolv", "resolvfile", "nohosts", "addnhosts"],
-            ["enable_tftp", "tftp_root", "dhcp_boot"],
-            ["*"]
-          ],
-          "titles": [
-            "General Settings",
-            "Resolv & Host Files",
-            "TFTP Settings",
-            "Advanced"
-          ]
-        },
-        "properties": {
-          "domainneeded": {
-            "type": "boolean",
-            "title": "Domain required",
-            "description": "Don't forward DNS-Requests without DNS-Name"
+        "title": "DHCP & DNS",
+        "allOf": [
+          {
+            "type": "object",
+            "title": "General Settings",
+            "properties": {
+              "domainneeded": {
+                "type": "boolean",
+                "title": "Domain required",
+                "description": "Don't forward DNS-Requests without DNS-Name"
+              },
+              "authoritative": {
+                "type": "boolean",
+                "title": "Authoritative",
+                "description": "This is the only DHCP in the local network"
+              },
+              "local": {
+                "type": "string",
+                "title": "Local server",
+                "description": "Local domain specification. Names matching this domain are never forwarded and are resolved from DHCP or hosts files only."
+              },
+              "domain": {
+                "type": "string",
+                "title": "Local domain",
+                "description": "Local domain suffix appended to DHCP names and hosts file entries."
+              },
+              "logqueries": {
+                "type": "boolean",
+                "title": "Log queries",
+                "description": "Write received DNS requests to syslog"
+              },
+              "server": {
+                "type": "array",
+                "title": "DNS forwardings",
+                "description": "List of DNS servers to forward requests to.",
+                "items": { "type": "string" }
+              },
+              "rebind_protection": {
+                "type": "boolean",
+                "default": true,
+                "title": "Rebind Protection",
+                "description": "Discard upstream RFC1918 responses"
+              },
+              "rebind_localhost": {
+                "type": "boolean",
+                "title": "Allow localhost",
+                "description": "Allow upstream responses in the 127.0.0.0/8 range, e.g. for RBL services",
+                "depends=": "$.rebind_protection"
+              },
+              "rebind_domain": {
+                "type": "array",
+                "title": "Domain whitelist",
+                "description": "List of domains to allow RFC1918 responses for.",
+                "depends=": "$.rebind_protection",
+                "items": { "type": "string", "format": "host" }
+              },
+              "localservice": {
+                "type": "boolean",
+                "title": "Local Service Only",
+                "description": "Limit DNS service to subnets interfaces on which we are serving DNS"
+              },
+              "nonwildcard": {
+                "type": "boolean",
+                "title": "Non-wildcard",
+                "description": "Bind dynamically to interfaces rather than wildcard address (recommended as linux default)",
+                "default": true,
+                "required": true
+              },
+              "interface": {
+                "type": "array",
+                "title": "Listen Interfaces",
+                "description": "Limit listening to these interfaces, and loopback",
+                "items": { "type": "string", "format": "iface" }
+              },
+              "notinterface": {
+                "type": "array",
+                "title": "Exclude interfaces",
+                "description": "Prevent listening on these interfaces",
+                "items": {
+                  "type": "string",
+                  "format": "iface"
+                },
+                "depends=": "$.nonwildcard"
+              }
+            }
           },
-          "authoritative": {
-            "type": "boolean",
-            "title": "Authoritative",
-            "description": "This is the only DHCP in the local network"
+          {
+            "type": "object",
+            "title": "Resolv & Host Files",
+            "properties": {
+              "readethers": {
+                "type": "boolean",
+                "title": "Use static lease file",
+                "description": "Read static lease entries from /etc/ethers to configure DHCP Server"
+              },
+              "leasefile": {
+                "type": "string",
+                "format": "path",
+                "title": "Leasefile",
+                "description": "Store DHCP leases in this file"
+              },
+              "noresolv": {
+                "type": "boolean",
+                "title": "Ignore resolve file",
+                "description": "Don't read upstream servers from /etc/resolv.conf"
+              },
+              "resolvfile": {
+                "type": "string",
+                "format": "path",
+                "default": "/tmp/resolv.conf.auto",
+                "title": "Resolve file",
+                "description": "Local alternative resolv file",
+                "depends=": "!$.noresolv"
+              },
+              "nohosts": {
+                "type": "boolean",
+                "title": "Ignore Hosts file",
+                "description": "Don't read DNSnames from /etc/hosts"
+              },
+              "addnhosts": {
+                "title": "Additional host files",
+                "description": "Additional host files to read for serving DNS responses",
+                "type": "array",
+                "items": { "type": "string", "format": "path" }
+              }
+            }
           },
-          "local": {
-            "type": "string",
-            "title": "Local server",
-            "description": "Local domain specification. Names matching this domain are never forwarded and are resolved from DHCP or hosts files only."
-          },
-          "domain": {
-            "type": "string",
-            "title": "Local domain",
-            "description": "Local domain suffix appended to DHCP names and hosts file entries."
-          },
-          "logqueries": {
-            "type": "boolean",
-            "title": "Log queries",
-            "description": "Write received DNS requests to syslog"
-          },
-          "server": {
-            "type": "array",
-            "title": "DNS forwardings",
-            "description": "List of DNS servers to forward requests to.",
-            "items": { "type": "string" }
-          },
-          "rebind_protection": {
-            "type": "boolean",
-            "default": true,
-            "title": "Rebind Protection",
-            "description": "Discard upstream RFC1918 responses"
-          },
-          "rebind_localhost": {
-            "type": "boolean",
-            "title": "Allow localhost",
-            "description": "Allow upstream responses in the 127.0.0.0/8 range, e.g. for RBL services",
-            "depends=": "$.rebind_protection"
-          },
-          "rebind_domain": {
-            "type": "array",
-            "title": "Domain whitelist",
-            "description": "List of domains to allow RFC1918 responses for.",
-            "depends=": "$.rebind_protection",
-            "items": { "type": "string", "format": "host" }
-          },
-          "localservice": {
-            "type": "boolean",
-            "title": "Local Service Only",
-            "description": "Limit DNS service to subnets interfaces on which we are serving DNS"
-          },
-          "nonwildcard": {
-            "type": "boolean",
-            "title": "Non-wildcard",
-            "description": "Bind dynamically to interfaces rather than wildcard address (recommended as linux default)",
-            "default": true,
-            "required": true
-          },
-          "interface": {
-            "type": "array",
-            "title": "Listen Interfaces",
-            "description": "Limit listening to these interfaces, and loopback",
-            "items": { "type": "string", "format": "iface" }
-          },
-          "notinterface": {
-            "type": "array",
-            "title": "Exclude interfaces",
-            "description": "Prevent listening on these interfaces",
-            "items": {
-              "type": "string",
-              "format": "iface"
-            },
-            "depends=": "$.nonwildcard"
-          },
+          {
+            "type": "object",
+            "title": "TFTP Settings",
+            "properties": {
+              "enable_tftp": {
+                "type": "boolean",
+                "title": "Enable TFTP Server"
+              },
 
-          "readethers": {
-            "type": "boolean",
-            "title": "Use static lease file",
-            "description": "Read static lease entries from /etc/ethers to configure DHCP Server"
-          },
-          "leasefile": {
-            "type": "string",
-            "format": "path",
-            "title": "Leasefile",
-            "description": "Store DHCP leases in this file"
-          },
-          "noresolv": {
-            "type": "boolean",
-            "title": "Ignore resolve file",
-            "description": "Don't read upstream servers from /etc/resolv.conf"
-          },
-          "resolvfile": {
-            "type": "string",
-            "format": "path",
-            "default": "/tmp/resolv.conf.auto",
-            "title": "Resolve file",
-            "description": "Local alternative resolv file",
-            "depends=": "!$.noresolv"
-          },
-          "nohosts": {
-            "type": "boolean",
-            "title": "Ignore Hosts file",
-            "description": "Don't read DNSnames from /etc/hosts"
-          },
-          "addnhosts": {
-            "title": "Additional host files",
-            "description": "Additional host files to read for serving DNS responses",
-            "type": "array",
-            "items": { "type": "string", "format": "path" }
-          },
+              "tftp_root": {
+                "type": "string",
+                "format": "path",
+                "title": "TFTP server root",
+                "description": "Root directory for files served via TFTP",
+                "depends=": "$.enable_tftp"
+              },
 
-          "enable_tftp": {
-            "type": "boolean",
-            "title": "Enable TFTP Server"
+              "dhcp_boot": {
+                "type": "string",
+                "title": "Network boot image",
+                "description": "Filename of the boot image advertised to clients",
+                "depends=": "$.enable_tftp"
+              }
+            }
           },
+          {
+            "type": "object",
+            "title": "Advanced",
 
-          "tftp_root": {
-            "type": "string",
-            "format": "path",
-            "title": "TFTP server root",
-            "description": "Root directory for files served via TFTP",
-            "depends=": "$.enable_tftp"
-          },
+            "properties": {
+              "quietdhcp": {
+                "type": "boolean",
+                "title": "Suppress logging",
+                "description": "Suppress logging of the routine operation of these protocols"
+              },
 
-          "dhcp_boot": {
-            "type": "string",
-            "title": "Network boot image",
-            "description": "Filename of the boot image advertised to clients",
-            "depends=": "$.enable_tftp"
-          },
+              "sequential_ip": {
+                "type": "boolean",
+                "title": "Allocate IP sequentially",
+                "description": "Starts from the lowest available address"
+              },
+              "boguspriv": {
+                "type": "boolean",
+                "title": "Filter private",
+                "description": "Do not forward reverse lookups for local networks",
+                "default": true
+              },
+              "filterwin2k": {
+                "type": "boolean",
+                "title": "Filter useless",
+                "description": "Do not forward requests that cannot be answered by public name servers"
+              },
+              "localise_queries": {
+                "type": "boolean",
+                "title": "Localise queries",
+                "description": "Choose IP address to match the incoming interface if multiple addresses are assigned to a host name in /etc/hosts"
+              },
+              "dnssec": {
+                "type": "boolean",
+                "title": "DNSSEC",
+                "description": "Validate DNS replies and cache DNSSEC data"
+              },
+              "dnsseccheckunsigned": {
+                "type": "boolean",
+                "title": "Check unsiged replies",
+                "description": "Check the zones of unsigned replies to ensure that unsigned replies are allowed in those zones"
+              },
+              "expandhosts": {
+                "type": "boolean",
+                "title": "Expand hosts",
+                "description": "Add local domain suffix to names served from hosts files"
+              },
+              "nonegcache": {
+                "type": "boolean",
+                "title": "No negative cache",
+                "description": "Do not cache negative replies, e.g. for not existing domains"
+              },
+              "serversfile": {
+                "type": "string",
+                "title": "Additional servers file",
+                "description": "This file may contain lines like 'server=/domain/1.2.3.4' or 'server=1.2.3.4' for domain-specific or full upstream DNS servers"
+              },
+              "strictorder": {
+                "type": "boolean",
+                "title": "Strict order",
+                "description": "Obey order of DNS servers in the resolv file"
+              },
+              "allservers": {
+                "type": "boolean",
+                "title": "All Servers",
+                "description": "Query all available upstream DNS servers"
+              },
+              "bogusnxdomain": {
+                "title": "Bogus NX Domain Override",
+                "description": "List of hosts that supply bogus NX domain results",
+                "type": "array",
+                "items": { "type": "string", "format": "ip" }
+              },
+              "port": {
+                "type": "integer",
+                "title": "DNS Server port",
+                "description": "Listening port for inbound DNS queries, disables DNSserver functionality if set to 0",
+                "minimum": 0,
+                "maximum": 65535
+              },
+              "queryport": {
+                "type": "integer",
+                "title": "DNS query port",
+                "description": "Use a fixed port for outbound DNS queries",
+                "minimum": 0,
+                "maximum": 65535
+              },
+              "dhcpleasemax": {
+                "type": "integer",
+                "minimum": 0,
+                "title": "Maximum DHCP leases",
+                "description": "Maximum allowed number of active DHCP leases"
+              },
+              "ednspacket_max": {
+                "type": "integer",
+                "minimum": 0,
+                "title": "EDNS max packet size",
+                "description": "Maximum allowed size of EDNS.0 UDP packets. Defaults to 4096"
+              },
+              "dnsforwardmax": {
+                "type": "integer",
+                "minimum": 0,
+                "title": "Maximum concurrent queries",
+                "description": "Maximum allowed number of concurrent DNS queries. Defaults to 150"
+              },
+              "cachesize": {
+                "type": "integer",
+                "title": "Size of DNS query cache",
+                "description": "Number of cached DNS entries (max is 10000, 0 is no caching)",
+                "default": 150,
+                "minimum": 0,
+                "maximum": 10000
+              },
 
-          "quietdhcp": {
-            "type": "boolean",
-            "title": "Suppress logging",
-            "description": "Suppress logging of the routine operation of these protocols"
-          },
+              "add_local_domain": {
+                "type": "boolean",
+                "title": "Add Local Domain",
+                "description": "Add the local domain as search directive in resolv.conf.",
+                "default": true
+              },
 
-          "sequential_ip": {
-            "type": "boolean",
-            "title": "Allocate IP sequentially",
-            "description": "Starts from the lowest available address"
-          },
-          "boguspriv": {
-            "type": "boolean",
-            "title": "Filter private",
-            "description": "Do not forward reverse lookups for local networks",
-            "default": true
-          },
-          "filterwin2k": {
-            "type": "boolean",
-            "title": "Filter useless",
-            "description": "Do not forward requests that cannot be answered by public name servers"
-          },
-          "localise_queries": {
-            "type": "boolean",
-            "title": "Localise queries",
-            "description": "Choose IP address to match the incoming interface if multiple addresses are assigned to a host name in /etc/hosts"
-          },
-          "dnssec": {
-            "type": "boolean",
-            "title": "DNSSEC",
-            "description": "Validate DNS replies and cache DNSSEC data"
-          },
-          "dnsseccheckunsigned": {
-            "type": "boolean",
-            "title": "Check unsiged replies",
-            "description": "Check the zones of unsigned replies to ensure that unsigned replies are allowed in those zones"
-          },
-          "expandhosts": {
-            "type": "boolean",
-            "title": "Expand hosts",
-            "description": "Add local domain suffix to names served from hosts files"
-          },
-          "nonegcache": {
-            "type": "boolean",
-            "title": "No negative cache",
-            "description": "Do not cache negative replies, e.g. for not existing domains"
-          },
-          "serversfile": {
-            "type": "string",
-            "title": "Additional servers file",
-            "description": "This file may contain lines like 'server=/domain/1.2.3.4' or 'server=1.2.3.4' for domain-specific or full upstream DNS servers"
-          },
-          "strictorder": {
-            "type": "boolean",
-            "title": "Strict order",
-            "description": "Obey order of DNS servers in the resolv file"
-          },
-          "allservers": {
-            "type": "boolean",
-            "title": "All Servers",
-            "description": "Query all available upstream DNS servers"
-          },
-          "bogusnxdomain": {
-            "title": "Bogus NX Domain Override",
-            "description": "List of hosts that supply bogus NX domain results",
-            "type": "array",
-            "items": { "type": "string", "format": "ip" }
-          },
-          "port": {
-            "type": "integer",
-            "title": "DNS Server port",
-            "description": "Listening port for inbound DNS queries, disables DNSserver functionality if set to 0",
-            "minimum": 0,
-            "maximum": 65535
-          },
-          "queryport": {
-            "type": "integer",
-            "title": "DNS query port",
-            "description": "Use a fixed port for outbound DNS queries",
-            "minimum": 0,
-            "maximum": 65535
-          },
-          "dhcpleasemax": {
-            "type": "integer",
-            "minimum": 0,
-            "title": "Maximum DHCP leases",
-            "description": "Maximum allowed number of active DHCP leases"
-          },
-          "ednspacket_max": {
-            "type": "integer",
-            "minimum": 0,
-            "title": "EDNS max packet size",
-            "description": "Maximum allowed size of EDNS.0 UDP packets. Defaults to 4096"
-          },
-          "dnsforwardmax": {
-            "type": "integer",
-            "minimum": 0,
-            "title": "Maximum concurrent queries",
-            "description": "Maximum allowed number of concurrent DNS queries. Defaults to 150"
-          },
-          "cachesize": {
-            "type": "integer",
-            "title": "Size of DNS query cache",
-            "description": "Number of cached DNS entries (max is 10000, 0 is no caching)",
-            "default": 150,
-            "minimum": 0,
-            "maximum": 10000
-          },
+              "add_local_hostname": {
+                "type": "boolean",
+                "title": "Add Local Hostname",
+                "description": "Add A and PTR records automatically for the local hostname.",
+                "default": true
+              },
 
-          "add_local_domain": {
-            "type": "boolean",
-            "title": "Add Local Domain",
-            "description": "Add the local domain as search directive in resolv.conf.",
-            "default": true
-          },
+              "cachelocal": {
+                "type": "boolean",
+                "title": "Cache Local",
+                "description": "When set to 0, use each network interface's dns address in the local  /etc/resolv.conf. Normally, only the loopback address is used, and all queries go through dnsmasq.",
+                "default": true
+              },
 
-          "add_local_hostname": {
-            "type": "boolean",
-            "title": "Add Local Hostname",
-            "description": "Add A and PTR records automatically for the local hostname.",
-            "default": true
-          },
+              "dbus": {
+                "type": "boolean",
+                "title": "DBus",
+                "description": "Enable DBus messaging for dnsmasq. Standard builds of dnsmasq on OpenWRT do not include DBus support!."
+              },
 
-          "cachelocal": {
-            "type": "boolean",
-            "title": "Cache Local",
-            "description": "When set to 0, use each network interface's dns address in the local  /etc/resolv.conf. Normally, only the loopback address is used, and all queries go through dnsmasq.",
-            "default": true
-          },
+              "dhcphostsfile": {
+                "type": "string",
+                "format": "path",
+                "title": "External hosts file",
+                "description": "Read DHCP host information from the specified file."
+              },
 
-          "dbus": {
-            "type": "boolean",
-            "title": "DBus",
-            "description": "Enable DBus messaging for dnsmasq. Standard builds of dnsmasq on OpenWRT do not include DBus support!."
-          },
+              "fqdn": {
+                "type": "boolean",
+                "title": "Full qualified domain name",
+                "description": "Do not resolve unqualifed local hostnames.",
+                "depends=": "$.domain"
+              },
 
-          "dhcphostsfile": {
-            "type": "string",
-            "format": "path",
-            "title": "External hosts file",
-            "description": "Read DHCP host information from the specified file."
-          },
-
-          "fqdn": {
-            "type": "boolean",
-            "title": "Full qualified domain name",
-            "description": "Do not resolve unqualifed local hostnames.",
-            "depends=": "$.domain"
-          },
-
-          "nodaemon": {
-            "type": "boolean",
-            "title": "Debug mode",
-            "description": "Don't daemonize the dnsmasq process. Logs to stderr as well as syslog."
+              "nodaemon": {
+                "type": "boolean",
+                "title": "Debug mode",
+                "description": "Don't daemonize the dnsmasq process. Logs to stderr as well as syslog."
+              }
+            }
           }
-        }
+        ]
       }
     },
 
@@ -491,6 +486,8 @@
       "type": "array",
       "items": {
         "type": "object",
+        "title=": "$.name",
+        "description=": "$.ip",
         "properties": {
           "name": {
             "type": "string",

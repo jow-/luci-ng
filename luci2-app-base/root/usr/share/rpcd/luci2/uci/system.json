@@ -5,161 +5,191 @@
   "properties": {
     "@system": {
       "type": "array",
+      "default": [{}],
+      "minItems": 1,
+      "maxItems": 1,
       "items": {
         "type": "object",
         "title": "System",
         "description": "General System options",
-        "ui": {
-          "include": [
-            ["hostname", "timezone", "zonename"],
-            ["conloglevel", "buffersize"],
-            ["log_buffer_size"],
-            ["log_file", "log_size"],
-            [
-              "log_remote",
-              "log_ip",
-              "log_port",
-              "log_proto",
-              "log_hostname",
-              "log_trailer_null",
-              "log_prefix"
-            ]
-          ],
 
-          "titles": [
-            "General",
-            "Kernel Log",
-            "System Log",
-            "File Logging",
-            "Remote Logging",
-            "Other"
-          ]
-        },
-        "properties": {
-          "hostname": {
-            "title": "Hostname",
-            "type": "string",
-            "format": "hostname",
-            "required": true
-          },
-          "timezone": {
-            "type": "string",
-            "title": "Time Zone Info",
-            "description": "Encoded time zone information.",
-            "default": "UTC"
-          },
-          "zonename": {
-            "type": "string",
-            "title": "Timezone",
-            "description": "Name of the time zone to use to render time.",
-            "depends=": "tz=ubus('luci', 'getTimezones')",
-            "ui": {
-              "widget": "set-autocomplete",
-              "events": {
-                "onValueChange": "$.timezone = tz?.[$value]?.tzstring ?? ''"
+        "allOf": [
+          {
+            "type": "object",
+            "title": "General",
+            "$id": "#/general",
+            "properties": {
+              "hostname": {
+                "title": "Hostname",
+                "type": "string",
+                "format": "hostname",
+                "required": true
               }
-            },
-            "default": "UTC",
-            "enum=": "Object.keys(tz).concat('UTC').sort()"
+            }
           },
-          "buffersize": {
-            "title": "Kernel log Buffersize",
-            "description": "Size of the kernel message buffer",
-            "type": "integer"
+          {
+            "type": "object",
+            "title": "Time",
+            "$id": "#/time",
+            "properties": {
+              "timezone": {
+                "type": "string",
+                "title": "Time Zone Info",
+                "description": "Encoded time zone information.",
+                "default": "UTC"
+              },
+              "zonename": {
+                "type": "string",
+                "title": "Timezone",
+                "description": "Name of the time zone to use to render time.",
+                "depends=": "tz=ubus('luci', 'getTimezones')",
+                "ui": {
+                  "events": {
+                    "onValueChange": "$.timezone = tz?.[$value]?.tzstring ?? ''"
+                  }
+                },
+                "default": "UTC",
+                "enum=": "Object.keys(tz).concat('UTC').sort()"
+              }
+            }
           },
-          "conloglevel": {
-            "title": "Kernel log level",
-            "description": "Maximum log level for kernel messages to be logged to the console.",
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 8,
-            "default": 7,
-            "ui": { "widget": "set-slider" }
+          {
+            "type": "object",
+            "title": "Kernel Log",
+            "$id": "#/kernel_log",
+            "properties": {
+              "conloglevel": {
+                "title": "Kernel log level",
+                "description": "Maximum log level for kernel messages to be logged to the console.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8,
+                "default": 7,
+                "ui": { "role": "range" }
+              },
+              "buffersize": {
+                "title": "Kernel log Buffersize",
+                "description": "Size of the kernel message buffer",
+                "type": "integer"
+              }
+            }
           },
-          "cronloglevel": {
-            "title": "Cron log level",
-            "description": "Combination of bit flags. 1: log start of job, 2: log end of job, 4: log failed jobs, 8: log pid of all jobs.",
-            "type": "integer",
-            "default": 5,
-            "minimum": 0,
-            "maximum": 15
+          {
+            "type": "object",
+            "title": "System Log",
+            "$id": "#/system_log",
+            "properties": {
+              "log_buffer_size": {
+                "title": "Buffersize",
+                "description": "System log in memory buffer size [kB]",
+                "type": "integer",
+                "minimum": 0,
+                "default": 64
+              }
+            }
           },
-          "log_buffer_size": {
-            "title": "Buffersize",
-            "description": "System log in memory buffer size [kB]",
-            "type": "integer",
-            "minimum": 0,
-            "default": 64
+          {
+            "type": "object",
+            "title": "File Log",
+            "value=": "$.log_file ? $.log_file : 'Disabled'",
+            "$id": "#/file_log",
+            "properties": {
+              "log_file": {
+                "title": "Log file",
+                "description": "File to write log messages to",
+                "type": "string",
+                "format": "path"
+              },
+              "log_size": {
+                "title": "Log size",
+                "description": "Size of the file buffer in [kB]",
+                "type": "integer",
+                "default": 16,
+                "minimum": 0
+              }
+            }
           },
-          "log_file": {
-            "title": "Log file",
-            "description": "File to write log messages to",
-            "type": "string",
-            "format": "path"
-          },
-          "log_ip": {
-            "title": "Remote Syslog Server",
+          {
+            "type": "object",
+            "title": "Remote Logging",
+            "$id": "#/remote_log",
+            "properties": {
+              "log_remote": {
+                "title": "Enable remote logging",
+                "description": "Log messages to server in addition to the local destination.",
+                "type": "boolean",
+                "default": true
+              },
+              "log_ip": {
+                "title": "Remote Syslog Server",
 
-            "type": "string",
-            "format": "host",
-            "depends=": "$.log_remote",
-            "required=": "!!$.log_remote"
+                "type": "string",
+                "format": "host",
+                "depends=": "$.log_remote",
+                "required=": "!!$.log_remote"
+              },
+              "log_port": {
+                "title": "Remote Port",
+                "description": "Port number of the remote Syslog Server",
+                "type": "integer",
+                "default": 514,
+                "minimum": 1,
+                "maximum": 65535,
+                "depends=": "$.log_remote"
+              },
+              "log_proto": {
+                "title": "Protocol",
+                "description": "Protocol to use for the connection",
+                "type": "string",
+                "enum": ["tcp", "udp"],
+                "default": "udp",
+                "depends=": "$.log_remote"
+              },
+              "log_hostname": {
+                "title": "Hostname for log",
+                "type": "string",
+                "format": "host",
+                "depends=": "$.log_remote"
+              },
+              "log_prefix": {
+                "title": "Remote Log Prefix",
+                "description": "Adds a prefix to all log messages send over network",
+                "type": "string",
+                "depends=": "$.log_remote"
+              },
+              "log_trailer_null": {
+                "title": "Trailer null",
+                "description": "Use \\0 instead of \\n as trailer when using TCP.",
+                "type": "boolean",
+                "default": false,
+                "depends=": "$.log_proto=='tcp'"
+              }
+            }
           },
-          "log_port": {
-            "title": "Remote Port",
-            "description": "Port number of the remote Syslog Server",
-            "type": "integer",
-            "default": 514,
-            "minimum": 1,
-            "maximum": 65535,
-            "depends=": "$.log_remote"
-          },
-          "log_prefix": {
-            "title": "Remote Log Prefix",
-            "description": "Adds a prefix to all log messages send over network",
-            "type": "string",
-            "depends=": "$.log_remote"
-          },
-          "log_proto": {
-            "title": "Protocol",
-            "description": "Protocol to use for the connection",
-            "type": "string",
-            "enum": ["tcp", "udp"],
-            "default": "udp",
-            "depends=": "$.log_remote"
-          },
-          "log_remote": {
-            "title": "Enable remote logging",
-            "description": "Log messages to server in addition to the local destination.",
-            "type": "boolean",
-            "default": true
-          },
-          "log_size": {
-            "title": "Log size",
-            "description": "Size of the file buffer in [kB]",
-            "type": "integer",
-            "default": 16,
-            "minimum": 0
-          },
-          "log_trailer_null": {
-            "title": "Trailer null",
-            "description": "Use \\0 instead of \\n as trailer when using TCP.",
-            "type": "boolean",
-            "default": false,
-            "depends=": "$.log_proto=='tcp'"
-          },
-          "log_hostname": {
-            "title": "Hostname for log",
-            "type": "string",
-            "format": "host",
-            "depends=": "$.log_remote"
+          {
+            "type": "object",
+            "title": "Cron Log",
+            "$id": "#/cron_log",
+            "properties": {
+              "cronloglevel": {
+                "title": "Cron log level",
+                "description": "Combination of bit flags. 1: log start of job, 2: log end of job, 4: log failed jobs, 8: log pid of all jobs.",
+                "type": "integer",
+                "default": 5,
+                "minimum": 0,
+                "maximum": 15
+              }
+            }
           }
-        }
+        ],
+
+        "properties": {}
       }
     },
     "@timeserver": {
       "type": "array",
-      "additionalItems": false,
+      "default": [{}],
+      "maxItems": 1,
       "items": {
         "type": "object",
         "title": "Time Server",
@@ -174,13 +204,7 @@
             "type": "boolean",
             "default": true
           },
-          "enable_server": {
-            "title": "Enable Local Server",
-            "description": "Provide local NTP server",
-            "type": "boolean",
-            "depends=": "$.enabled",
-            "default": false
-          },
+
           "server": {
             "title": "Servers",
             "description": "NTP servers to poll the time from. If empty disables client.",
@@ -207,6 +231,13 @@
               "type": "string"
             },
             "depends=": "$.enabled && $.use_dhcp"
+          },
+          "enable_server": {
+            "title": "Enable Local Server",
+            "description": "Provide local NTP server",
+            "type": "boolean",
+            "depends=": "$.enabled",
+            "default": false
           }
         }
       }
@@ -219,6 +250,7 @@
       "items": {
         "type": "object",
         "title=": "`${$.name || ''} (${$.sysfs || ''})`",
+        "allOf": [{ "$include": "system/led/*.json" }],
         "properties": {
           "name": {
             "title": "Led name",

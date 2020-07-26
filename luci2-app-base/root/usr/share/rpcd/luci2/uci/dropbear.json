@@ -7,9 +7,89 @@
       "title": "Dropbear instance",
       "description": "General System options",
       "type": "array",
-      "anonymous": true,
       "items": {
         "type": "object",
+        "title=": "`Listen on ${$.Interface || 'all'}:${$.Port}`",
+        "allOf": [
+          {
+            "type": "object",
+            "title": "Advanced",
+
+            "properties": {
+              "RootPasswordAuth": {
+                "title": "Enable Root with Password",
+                "description": "Allow login as Root with password",
+                "type": "boolean",
+                "default": true
+              },
+              "GatewayPorts": {
+                "title": "Gateway Ports",
+                "description": "Allow remote hosts to connect to forwarded ports.",
+                "type": "boolean",
+                "default": false
+              },
+
+              "rsakeyfile": {
+                "title": "RSA key File",
+                "description": "Path to RSA file.",
+                "type": "string",
+                "format": "path"
+              },
+              "dsskeyfile": {
+                "title": "DSS/DSA key File",
+                "description": "Path to DSS/DSA file.",
+                "type": "string",
+                "format": "path"
+              },
+              "verbose": {
+                "title": "Verbose",
+                "description": "Enable verbose output by the start script.",
+                "default": false,
+                "type": "boolean"
+              },
+              "BannerFile": {
+                "title": "Banner File",
+                "description": "Name of a file to be printed before the user has authenticated successfully.",
+                "type": "string",
+                "format": "path"
+              },
+              "SSHKeepAlive": {
+                "title": "SSH Keep Alive",
+                "description": "Keep alive in ms.",
+                "default": 300,
+                "type": "integer"
+              },
+              "IdleTimeout": {
+                "title": "Idle Timeout",
+                "description": "Idle Timeout in ms.",
+                "default": 0,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "MaxAuthTries": {
+                "title": "Max Athentications Tries",
+                "description": "Amount of times you can retry writing the password when logging in before the SSH server closes the connection.",
+                "default": 3,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "mdns": {
+                "title": "mDNS",
+                "description": "Annouce the service via mDNS (a.k.a. Bonjour).",
+                "default": true,
+                "type": "boolean"
+              },
+              "RecvWindowSize": {
+                "type": "integer",
+                "title": "Receive Window Buffer Size",
+                "description": "Per-channel receive window buffer size. 0 to use default.",
+                "minimum": 0,
+                "maximum": 1048576,
+                "default": 0
+              }
+            }
+          }
+        ],
 
         "properties": {
           "enable": {
@@ -18,12 +98,7 @@
             "default": true,
             "type": "boolean"
           },
-          "Interface": {
-            "title": "Interface",
-            "description": "Listen only on the specified interface, if unspecified, on all.",
-            "type": "string",
-            "enum=": "ubus('network.interface', 'dump', {} , `$.interface[?(@.device!='lo')].interface`)"
-          },
+
           "Port": {
             "title": "Port",
             "description": "Port number to listen on.",
@@ -31,6 +106,12 @@
             "minimum": 0,
             "maximum": 65535,
             "default": 22
+          },
+          "Interface": {
+            "title": "Interface",
+            "description": "Listen only on the specified interface, if unspecified, on all.",
+            "type": "string",
+            "enum=": "ubus('network.interface', 'dump', {} , `$.interface[?(@.device!='lo')].interface`)"
           },
           "PasswordAuth": {
             "title": "Password Authentication",
@@ -43,77 +124,6 @@
             "description": "Allow login as Root",
             "type": "boolean",
             "default": true
-          },
-          "RootPasswordAuth": {
-            "title": "Enable Root with Password",
-            "description": "Allow login as Root with password",
-            "type": "boolean",
-            "default": true
-          },
-          "GatewayPorts": {
-            "title": "Gateway Ports",
-            "description": "Allow remote hosts to connect to forwarded ports.",
-            "type": "boolean",
-            "default": false
-          },
-
-          "rsakeyfile": {
-            "title": "RSA key File",
-            "description": "Path to RSA file.",
-            "type": "string",
-            "format": "path"
-          },
-          "dsskeyfile": {
-            "title": "DSS/DSA key File",
-            "description": "Path to DSS/DSA file.",
-            "type": "string",
-            "format": "path"
-          },
-          "verbose": {
-            "title": "Verbose",
-            "description": "Enable verbose output by the start script.",
-            "default": false,
-            "type": "boolean"
-          },
-          "BannerFile": {
-            "title": "Banner File",
-            "description": "Name of a file to be printed before the user has authenticated successfully.",
-            "type": "string",
-            "format": "path"
-          },
-          "SSHKeepAlive": {
-            "title": "SSH Keep Alive",
-            "description": "Keep alive in ms.",
-            "default": 300,
-            "type": "integer"
-          },
-          "IdleTimeout": {
-            "title": "Idle Timeout",
-            "description": "Idle Timeout in ms.",
-            "default": 0,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "MaxAuthTries": {
-            "title": "Max Athentications Tries",
-            "description": "Amount of times you can retry writing the password when logging in before the SSH server closes the connection.",
-            "default": 3,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "mdns": {
-            "title": "mDNS",
-            "description": "Annouce the service via mDNS (a.k.a. Bonjour).",
-            "default": true,
-            "type": "boolean"
-          },
-          "RecvWindowSize": {
-            "type": "integer",
-            "title": "Receive Window Buffer Size",
-            "description": "Per-channel receive window buffer size. 0 to use default.",
-            "minimum": 0,
-            "maximum": 1048576,
-            "default": 0
           }
         }
       }

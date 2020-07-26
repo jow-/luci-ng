@@ -5,8 +5,13 @@
     "@globals": {
       "title": "Global network options",
       "type": "array",
+      "default": [{}],
+      "maxItems": 1,
+      "minItems": 1,
+
       "items": {
         "type": "object",
+        "title": "Global",
         "properties": {
           "ula_prefix": {
             "type": "string",
@@ -23,68 +28,96 @@
       "description": "Logical networks configuration",
       "items": {
         "type": "object",
-        "title=": "$['.name']",
-        "properties": {
-          "disabled": {
-            "type": "boolean",
-            "title": "Disabled",
-            "description": "enable or disable the interface section"
-          },
-          "type": {
-            "type": "boolean",
-            "title": "Bridge interfaces",
-            "description": "Creates a bridge over specified interface(s)",
-            "convert": {
-              "toUCI": "$data ? 'bridge' : undefined",
-              "fromUCI": "$data === 'bridge'"
-            },
-            "depends=": "['static', 'dhcp', 'none'].includes($.proto)"
-          },
-          "stp": {
-            "type": "boolean",
-            "title": "STP",
-            "description": "Enables the Spanning Tree Protocol",
-            "depends=": "$.type"
-          },
-          "igmp_snooping": {
-            "type": "boolean",
-            "title": "IGMP snooping",
-            "description": "Enables IGMP snooping on this bridge",
-            "depends=": "$.type"
-          },
-          "ifname": {
-            "type": "string",
-            "title": "Interface name",
-            "description": "Physical interface name to assign to this section, list of interfaces if type bridge is set."
-          },
+        "title=": "`Interface ${$['.name'].toUpperCase()}`",
 
-          "bridge_empty": {
-            "type": "boolean",
-            "title": "Allow empty",
-            "description": "Enables creating empty bridges",
-            "depends=": "$.type"
-          },
+        "allOf": [
+          {
+            "type": "object",
+            "title": "General",
 
-          "proto": {
-            "type": "string",
-            "title": "Protocol"
+            "properties": {
+              "disabled": {
+                "type": "boolean",
+                "title": "Disabled",
+                "description": "enable or disable the interface section"
+              },
+              "auto": {
+                "type": "boolean",
+                "title": "Bring up on boot",
+                "description": "Specifies whether to bring up interface on boot"
+              },
+              "proto": {
+                "type": "string",
+                "title": "Protocol",
+                "enum=": "store.keys('proto')",
+                "enumDescription=": "store.values('proto')",
+                "default": "none",
+                "required": true,
+                "convert": {
+                  "fromUCI": "$data || 'none'",
+                  "toUCI": "$data === 'none' ? undefined : $data"
+                }
+              }
+            }
           },
+          { "$include": "network/**/*.json" },
+          {
+            "type": "object",
+            "title": "Physical",
+            "properties": {
+              "type": {
+                "type": "boolean",
+                "title": "Bridge interfaces",
+                "description": "Creates a bridge over specified interface(s)",
+                "convert": {
+                  "toUCI": "$data ? 'bridge' : undefined",
+                  "fromUCI": "$data === 'bridge'"
+                },
+                "depends=": "['static', 'dhcp', 'none'].includes($.proto)"
+              },
+              "ifname": {
+                "type": "string",
+                "title": "Interface name",
+                "description": "Physical interface name to assign to this section, list of interfaces if type bridge is set."
+              },
 
-          "auto": {
-            "type": "boolean",
-            "title": "Bring up on boot",
-            "description": "Specifies whether to bring up interface on boot"
+              "bridge_empty": {
+                "type": "boolean",
+                "title": "Allow empty",
+                "description": "Enables creating empty bridges",
+                "depends=": "$.type"
+              },
+              "stp": {
+                "type": "boolean",
+                "title": "STP",
+                "description": "Enables the Spanning Tree Protocol",
+                "depends=": "$.type"
+              },
+              "igmp_snooping": {
+                "type": "boolean",
+                "title": "IGMP snooping",
+                "description": "Enables IGMP snooping on this bridge",
+                "depends=": "$.type"
+              }
+            }
           },
-          "force_link": {
-            "type": "boolean",
-            "title": "Force link",
-            "description": "Set interface properties regardless of the link carrier (If set, carrier sense events do not invoke hotplug handlers)."
-          },
-          "delegate": {
-            "type": "boolean",
-            "title": "Use builtin IPv6-management"
+          {
+            "type": "object",
+            "title": "Advanced",
+            "$id": "#/advanced",
+            "properties": {
+              "force_link": {
+                "type": "boolean",
+                "title": "Force link",
+                "description": "Set interface properties regardless of the link carrier (If set, carrier sense events do not invoke hotplug handlers)."
+              },
+              "delegate": {
+                "type": "boolean",
+                "title": "Use builtin IPv6-management"
+              }
+            }
           }
-        }
+        ]
       }
     },
 
@@ -93,17 +126,62 @@
       "type": "array",
       "items": {
         "type": "object",
-        "ui": {
-          "include": [["interface", "target", "netmask", "gateway"], ["*"]],
-          "titles": ["General", "Advanced"]
-        },
+        "title=": "`${$.target ?? ''}${$.netmask ? `/${$.netmask}` : ''}`",
+        "value=": "$.interface ?? ''",
+
+        "allOf": [
+          {
+            "type": "object",
+            "title": "Advanced",
+            "properties": {
+              "metric": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255,
+                "title": "Metric",
+                "description": "Specifies the route metric to use"
+              },
+              "mtu": {
+                "type": "integer",
+                "minimum": 64,
+                "maximum": 9000,
+                "title": "MTU",
+                "description": "Defines a specific MTU for this route"
+              },
+              "table": {
+                "type": "string",
+                "title": "Routing table",
+                "description": "Numeric table index or symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
+              },
+              "source": {
+                "type": "string",
+                "format": "ipv4",
+                "title": "Source Address",
+                "description": "The preferred source address when sending to destinations covered by the target"
+              },
+              "onlink": {
+                "type": "boolean",
+                "title": "On-Link Route",
+                "description": "Gateway is on link even if the gateway does not match any interface prefix."
+              },
+              "type": {
+                "type": "string",
+                "title": "Route type",
+                "enum": [
+                  "local",
+                  "broadcast",
+                  "multicast",
+                  "unreachable",
+                  "prohibit",
+                  "blackhole",
+                  "anycast"
+                ]
+              }
+            }
+          }
+        ],
+
         "properties": {
-          "interface": {
-            "type": "string",
-            "title": "Interface",
-            "required": true,
-            "enum=": "jsonPath(uci.network['@interface'],`$[?(@['.name']!='loopback')]['.name']`)"
-          },
           "target": {
             "type": "string",
             "format": "ipv4",
@@ -116,54 +194,17 @@
             "title": "Netmask",
             "description": "If target is a network"
           },
+          "interface": {
+            "type": "string",
+            "title": "Interface",
+            "required": true,
+            "enum=": "jsonPath(uci.network['@interface'],`$[?(@['.name']!='loopback')]['.name']`)"
+          },
           "gateway": {
             "type": "string",
             "format": "ipv4",
             "title": "Gateway",
             "description": "If omitted, the gateway from the parent interface is taken; if set to 0.0.0.0 no gateway will be specified for the route"
-          },
-          "metric": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 255,
-            "title": "Metric",
-            "description": "Specifies the route metric to use"
-          },
-          "mtu": {
-            "type": "integer",
-            "minimum": 64,
-            "maximum": 9000,
-            "title": "MTU",
-            "description": "Defines a specific MTU for this route"
-          },
-          "table": {
-            "type": "string",
-            "title": "Routing table",
-            "description": "Numeric table index or symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
-          },
-          "source": {
-            "type": "string",
-            "format": "ipv4",
-            "title": "Source Address",
-            "description": "The preferred source address when sending to destinations covered by the target"
-          },
-          "onlink": {
-            "type": "boolean",
-            "title": "On-Link Route",
-            "description": "Gateway is on link even if the gateway does not match any interface prefix."
-          },
-          "type": {
-            "type": "string",
-            "title": "Route type",
-            "enum": [
-              "local",
-              "broadcast",
-              "multicast",
-              "unreachable",
-              "prohibit",
-              "blackhole",
-              "anycast"
-            ]
           }
         }
       }
@@ -174,70 +215,77 @@
       "type": "array",
       "items": {
         "type": "object",
-        "ui": {
-          "include": [["interface", "target", "gateway"], ["*"]],
-          "titles": ["General", "Advanced"]
-        },
+        "title=": "`${$.target ?? ''}`",
+        "value=": "$.interface ?? ''",
+
+        "allOf": [
+          {
+            "type": "object",
+            "title": "Advanced",
+            "properties": {
+              "metric": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 65535,
+                "title": "Metric",
+                "description": "Specifies the route metric to use"
+              },
+              "mtu": {
+                "type": "integer",
+                "minimum": 64,
+                "maximum": 9000,
+                "title": "MTU",
+                "description": "Defines a specific MTU for this route"
+              },
+              "table": {
+                "type": "string",
+                "title": "Routing table",
+                "description": "Defines the table ID to use for the route. The ID can be either a numeric table index ranging from 0 to 65535 or a symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
+              },
+              "source": {
+                "type": "string",
+                "format": "ipv4",
+                "title": "Source Address",
+                "description": "The preferred source address when sending to destinations covered by the target"
+              },
+              "onlink": {
+                "type": "boolean",
+                "title": "",
+                "description": "When enabled gateway is on link even if the gateway does not match any interface prefix (Barrier Breaker and later only)"
+              },
+              "type": {
+                "type": "string",
+                "title": "Route type",
+                "enum": [
+                  "local",
+                  "broadcast",
+                  "multicast",
+                  "unreachable",
+                  "prohibit",
+                  "blackhole",
+                  "anycast"
+                ]
+              }
+            }
+          }
+        ],
         "properties": {
-          "interface": {
-            "type": "string",
-            "title": "Interface",
-            "description": "Specifies the logical interface name of the parent (or master) interface this route belongs to; must refer to one of the defined interface sections"
-          },
           "target": {
             "type": "string",
             "format": "ipv6",
             "title": "Target",
             "description": "Network address"
           },
+          "interface": {
+            "type": "string",
+            "title": "Interface",
+            "description": "Specifies the logical interface name of the parent (or master) interface this route belongs to; must refer to one of the defined interface sections"
+          },
           "gateway": {
             "type": "string",
             "format": "ipv6",
             "title": "Gateway",
             "description": "Network gateway. If omitted, the gateway from the parent interface is taken; if set to 0.0.0.0 no gateway will be specified for the route"
-          },
-          "metric": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 65535,
-            "title": "Metric",
-            "description": "Specifies the route metric to use"
-          },
-          "mtu": {
-            "type": "integer",
-            "minimum": 64,
-            "maximum": 9000,
-            "title": "MTU",
-            "description": "Defines a specific MTU for this route"
-          },
-          "table": {
-            "type": "string",
-            "title": "Routing table",
-            "description": "Defines the table ID to use for the route. The ID can be either a numeric table index ranging from 0 to 65535 or a symbolic alias declared in /etc/iproute2/rt_tables. The special aliases local (255), main (254) and default (253) are recognized as well"
-          },
-          "source": {
-            "type": "string",
-            "format": "ipv4",
-            "title": "Source Address",
-            "description": "The preferred source address when sending to destinations covered by the target"
-          },
-          "onlink": {
-            "type": "boolean",
-            "title": "",
-            "description": "When enabled gateway is on link even if the gateway does not match any interface prefix (Barrier Breaker and later only)"
-          },
-          "type": {
-            "type": "string",
-            "title": "Route type",
-            "enum": [
-              "local",
-              "broadcast",
-              "multicast",
-              "unreachable",
-              "prohibit",
-              "blackhole",
-              "anycast"
-            ]
           }
         }
       }
@@ -248,7 +296,8 @@
       "type": "array",
       "items": {
         "type": "object",
-        "ui": { "options": { "title=": "$data['.name']" } },
+        "title=": "$['.name']",
+
         "properties": {
           ".name": { "type": "string" },
 
@@ -302,7 +351,15 @@
             "minimum": 0,
             "required": true
           },
-          "ports": { "type": "string", "title": "Ports" }
+          "ports": {
+            "type": "array",
+            "title": "Ports",
+            "items": { "type": "string", "pattern": "^[0-9]+t?$" },
+            "convert": {
+              "fromUCI": "$data && $data.trim().split(' ').sort()",
+              "toUCI": "$data && $data.sort().join(' ')"
+            }
+          }
         }
       }
     },
@@ -335,7 +392,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "ui": { "options": { "title=": "$data['.name']" } },
+        "title=": "$['.name']",
         "properties": {
           "type": {
             "type": "string",

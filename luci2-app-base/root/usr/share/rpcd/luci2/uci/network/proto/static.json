@@ -14,13 +14,15 @@
       "minItems": 1,
       "items": {
         "type": "string",
-        "format": "ipv4"
+        "format": "ipv4",
+        "required": true
       }
     },
     "netmask": {
       "type": "string",
       "title": "IPv4 netmask",
-      "format": "netmask4"
+      "format": "netmask4",
+      "hints": ["255.255.255.0", "255.255.0.0", "255.0.0.0"]
     },
     "gateway": {
       "type": "string",
@@ -45,6 +47,7 @@
       "title": "IPv6 assignment length",
       "description": "Assign a part of given length of every public IPv6-prefix to this interface",
       "type": "integer",
+      "hints": [64],
       "maximum": 64,
       "minimum": 0
     },
@@ -83,23 +86,32 @@
       "description": "Optional. Allowed values: 'eui64', 'random', fixed value like '::1' or '::1:2'. When IPv6 prefix (like 'a:b:c:d::') is received from a delegating server, use the suffix (like '::1') to form the IPv6 address ('a:b:c:d::1') for the interface",
       "type": "string",
       "format": "ip6hostid"
-    },
-
-    "macaddr": {
-      "title": "Override MAC address",
-      "type": "string",
-      "format": "macaddr"
-    },
-    "mtu": {
-      "title": "Override MTU",
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 9200
-    },
-    "metric": {
-      "title": "Use gateway metric",
-      "type": "integer",
-      "minimum": 0
     }
-  }
+  },
+
+  "allOf": [
+    {
+      "type": "object",
+      "title": "Advanced",
+      "$id": "#/advanced",
+      "properties": {
+        "macaddr": {
+          "title": "Override MAC address",
+          "type": "string",
+          "format": "macaddr"
+        },
+        "mtu": {
+          "title": "Override MTU",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9200
+        },
+        "metric": {
+          "title": "Use gateway metric",
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  ]
 }
