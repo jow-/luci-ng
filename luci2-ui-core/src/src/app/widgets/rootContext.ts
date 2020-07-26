@@ -28,12 +28,12 @@ import { catchError, map, take } from 'rxjs/operators';
 import { AppState, APP_STATE } from '../app.service';
 import { CgiService } from '../shared/cgi.service';
 import { ReconnectService } from '../shared/reconnect.service';
+import { RxStore } from '../shared/store';
 import { UbusService } from '../shared/ubus.service';
 import { UciModel2 } from '../uci/uci';
 
 import { APP_POPUP_OPTS, PopupDialogComponent } from './popup/popup.component';
 export const rootContextProvider = {
-  // tslint:disable-line:naming-convention
   provide: ROOT_EXPR_CONTEXT,
   useFactory: rootContextFactory,
   deps: [
@@ -118,6 +118,7 @@ export function rootContextFactory(
       },
       RxObject,
       $tmp: RxObject({}),
+      store: new RxStore(),
       uciUI: (
         config: string,
         type?: string,

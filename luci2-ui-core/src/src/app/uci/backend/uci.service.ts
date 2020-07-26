@@ -3,8 +3,14 @@
  * Licensed under the MIT license.
  */
 
-import { Injectable } from '@angular/core';
-import { loadSchema, Schema, SchemaObject } from 'rx-json-ui';
+import { Injectable, Injector } from '@angular/core';
+import {
+  Expressions,
+  loadSchema,
+  ROOT_EXPR_CONTEXT,
+  Schema,
+  SchemaObject,
+} from 'rx-json-ui';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
@@ -22,15 +28,28 @@ import { IUciConfigData } from './config.interface';
   providedIn: 'root',
 })
 export class UciService {
-  constructor(private _ubus: UbusService) {}
+  constructor(
+    private _ubus: UbusService,
+    private _expr: Expressions,
+    private _injector: Injector
+  ) {}
 
   getConfig(config: string): Observable<[IUciConfigData, SchemaObject]> {
+    // delayed injection to avoid circular dependency
+    const rootContext = this._injector.get(ROOT_EXPR_CONTEXT);
+
     return forkJoin([
       this._ubus
         .call<IUciConfigData>('uci', 'get', { config })
         .pipe(map((r) => (r && r.values) || {})),
 
-      loadSchema(`${config}.json`, this.loadSchema.bind(this)).pipe(
+      loadSchema(
+        `${config}.json`,
+        this.loadSchema.bind(this),
+        undefined,
+        this._expr,
+        rootContext
+      ).pipe(
         map((schemas) =>
           schemas.length
             ? (schemas[0] as SchemaObject)
