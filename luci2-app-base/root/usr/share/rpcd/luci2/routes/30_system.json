@@ -55,13 +55,5 @@
     "files": ["/etc/init.d/led"],
     "view": "system/leds",
     "index": 80
-  },
-  "system/ssh": {
-    "title": "LED Configuration",
-    "acls": ["leds"],
-    "files": ["/etc/init.d/led"],
-    "view": "system/ssh",
-    "param": "id",
-    "index": 90
   }
 }
