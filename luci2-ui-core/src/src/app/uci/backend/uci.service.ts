@@ -4,10 +4,10 @@
  */
 
 import { Injectable } from '@angular/core';
+import { loadSchema, Schema, SchemaObject } from 'rx-json-ui';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { debug } from '../../shared/observable.debug';
 import { UbusService } from '../../shared/ubus.service';
 
 import {
@@ -24,20 +24,32 @@ import { IUciConfigData } from './config.interface';
 export class UciService {
   constructor(private _ubus: UbusService) {}
 
-  getConfig(config: string): Observable<[IUciConfigData, any]> {
+  getConfig(config: string): Observable<[IUciConfigData, SchemaObject]> {
     return forkJoin([
       this._ubus
         .call<IUciConfigData>('uci', 'get', { config })
         .pipe(map((r) => (r && r.values) || {})),
-      this._ubus
-        .call<{ content: any[] }>('luci2.file', 'read_json', {
-          glob: `/usr/share/rpcd/luci2/uci/${config}.json`,
-        })
-        .pipe(
-          map((res) => res?.content[0] ?? {}),
-          catchError(() => of({}))
-        ),
-    ]).pipe(debug('forkJoin UCI'));
+
+      loadSchema(`${config}.json`, this.loadSchema.bind(this)).pipe(
+        map((schemas) =>
+          schemas.length
+            ? (schemas[0] as SchemaObject)
+            : ({ type: 'object' } as SchemaObject)
+        )
+      ),
+    ]);
+  }
+
+  loadSchema(path: string, _id?: string): Observable<Schema | Schema[]> {
+    // TODO: add cache?
+    return this._ubus
+      .call<{ content: any[] }>('luci2.file', 'read_json', {
+        glob: `/usr/share/rpcd/luci2/uci/${path}`,
+      })
+      .pipe(
+        map((res) => res?.content ?? []),
+        catchError(() => of([]))
+      );
   }
 
   /** Adds a section and returns its name, or empty string on error */

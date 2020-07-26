@@ -11,7 +11,14 @@
       "url": "../luci2-ui-core/src/out/widgetschema/widgets.content.json"
     },
     {
-      "fileMatch": ["/root/usr/share/rpcd/luci2/uci/*.json"],
+      "fileMatch": ["/root/usr/share/rpcd/luci2/uci/*/*.json"],
+      "url": "../luci2-ui-core/src/src/schema.import.json"
+    },
+    {
+      "fileMatch": [
+        "/root/usr/share/rpcd/luci2/uci/*.json",
+        "!/root/usr/share/rpcd/luci2/uci/network/proto/dhcp.json"
+      ],
       "url": "../luci2-ui-core/src/src/uci.schema.json"
     }
   ],

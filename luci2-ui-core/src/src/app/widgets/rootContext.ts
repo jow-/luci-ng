@@ -19,7 +19,7 @@ import {
   formatDuration,
   formatHuman,
   ROOT_EXPR_CONTEXT,
-  SchemaArray,
+  SchemaUI,
   toHumanReadable,
 } from 'rx-json-ui';
 import { Observable, of } from 'rxjs';
@@ -121,55 +121,37 @@ export function rootContextFactory(
       uciUI: (
         config: string,
         type?: string,
-        section?: number,
-        options?:
-          | string
-          | string[]
-          | { include?: string[]; exclude?: string[]; wrapForm?: boolean }
+        sectionOrUiOrFilter?: number | SchemaUI | string | string[],
+        uiOrFilter?: SchemaUI | string | string[],
+        ui?: SchemaUI
       ) => {
-        let opt: {
-          include?: string[];
-          exclude?: string[];
-          wrapForm?: boolean;
-        } = {};
+        let filter: string | string[] | undefined;
+        let bind = `uci.${config}`;
+        if (type) bind += `['${type}']`;
+        if (typeof sectionOrUiOrFilter === 'number') bind += `[${sectionOrUiOrFilter}]`;
+        else if (
+          typeof sectionOrUiOrFilter === 'string' ||
+          Array.isArray(sectionOrUiOrFilter)
+        )
+          filter = sectionOrUiOrFilter;
+        else if (typeof sectionOrUiOrFilter === 'object') ui = sectionOrUiOrFilter;
 
-        if (typeof options === 'string' && options) opt = { include: [options] };
-        else if (Array.isArray(options)) opt = { include: options };
-        else if (typeof options === 'object') opt = options;
+        if (typeof uiOrFilter === 'string' || Array.isArray(uiOrFilter))
+          filter = uiOrFilter;
+        else if (typeof uiOrFilter === 'object') ui = uiOrFilter;
 
         return uci.getSchema(config, type).pipe(
           map((schema: any) => {
-            if (!opt.include) {
-              switch (schema.type) {
-                case 'object':
-                  opt.include = Object.keys(schema.properties);
-                  break;
-                case 'array':
-                  opt.include = Object.keys(schema.items.properties);
-                  break;
-                default:
-                  opt.include = [];
-              }
-
-              if (opt.exclude)
-                opt.include = opt.include!.filter((key) => !opt.exclude!.includes(key));
+            if (typeof sectionOrUiOrFilter === 'number') {
+              if (Array.isArray(schema.items))
+                schema =
+                  sectionOrUiOrFilter < schema.items.length
+                    ? schema.items[sectionOrUiOrFilter]
+                    : schema.additionalItems;
+              else schema = schema.items;
             }
-            if (typeof section === 'number') {
-              schema = (<SchemaArray>schema).items;
 
-              if (opt.wrapForm)
-                return buildUI(schema, `uci.${config}['${type}'][${section}]`);
-              else
-                return opt.include!.map((key) =>
-                  buildUI(
-                    schema.properties[key],
-                    `uci.${config}['${type}'][${section}].${key}`
-                  )
-                );
-            }
-            return type
-              ? buildUI(schema, `uci.${config}['${type}']`)
-              : buildUI(schema, `uci.${config}`);
+            return buildUI(schema, bind, filter, ui);
           })
         );
       },
