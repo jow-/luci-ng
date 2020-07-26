@@ -7,7 +7,13 @@
 
 import { Injectable } from '@angular/core';
 import { RxObject } from 'espression-rx';
-import { Schema, SchemaObject } from 'rx-json-ui';
+import {
+  Context,
+  Expressions,
+  getPropertiesFromSchema,
+  Schema,
+  SchemaObject,
+} from 'rx-json-ui';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -27,16 +33,16 @@ export type RxConfig = IMap<IUciSectionData | IUciSectionData[]>;
 })
 export class UciModel2 {
   configs: IMap<RxConfig> = {};
-  schemas: IMap<Schema> = {};
+  schemas: IMap<SchemaObject> = {};
   private _orig: IMap<IMap<IUciSectionData[]>> = {};
 
-  constructor(private _uci: UciService) {}
+  constructor(private _uci: UciService, private _expr: Expressions) {}
 
   loadConfig(configName: string): Observable<RxConfig> {
     if (configName in this.configs) return of(this.configs[configName]);
 
     return this._uci.getConfig(configName).pipe(
-      map(([data, schema]: [IUciConfigData, SchemaObject]) => {
+      map(([data, schema]) => {
         this.schemas[configName] = schema;
         this.reactiveConfig(data, configName);
         return this.configs[configName];
@@ -48,9 +54,34 @@ export class UciModel2 {
     const config: IMap<IUciSectionData[]> = {};
     const orig: IMap<IUciSectionData[]> = {};
 
+    // add missing sections if there is a default
+    if (this.schemas[configName] && this.schemas[configName].properties) {
+      const properties = this.schemas[configName].properties!;
+
+      Object.keys(properties!)
+        // get missing sections with defaults
+        .filter(
+          (type) =>
+            Array.isArray(properties[type].default) &&
+            !Object.keys(rawConfigData).some(
+              (sec) => type === `@${rawConfigData[sec]['.type']}`
+            )
+        )
+        // add default
+        // TODO: allow to add more than one record
+        .forEach(
+          (type: string) =>
+            (properties[type].default as any[]).length &&
+            (rawConfigData[`__${type}`] = {
+              '.type': type.slice(1),
+              ...(properties[type].default as any)[0],
+            } as IUciSectionData)
+        );
+    }
+
     // tslint:disable-next-line: forin
-    for (const prop in rawConfigData) {
-      let type = rawConfigData[prop]['.type'];
+    for (const sectionID in rawConfigData) {
+      let type = rawConfigData[sectionID]['.type'];
       if (!type) continue;
       type = `@${type}`;
 
@@ -62,29 +93,23 @@ export class UciModel2 {
         schema &&
         schema.type === 'array' &&
         !Array.isArray(schema?.items) &&
-        schema.items?.type === 'object' &&
-        schema.items.properties
+        schema.items?.type === 'object'
       ) {
-        // coerce to boolean (uci saves as '1')
-        for (const key in rawConfigData[prop]) {
-          if (schema.items.properties[key]?.type === 'boolean')
-            rawConfigData[prop][key] = ['1', 'yes', 'true'].includes(
-              rawConfigData[prop][key]
-            );
-        }
-
         // setup defaults to have proper in-memory representation before creating widget
-        for (const key in schema.items.properties) {
-          if (!(key in rawConfigData[prop]) && 'default' in schema.items.properties[key])
-            rawConfigData[prop][key] = (schema.items.properties[key] as any).default;
-        }
+        getPropertiesFromSchema(schema.items, Infinity).forEach((prop) => {
+          // TODO: check depends= before applying
+          // TODO: duplicated properties in schema
+          const val = this.toModel(prop.schema, rawConfigData[sectionID][prop.property]);
+          if (typeof val !== 'undefined' || prop.property in rawConfigData[sectionID])
+            rawConfigData[sectionID][prop.property] = val;
+        });
       }
 
-      config[type].push(RxObject(rawConfigData[prop], true));
+      config[type].push(RxObject(rawConfigData[sectionID], true));
 
       // deep clone data to later test for changes
       if (!orig[type]) orig[type] = [];
-      orig[type].push(JSON.parse(JSON.stringify(rawConfigData[prop])));
+      orig[type].push(JSON.parse(JSON.stringify(rawConfigData[sectionID])));
     }
 
     this._orig[configName] = orig;
@@ -201,5 +226,37 @@ export class UciModel2 {
     }
 
     return obs;
+  }
+
+  toModel(schema: Schema, value: any): any {
+    if (!schema) return value;
+
+    if ((schema as any).convert?.fromUCI) {
+      value = this._expr.eval(
+        (schema as any).convert.fromUCI,
+        Context.create(undefined, undefined, { $data: value }, undefined, true)
+      );
+    } else if (typeof value === 'undefined') value = schema.default;
+    if (typeof value === 'undefined' && 'const' in schema) value = schema.const;
+
+    switch (schema.type) {
+      case 'array':
+        // coerce to array (some list options are stored as options if there was only one value)
+        if (typeof value !== 'undefined' && !Array.isArray(value)) value = [value];
+        break;
+
+      case 'boolean':
+        // coerce to boolean (uci saves as '1')
+
+        value =
+          typeof value === 'string'
+            ? ['1', 'yes', 'true'].includes(value.toLowerCase())
+            : !!value;
+        break;
+
+      default:
+    }
+
+    return value;
   }
 }
