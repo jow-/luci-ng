@@ -1,13 +1,9 @@
 {
   "widget": "set-page",
-  "if": "uciLoad('network') && uciLoad('dhcp') && (ifs = ubus('network.interface','dump').interface)",
+  "if": "uciLoad('network'), uciLoad('dhcp'), (ifs = ubus('network.interface','dump').interface)",
 
   "content": [
-    {
-      "widget": "set-section",
-      "options": { "title": "Global" },
-      "content": ["uciUI('network','@globals', 0)"]
-    },
+    "uciUI('network','@globals', 0, { level: 1 })",
     {
       "widget": "set-section",
       "options": { "title": "Interfaces" },
@@ -50,6 +46,7 @@
     },
     {
       "widget": "set-section",
+      "if": "ubus('file', 'stat', { path: '/sbin/swconfig'}, {4:false})",
       "options": { "title": "Switch" },
       "content": [
         {
@@ -67,39 +64,15 @@
       "content": [
         {
           "widget": "set-link",
-          "options": {
-            "title": "Diagnostics",
-            "link": "network/diagnostics"
-          }
+          "options": { "title": "Diagnostics", "link": "network/diagnostics" }
         }
       ]
     },
-    {
-      "widget": "set-section",
-      "options": { "title": "DHCP & DNS" },
-      "content": ["uciUI('dhcp', '@dnsmasq', 0, {wrapForm: true})"]
-    },
+    "uciUI('dhcp', '@dnsmasq', 0, { level: 1 })",
     {
       "widget": "set-section",
       "options": { "title": "Hostnames" },
-      "content": [
-        {
-          "widget": "set-rowarray",
-          "bind": "uci.dhcp['@domain']",
-          "events": { "onNewRow": "{name: 'NewHost'}", "onDeleteRow": "true" },
-
-          "content": [
-            {
-              "widget": "set-expansion",
-              "options": {
-                "title=": "$row.data.name",
-                "description=": "$row.data.ip"
-              },
-              "content": ["uciUI('dhcp', '@domain', $row.index)"]
-            }
-          ]
-        }
-      ]
+      "content": ["uciUI('dhcp', '@domain')"]
     },
     {
       "widget": "set-section",

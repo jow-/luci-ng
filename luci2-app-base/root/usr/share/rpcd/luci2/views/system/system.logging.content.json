@@ -5,16 +5,7 @@
       "title": "System Log"
     },
     "content": [
-      "uciUI('system', '@system', 0, 'log_buffer_size')",
-      {
-        "widget": "set-expansion",
-        "bind": "uci.system['@system'][0]",
-        "options": {
-          "title": "File Log",
-          "value=": "$.log_file ? $.log_file : 'Disabled'"
-        },
-        "content": ["uciUI('system', '@system', 0, ['log_file', 'log_size'])"]
-      },
+      "uciUI('system', '@system', 0, ['log_buffer_size', '#/file_log'])",
       {
         "widget": "set-toggle",
         "bind": "$.log_remote",
@@ -23,18 +14,12 @@
           "description": "Log to server in addition to the local destination."
         },
         "content": [
-          "uciUI('system', '@system', 0, ['log_ip', 'log_port', 'log_proto', 'log_hostname', 'log_trailer_null', 'log_prefix'])"
+          "uciUI('system', '@system', 0, ['#/remote_log/*', '!log_remote'])"
         ]
       }
     ]
   },
-  {
-    "widget": "set-expansion",
-    "options": {
-      "title": "Kernel Log"
-    },
-    "content": ["uciUI('system', '@system', 0, ['buffersize', 'conloglevel'])"]
-  },
+  "uciUI('system', '@system', 0, '#/kernel_log')",
   {
     "widget": "set-expansion",
     "options": {
@@ -47,8 +32,8 @@
         "for": "['Log Job Start', 'Log Job End', 'Log Failed Jobs', 'Log PID for all Jobs']",
         "bind": "$[$for.index]",
         "events": {
-          "onInit": "$[$for.index] = system0.cronloglevel & (2 ** $for.index), console.log(2 ** $for.index)",
-          "onValueChange": "console.log(system0 | (2 ** $for.index) , $value ,$value ? system0.cronloglevel |= (2 ** $for.index) : system0.cronloglevel &= ~(2 ** $for.index))"
+          "onInit": "$[$for.index] = system0.cronloglevel & (2 ** $for.index)",
+          "onValueChange": "$value ? system0.cronloglevel |= (2 ** $for.index) : system0.cronloglevel &= ~(2 ** $for.index)"
         },
         "options": { "title=": "$for.data" }
       }

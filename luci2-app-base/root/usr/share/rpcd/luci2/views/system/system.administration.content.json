@@ -17,7 +17,7 @@
       "value=": [
         "uci.dropbear['@dropbear'].length ? ",
         "`${uci.dropbear['@dropbear'][0].Interface || 'all'}:${uci.dropbear['@dropbear'][0].Port}${",
-        "uci.dropbear['@dropbear'].length > 1 ? `(+${uci.dropbear['@dropbear'].length-1})` : ''}`",
+        "uci.dropbear['@dropbear'].length > 1 ? ` (+${uci.dropbear['@dropbear'].length-1})` : ''}`",
         " : 'Disabled'"
       ]
     },

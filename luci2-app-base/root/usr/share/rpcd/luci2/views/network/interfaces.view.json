@@ -1,16 +1,7 @@
 {
-  "widget": "set-subpage",
-  "if": "uciLoad('network') && (schema = loadSchemaExt('network', 'proto', uci.network['@interface'][parseInt($routeParam.id)].proto))",
-
+  "widget": "container",
+  "if": "uciLoad('network')",
   "content": [
-    {
-      "widget": "set-section",
-      "options": {
-        "title=": "`Interface ${uci.network['@interface'][parseInt($routeParam.id)]['.name'].toUpperCase()}`"
-      },
-      "content": ["uciUI('network','@interface', parseInt($routeParam.id))"]
-    },
-
-    "schema ? buildUI( schema, `uci.network['@interface'][parseInt($routeParam.id)]`) : []"
+    "uciUI('network','@interface', parseInt($routeParam.id), {level: 0, widgets: {objectLevel: ['set-subpage','set-section','set-expansion']}})"
   ]
 }

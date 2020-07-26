@@ -5,9 +5,7 @@
     {
       "widget": "set-section",
       "options": { "title": "Switch" },
-      "content": [
-        "uciUI('network','@switch', 0, {exclude: ['enable_vlan', '.name']})"
-      ]
+      "content": ["uciUI('network','@switch', 0, ['!enable_vlan', '!.name'])"]
     },
     {
       "widget": "set-section",

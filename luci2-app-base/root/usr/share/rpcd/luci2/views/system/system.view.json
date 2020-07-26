@@ -1,12 +1,9 @@
 {
   "widget": "set-page",
-  "if": "uciLoad('system') && ( system0 = uci.system['@system'][0] )",
+  "if": "uciLoad('system')",
   "content": [
-    {
-      "widget": "set-section",
-      "options": { "title": "General" },
-      "content": ["uciUI('system', '@system', 0, 'hostname')"]
-    },
+    "uciUI('system', '@system', 0, '#/general', { level: 1 } )",
+
     {
       "widget": "set-section",
       "options": { "title": "Time & Date" },

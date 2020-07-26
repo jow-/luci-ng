@@ -40,7 +40,8 @@
         {
           "widget": "set-button",
           "options": {
-            "title=": "`Command: ${page.utility} ${page.address}`",
+            "title": "Command",
+            "description=": "`${page.utility} ${page.address}`",
             "buttonTitle": "Run",
             "disabled=": "!pageContext.$form.valid",
             "spinner": "auto"
