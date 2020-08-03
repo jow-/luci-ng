@@ -24,17 +24,19 @@
           "options": {
             "title": "Utility",
             "enum": ["ping", "traceroute", "nslookup"],
-            "default": "ping"
+            "default": "ping",
+            "required": true
           }
         },
         {
-          "widget": "set-select",
+          "widget": "set-radio",
           "if": "page.utility !== 'nslookup'",
           "bind": "page.protocol",
           "options": {
             "title": "Protocol",
             "enum": ["IPv4", "IPv6"],
-            "default": "IPv4"
+            "default": "IPv4",
+            "required": true
           }
         },
         {
