@@ -3,11 +3,11 @@
   "editor.tabSize": 2,
   "json.schemas": [
     {
-      "fileMatch": ["/root/usr/share/rpcd/luci2/views/**/*.view.json"],
+      "fileMatch": ["/root/usr/share/rpcd/luci2/views/*.view.json"],
       "url": "../luci2-ui-core/src/out/widgetschema/widgets.json"
     },
     {
-      "fileMatch": ["/root/usr/share/rpcd/luci2/views/**/*.content.json"],
+      "fileMatch": ["/root/usr/share/rpcd/luci2/views/*.content.json"],
       "url": "../luci2-ui-core/src/out/widgetschema/widgets.content.json"
     },
     {
@@ -17,7 +17,7 @@
     {
       "fileMatch": [
         "/root/usr/share/rpcd/luci2/uci/*.json",
-        "!/root/usr/share/rpcd/luci2/uci/network/proto/dhcp.json"
+        "!/root/usr/share/rpcd/luci2/uci/*/*.json"
       ],
       "url": "../luci2-ui-core/src/src/uci.schema.json"
     }
