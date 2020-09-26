@@ -1,0 +1,703 @@
+{
+  "type": "object",
+  "title": "Firewall configuration",
+  "properties": {
+    "@defaults": {
+      "title": "General Settings",
+      "description": "Settings which do not belong to specific zones",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "synflood_protect": {
+            "type": "boolean",
+            "title": "Enable SYN flood protection",
+
+            "convert": {
+              "fromUCI": "$value = $value ?? $.syn_flood",
+              "toUci": "$.syn_flood = undefined, $value"
+            }
+          },
+          "syn_flood": {
+            "type": "boolean",
+            "title": "Enable SYN flood protection",
+            "$comment": "obsoleted by synflood_protect setting"
+          },
+          "drop_invalid": {
+            "type": "boolean",
+            "title": "Drop invalid packets",
+            "description": "(e.g. not matching any active connection)"
+          },
+
+          "input": {
+            "type": "string",
+            "title": "INPUT chain default policy",
+            "enum": ["REJECT", "DROP", "ACCEPT"],
+            "default": "REJECT"
+          },
+          "output": {
+            "type": "string",
+            "title": "OUTPUT chain default policy",
+            "enum": ["REJECT", "DROP", "ACCEPT"],
+            "default": "REJECT"
+          },
+          "forward": {
+            "type": "string",
+            "title": "FORWARD chain default policy",
+            "enum": ["REJECT", "DROP", "ACCEPT"],
+            "default": "REJECT"
+          }
+        },
+        "allOf": [
+          {
+            "$id": "#/offloading",
+            "type": "object",
+
+            "title": "Routing/NAT Offloading",
+            "description": "Experimental feature. Not fully compatible with QoS/SQM",
+
+            "properties": {
+              "flow_offloading": {
+                "type": "boolean",
+                "title": "Software flow offloading",
+                "description": "Decrease cpu load / increase routing throughput"
+              },
+              "flow_offloading_hw": {
+                "type": "boolean",
+                "title": "Hardware flow offloading",
+                "description": "Requires hardware NAT support. Implemented at least for mt7621",
+                "depends=": "$.flow_offloading"
+              }
+            }
+          },
+          {
+            "$id": "#/advanced",
+            "type": "object",
+            "title": "Advanced",
+            "$comment": "TODO: check, as they are not implemented in LUCI",
+
+            "properties": {
+              "synflood_rate": {
+                "type": "string",
+                "title": "Set rate limit (packets/second) for SYN packets above which the traffic is considered a flood.",
+                "default": "25"
+              },
+              "synflood_burst": {
+                "type": "string",
+                "title": "Set burst limit for SYN packets above which the traffic is considered a flood if it exceeds the allowed rate.",
+                "default": "50"
+              },
+              "tcp_syncookies": {
+                "type": "boolean",
+                "title": "Enable the use of SYN cookies.",
+                "default": true
+              },
+              "tcp_ecn": {
+                "type": "boolean",
+                "title": "Enable/Disable Explicit Congestion Notification. Implemented upstream in Linux Kernel. See ip-sysctl.txt."
+              },
+              "tcp_window_scaling": {
+                "type": "boolean",
+                "title": "Enable TCP window scaling.",
+                "default": true
+              },
+              "accept_redirects": {
+                "type": "boolean",
+                "title": "Accepts redirects. Implemented upstream in Linux Kernel. See ip-sysctl.txt."
+              },
+              "accept_source_route": {
+                "type": "boolean",
+                "title": "Implemented upstream in Linux Kernel. See ip-sysctl.txt."
+              },
+              "custom_chains": {
+                "type": "boolean",
+                "title": "Enable generation of custom rule chain hooks for user generated rules. User rules would be typically stored in firewall.user but some packages e.g. BCP38 also make use of these hooks.",
+                "default": true
+              },
+              "disable_ipv6": {
+                "type": "boolean",
+                "title": "Disable IPv6 firewall rules."
+              },
+
+              "tcp_reject_code": {
+                "type": "reject_code",
+                "title": "Defined in firewall3/options.h. Seems to determine method of packet rejection; (tcp reset, or drop, vs ICMP Destination Unreachable, or closed)"
+              },
+              "any_reject_code": {
+                "type": "reject_code",
+                "title": "Defined in firewall3/options.h. Seems to determine method of packet rejection; (tcp reset, or drop, vs ICMP Destination Unreachable, or closed)",
+                "default": true
+              },
+              "auto-helper": {
+                "type": "boolean",
+                "title": "Enable Conntrack helpers",
+                "default": true
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    "@includes": {
+      "type": "array",
+      "title": "Custom Firewall scripts",
+      "items": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Allows to disable the corresponding include without having to delete the section",
+            "default": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Specifies the type of the include, can be script for traditional shell script includes or restore for plain files in iptables-restore format",
+            "default": "script"
+          },
+          "path": {
+            "type": "string",
+            "title": "Specifies a shell script to execute on boot or firewall restarts",
+            "default": "/etc/firewall.user"
+          },
+          "family": {
+            "type": "string",
+            "title": "Specifies the address family (ipv4, ipv6 or any) for which the include is called",
+            "default": "any"
+          },
+          "reload": {
+            "type": "boolean",
+            "title": "Specifies whether the include should be called on reload - this is only needed if the include injects rules into internal chains"
+          }
+        }
+      }
+    },
+
+    "@redirects": {
+      "type": "array",
+      "title": "Port Forwardings",
+      "items": {
+        "type": "object",
+        "properties": {
+          "src": {
+            "type": "zone name",
+            "title": "Specifies the traffic source zone. Must refer to one of the defined zone names. For typical port forwards this usually is wan."
+          },
+          "src_ip": {
+            "type": "ip address",
+            "title": "Match incoming traffic from the specified source ip address."
+          },
+          "src_dip": {
+            "type": "ip address",
+            "title": "For DNAT, match incoming traffic directed at the given destination ip address. For SNAT rewrite the source address to the given address."
+          },
+          "src_mac": {
+            "type": "mac address",
+            "title": "Match incoming traffic from the specified mac address."
+          },
+          "src_port": {
+            "type": "port or range",
+            "title": "Match incoming traffic originating from the given source port or port range on the client host."
+          },
+          "src_dport": {
+            "type": "port or range",
+            "title": "For DNAT, match incoming traffic directed at the given destination port or port range on this host. For SNAT rewrite the source ports to the given value."
+          },
+          "proto": {
+            "type": "protocol name or number",
+            "title": "Match incoming traffic using the given protocol. Can be one (or several when using list syntax) of tcp, udp, tcpudp, udplite, icmp, esp, ah, sctp, or all or it can be a numeric value, representing one of these protocols or a different one. A protocol name from /etc/protocols is also allowed. The number 0 is equivalent to all.",
+            "default": "tcpudp"
+          },
+          "dest": {
+            "type": "zone name",
+            "title": "Specifies the traffic destination zone. Must refer to one of the defined zone names. For DNAT target on Attitude Adjustment, NAT reflection works only if this is equal to lan."
+          },
+          "dest_ip": {
+            "type": "ip address",
+            "title": "For DNAT, redirect matches incoming traffic to the specified internal host. For SNAT, it matches traffic directed at the given address. For DNAT, if the dest_ip is not specified, the rule is translated in a iptables/REDIRECT rule, otherwise it is a iptables/DNAT rule."
+          },
+          "dest_port": {
+            "type": "port or range",
+            "title": "For DNAT, redirect matched incoming traffic to the given port on the internal host. For SNAT, match traffic directed at the given ports. Only a single port or range can be specified, not disparate ports as with Rules (below)."
+          },
+          "ipset": {
+            "type": "string",
+            "title": "If specified, match traffic against the given ipset. The match can be inverted by prefixing the value with an exclamation mark."
+          },
+          "mark": {
+            "type": "string",
+            "title": "If specified, match traffic against the given firewall mark, e.g. 0xFF to match mark 255 or 0x0/0x1 to match any even mark value. The match can be inverted by prefixing the value with an exclamation mark, e.g. !0x10 to match all but mark #16."
+          },
+          "start_date": {
+            "type": "date (yyyy-mm-dd)",
+            "title": "If specifed, only match traffic after the given date (inclusive)."
+          },
+          "stop_date": {
+            "type": "date (yyyy-mm-dd)",
+            "title": "If specified, only match traffic before the given date (inclusive)."
+          },
+          "start_time": {
+            "type": "time (hh:mm:ss)",
+            "title": "If specified, only match traffic after the given time of day (inclusive)."
+          },
+          "stop_time": {
+            "type": "time (hh:mm:ss)",
+            "title": "If specified, only match traffic before the given time of day (inclusive)."
+          },
+          "weekdays": {
+            "type": "list of weekdays",
+            "title": "If specified, only match traffic during the given week days, e.g. sun mon thu fri to only match on Sundays, Mondays, Thursdays and Fridays. The list can be inverted by prefixing it with an exclamation mark, e.g. ! sat sun to always match but on Saturdays and sundays."
+          },
+          "monthdays": {
+            "type": "list of dates",
+            "title": "If specified, only match traffic during the given days of the month, e.g. 2 5 30 to only match on every 2nd, 5th and 30rd day of the month. The list can be inverted by prefixing it with an exclamation mark, e.g. ! 31 to always match but on the 31st of the month."
+          },
+          "utc_time": {
+            "type": "boolean",
+            "title": "Treat all given time values as UTC time instead of local time."
+          },
+          "target": {
+            "type": "string",
+            "title": "NAT target (DNAT or SNAT) to use when generating the rule.",
+            "default": "DNAT"
+          },
+          "family": {
+            "type": "string",
+            "title": "Protocol family (ipv4, ipv6 or any) to generate iptables rules for.",
+            "default": "any"
+          },
+          "reflection": {
+            "type": "boolean",
+            "title": "Activate NAT reflection for this redirect - applicable to DNAT targets.",
+            "default": true
+          },
+          "reflection_src": {
+            "type": "string",
+            "title": "The source address to use for NAT-reflected packets if reflection is 1. This can be internal or external, specifying which interface’s address to use. Applicable to DNAT targets.",
+            "default": "internal"
+          },
+          "limit": {
+            "type": "string",
+            "title": "Maximum average matching rate; specified as a number, with an optional /second, /minute, /hour or /day suffix. Examples: 3/second, 3/sec or 3/s."
+          },
+          "limit_burst": {
+            "type": "integer",
+            "title": "Maximum initial number of packets to match, allowing a short-term average above limit.",
+            "default": 5
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enable the redirect rule or not.",
+            "default": true
+          }
+        }
+      }
+    },
+
+    "@zone": {
+      "type": "array",
+
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "maxLength": 11,
+            "required": true
+          },
+
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "input": {
+            "type": "string",
+            "title": "INPUT chain default policy",
+            "enum": ["REJECT", "DROP", "ACCEPT"],
+            "default": "REJECT"
+          },
+          "output": {
+            "type": "string",
+            "title": "OUTPUT chain default policy",
+            "enum": ["REJECT", "DROP", "ACCEPT"],
+            "default": "REJECT"
+          },
+          "forward": {
+            "type": "string",
+            "title": "FORWARD chain default policy",
+            "enum": ["REJECT", "DROP", "ACCEPT"],
+            "default": "REJECT"
+          },
+          "masq": {
+            "type": "boolean",
+            "title": "Masquerading",
+            "description": "Typically enabled on the wan zone"
+          },
+
+          "mtu_fix": {
+            "type": "boolean",
+            "title": "MSS clamping"
+          },
+
+          "network": {
+            "type": "array",
+            "title": "List of interfaces attached to this zone. If omitted and neither extra* options, subnets nor devices are given, the value of name is used by default. Alias interfaces defined in the network config cannot be used as valid 'standalone' networks. Use list syntax .",
+            "items": { "type": "string" },
+            "ui": { "role": "multiselect" }
+          },
+
+          "out": {
+            "type": "array",
+            "title": "Allow forward to destination zones",
+            "items": {
+              "type": "string",
+              "enum=": ""
+            },
+
+            "ui": { "role": "multiselect" }
+          },
+
+          "in": {
+            "type": "array",
+            "title": "Allow forward from source zones",
+            "items": { "type": "string" },
+
+            "ui": { "role": "multiselect" }
+          }
+        },
+        "allOf": [
+          {
+            "type": "object",
+            "title": "Advanced",
+            "properties": {
+              "device": {
+                "type": "array",
+                "title": "Covered devices",
+                "description": "Use this option to classify zone traffic by raw, non-uci managed network devices",
+                "items": { "type": "string" },
+                "ui": { "role": "multiselect" }
+              },
+              "subnet": {
+                "type": "array",
+                "title": "Covered subnets",
+                "description": "Use this option to classify zone traffic by source or destination subnet instead of networks or devices",
+                "items": { "type": "string" }
+              },
+              "family": {
+                "type": "string",
+                "title": "Restrict to address family",
+                "enum": ["ipv4", "ipv6"]
+              },
+
+              "masq_src": {
+                "type": "array",
+                "title": "Restrict Masquerading to given source subnets",
+                "items": { "type": "string" },
+                "depends=": "!$.family || $.family=='ipv4'"
+              },
+              "masq_dest": {
+                "type": "array",
+                "title": "Restrict Masquerading to given destination subnets",
+                "description": "Negation is possible by prefixing the subnet with !; multiple subnets are allowed.",
+                "items": { "type": "string" },
+                "depends=": "!$.family || $.family=='ipv4'"
+              },
+              "log": {
+                "type": "boolean",
+                "title": "Enable logging on this zone"
+              },
+              "log_limit": {
+                "type": "string",
+                "title": "Limits log messages per interval.",
+                "default": "10/minute",
+                "depends=": "$.log"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "Conntrack",
+            "properties": {
+              "masq_allow_invalid": {
+                "type": "boolean",
+                "title": "Allow 'invalid' traffic",
+                "description": "Do not install extra rules to reject forwarded traffic with conntrack state invalid. This may be required for complex asymmetric route setups"
+              },
+
+              "auto_helper": {
+                "type": "boolean",
+                "title": "Automatic helper assignment",
+                "description": "Automatically assign conntrack helpers based on traffic protocol and port",
+                "default": true
+              },
+              "helper": {
+                "type": "array",
+                "title": "Conntrack helpers",
+                "description": "Explicitly choses allowed connection tracking helpers for zone traffic",
+                "depends=": "!$.auto_helper"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "Extra arguments passed directly to iptables",
+            "description": "Passing raw iptables arguments to source and destination traffic classification rules allows to match packets based on other criteria than interfaces or subnets. These options should be used with extreme care as invalid values could render the firewall ruleset broken, completely exposing all services",
+            "properties": {
+              "extra": {
+                "type": "string",
+                "title": "Extra arguments",
+                "description": "Deprecated in favor of 'extra_src' and 'extra_dest'"
+              },
+              "extra_src": {
+                "type": "string",
+                "title": "Extra source arguments",
+                "description": "Additional raw iptables arguments to classify zone source traffic, e.g. '-p tcp --sport 443' to only match inbound HTTPS traffic",
+                "convert": {
+                  "toUCI": "$.extra = undefined, $value",
+                  "fromUCI": "$.extra_src || $.extra"
+                }
+              },
+              "extra_dest": {
+                "type": "string",
+                "title": "Extra destination arguments",
+                "description": "Additional raw iptables arguments to classify zone destination traffic, e.g. '-p tcp --dport 443' to only match outbound HTTPS traffic"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    "@forwarding": {
+      "type": "array",
+
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "forward name",
+            "title": "Unique forwarding name."
+          },
+          "src": {
+            "type": "zone name",
+            "title": "Specifies the traffic source zone. Must refer to one of the defined zone names. For typical port forwards this usually is 'wan'."
+          },
+          "dest": {
+            "type": "zone name",
+            "title": "Specifies the traffic destination zone. Must refer to one of the defined zone names"
+          },
+          "mtu_fix": {
+            "type": "boolean",
+            "title": "Enable MSS clamping for traffic flowing from the source zone to the destination zone (Deprecated and moved to zone sections in 8.09.2+)"
+          },
+          "family": {
+            "type": "string",
+            "title": "Protocol family (ipv4, ipv6 or any) to generate iptables rules for.",
+            "default": "any"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "if set to 0, forward is disabled",
+            "default": true
+          }
+        }
+      }
+    },
+
+    "@rule": {
+      "type": "array",
+
+      "items": {
+        "type": "object",
+
+        "allOf": [
+          {
+            "type": "object",
+            "$id": "#/ip_sets",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "title": "Allows to disable the declaration of the ipset without the need to delete the section.",
+                "default": "1"
+              },
+              "external": {
+                "type": "string",
+                "title": "If the external option is set to a name, the firewall will simply reference an already existing ipset pointed to by the name. If the external option is unset, the firewall will create the ipset on start and destroy it on stop."
+              },
+              "name": {
+                "type": "string",
+                "title": "Specifies the firewall internal name of the ipset which is used to reference the set in rules or redirects.",
+                "default": "(none) if external is unset"
+              },
+              "": {
+                "type": "",
+                "title": "",
+                "default": "value of external if external is set"
+              },
+              "family": {
+                "type": "string",
+                "title": "Protocol family (ipv4 or ipv6) to create ipset for. Only applicable to storage types hash and list, the bitmap type implies ipv4.",
+                "default": "ipv4"
+              },
+              "storage": {
+                "type": "string",
+                "title": "Specifies the storage method (bitmap, hash or list) used by the ipset, the default varies depending on the used datatypes (see match option below). In most cases the storage method can be automatically inferred from the datatype combination but in some cases multiple choices are possible (e.g. bitmap:ip vs. hash:ip).",
+                "default": "varies"
+              },
+              "match": {
+                "type": "list of direction/type tuples",
+                "title": "Specifies the matched data types (ip, port, mac, net or set) and their direction (src or dest). The direction is joined with the datatype by an underscore to form a tuple, e.g. src_port to match source ports or dest_net to match destination CIDR ranges. When using ipsets matching on multiple elements, e.g. hash:ip,port, specify the packet fields to match on in quotes or comma-separated (i.e. “match dest_ip dest_port”)."
+              },
+              "iprange": {
+                "type": "IP range",
+                "title": "Specifies the IP range to cover, see ipset(8). Only applicable to the hash storage type."
+              },
+              "portrange": {
+                "type": "Port range",
+                "title": "Specifies the port range to cover, see ipset(8). Only applicable to the hash storage type."
+              },
+              "netmask": {
+                "type": "integer",
+                "title": "If specified, network addresses will be stored in the set instead of IP host addresses. Value must be between 1 and 32, see ipset(8). Only applicable to the bitmap storage type with match ip or the hash storage type with match ip.",
+                "default": "32"
+              },
+              "maxelem": {
+                "type": "integer",
+                "title": "Limits the number of items that can be added to the set, only applicable to the hash and list storage types.",
+                "default": "65536"
+              },
+              "hashsize": {
+                "type": "integer",
+                "title": "Specifies the initial hash size of the set, only applicable to the hash storage type.",
+                "default": "1024"
+              },
+              "timeout": {
+                "type": "integer",
+                "title": "Specifies the default timeout for entries added to the set. A value of 0 means no timeout.",
+                "default": "0"
+              }
+            }
+          }
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name of rule"
+          },
+          "src": {
+            "type": "zone name",
+            "title": "Specifies the traffic source zone. Must refer to one of the defined zone names."
+          },
+          "src_ip": {
+            "type": "ip address",
+            "title": "Match incoming traffic from the specified source ip address"
+          },
+          "src_mac": {
+            "type": "mac address",
+            "title": "Match incoming traffic from the specified mac address"
+          },
+          "src_port": {
+            "type": "port or range",
+            "title": "Match incoming traffic from the specified source port or port range, if relevant proto is specified. Multiple ports can be specified like '80 443 465' 1."
+          },
+          "proto": {
+            "type": "protocol name or number",
+            "title": "Match incoming traffic using the given protocol. Can be one (or several when using list syntax) of tcp, udp, tcpudp, udplite, icmp, esp, ah, sctp, or all or it can be a numeric value, representing one of these protocols or a different one. A protocol name from /etc/protocols is also allowed. The number 0 is equivalent to all.",
+            "default": "tcpudp"
+          },
+          "icmp_type": {
+            "type": "list of type names or numbers",
+            "title": "For protocol icmp select specific icmp types to match. Values can be either exact icmp type numbers or type names (see below).",
+            "default": "any"
+          },
+          "dest": {
+            "type": "zone name",
+            "title": "Specifies the traffic destination zone. Must refer to one of the defined zone names, or * for any zone. If specified, the rule applies to forwarded traffic; otherwise, it is treated as input rule."
+          },
+          "dest_ip": {
+            "type": "ip address",
+            "title": "Match incoming traffic directed to the specified destination ip address. With no dest zone, this is treated as an input rule!"
+          },
+          "dest_port": {
+            "type": "port or range",
+            "title": "Match incoming traffic directed at the given destination port or port range, if relevant proto is specified. Multiple ports can be specified like '80 443 465' 1."
+          },
+          "ipset": {
+            "type": "string",
+            "title": "If specified, match traffic against the given ipset. The match can be inverted by prefixing the value with an exclamation mark. You can specify the direction as 'setname src' or 'setname dest'. The default if neither src nor dest are added is to assume src"
+          },
+          "mark": {
+            "type": "mark/mask",
+            "title": "If specified, match traffic against the given firewall mark, e.g. 0xFF to match mark 255 or 0x0/0x1 to match any even mark value. The match can be inverted by prefixing the value with an exclamation mark, e.g. !0x10 to match all but mark #16."
+          },
+          "start_date": {
+            "type": "date (yyyy-mm-dd)",
+            "title": "If specifed, only match traffic after the given date (inclusive)."
+          },
+          "stop_date": {
+            "type": "date (yyyy-mm-dd)",
+            "title": "If specified, only match traffic before the given date (inclusive)."
+          },
+          "start_time": {
+            "type": "time (hh:mm:ss)",
+            "title": "If specified, only match traffic after the given time of day (inclusive)."
+          },
+          "stop_time": {
+            "type": "time (hh:mm:ss)",
+            "title": "If specified, only match traffic before the given time of day (inclusive)."
+          },
+          "weekdays": {
+            "type": "list of weekdays",
+            "title": "If specified, only match traffic during the given week days, e.g. sun mon thu fri to only match on sundays, mondays, thursdays and Fridays. The list can be inverted by prefixing it with an exclamation mark, e.g. ! sat sun to always match but on Saturdays and sundays."
+          },
+          "monthdays": {
+            "type": "list of dates",
+            "title": "If specified, only match traffic during the given days of the month, e.g. 2 5 30 to only match on every 2nd, 5th and 30rd day of the month. The list can be inverted by prefixing it with an exclamation mark, e.g. ! 31 to always match but on the 31st of the month."
+          },
+          "utc_time": {
+            "type": "boolean",
+            "title": "Treat all given time values as UTC time instead of local time."
+          },
+          "target": {
+            "type": "string",
+            "title": "Firewall action (ACCEPT, REJECT, DROP, MARK, NOTRACK) for matched traffic",
+            "default": "DROP"
+          },
+          "set_mark": {
+            "type": "mark/mask",
+            "title": "Zeroes out the bits given by mask and ORs value into the packet mark. If mask is omitted, 0xFFFFFFFF is assumed"
+          },
+          "set_xmark": {
+            "type": "",
+            "title": "Zeroes out the bits given by mask and XORs value into the packet mark. If mask is omitted, 0xFFFFFFFF is assumed"
+          },
+          "family": {
+            "type": "string",
+            "title": "Protocol family (ipv4, ipv6 or any) to generate iptables rules for.",
+            "default": "any"
+          },
+          "limit": {
+            "type": "string",
+            "title": "Maximum average matching rate; specified as a number, with an optional /second, /minute, /hour or /day suffix. Examples: 3/minute, 3/min or 3/m."
+          },
+          "limit_burst": {
+            "type": "integer",
+            "title": "Maximum initial number of packets to match, allowing a short-term average above limit",
+            "default": 5
+          },
+          "extra": {
+            "type": "string",
+            "title": "Extra arguments to pass to iptables. Useful mainly to specify additional match options, such as -m policy --dir in for IPsec."
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enable or disable rule.",
+            "default": true
+          }
+        }
+      }
+    }
+  }
+}
