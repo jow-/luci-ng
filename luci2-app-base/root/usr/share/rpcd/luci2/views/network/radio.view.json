@@ -1,0 +1,7 @@
+{
+  "widget": "container",
+  "if": "uciLoad('wireless')",
+  "content": [
+    "uciUI('wireless','@wifi-device', parseInt($routeParam.id), {level: 0, widgets: {objectLevel: ['set-subpage','set-section','set-expansion']}})"
+  ]
+}

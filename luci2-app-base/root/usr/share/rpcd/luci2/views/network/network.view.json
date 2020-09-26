@@ -1,9 +1,8 @@
 {
   "widget": "set-page",
-  "if": "uciLoad('network'), uciLoad('dhcp'), (ifs = ubus('network.interface','dump').interface)",
+  "if": "uciLoad('network'), uciLoad('dhcp'), uciLoad('wireless'), (ifs = ubus('network.interface','dump').interface)",
 
   "content": [
-    "uciUI('network','@globals', 0, { level: 1 })",
     {
       "widget": "set-section",
       "options": { "title": "Interfaces" },
@@ -21,7 +20,8 @@
           "events": {
             "onDeleteRow": "true",
             "onAction": "popup($row.data)",
-            "onNewRow": "{ '.name': 'newInterface' }"
+            "onNewRow": "{ '.name': 'newInterface' }",
+            "onShowRow": "$row.data.ifname !== 'lo'"
           },
           "content": [
             {
@@ -39,6 +39,59 @@
                 ],
                 "link=": "`network/interfaces/${$row.index}`"
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "widget": "set-section",
+      "options": { "title": "Wireless" },
+      "content": [
+        {
+          "widget": "set-rowarray",
+          "bind": "uci.wireless['@wifi-device']",
+          "content": [
+            {
+              "widget": "set-expansion",
+              "events": {
+                "onSetup": "$self.ifaces=uci.wireless['@wifi-iface'].filter( i => i.device === $row.data['.name'])"
+              },
+              "options": {
+                "title=": "$row.data['.name'].toUpperCase()",
+                "description=": "`${$row.data.hwmode} - ${$row.data.channel}`",
+                "value=": "ifaces.length ? `${ifaces[0].ssid}${ifaces.length>1 ? ` (+${ifaces.length-1})` : ''}` : 'No networks'"
+              },
+              "content": [
+                {
+                  "widget": "set-link",
+                  "options": {
+                    "title": "Radio Options",
+                    "link=": "`network/radio/${$row.index}`"
+                  }
+                },
+                {
+                  "widget": "set-rowarray",
+                  "bind": "uci.wireless['@wifi-iface']",
+
+                  "options": {},
+                  "events": {
+                    "onSetup": "$self.radioDevice = $row.data['.name']",
+                    "onDeleteRow": "true",
+                    "onAction": "popup($row.data)",
+                    "onShowRow": "$row.data.device === radioDevice"
+                  },
+                  "content": [
+                    {
+                      "widget": "set-link",
+                      "options": {
+                        "title=": "$row.data.ssid",
+                        "link=": "`network/wireless/${$row.index}`"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -68,6 +121,7 @@
         }
       ]
     },
+    "uciUI('network','@globals', 0, { level: 1 })",
     "uciUI('dhcp', '@dnsmasq', 0, { level: 1 })",
     {
       "widget": "set-section",

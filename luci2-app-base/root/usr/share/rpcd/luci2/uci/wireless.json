@@ -1,0 +1,459 @@
+{
+  "type": "object",
+  "title": "Wireless Network configurations",
+
+  "properties": {
+    "@wifi-device": {
+      "type": "array",
+
+      "items": {
+        "type": "object",
+        "title": "",
+
+        "properties": {
+          ".name": {
+            "type": "string",
+            "title": "Device name"
+          },
+          "type": {
+            "type": "string",
+            "required": true,
+            "title": "Radio device type"
+          },
+          "phy": {
+            "type": "string",
+            "title": "Phy radio associated"
+          },
+          "macaddr": {
+            "type": "string",
+            "format": "macaddr",
+            "title": "Radio adapter macaddr",
+            "description": "Used to identify the interface, not to change device mac"
+          },
+          "disabled": {
+            "type": "boolean",
+            "default": false,
+            "title": "Disable adapter"
+          },
+          "channel": {
+            "type": "integer",
+            "title": "Wireless channel",
+            "convert": {
+              "fromUCI": "$data ==='auto' ? undefined : $data",
+              "toUCI": "$data === undefined ? 'auto' : $data"
+            }
+          },
+          "channels": {
+            "type": "array",
+            "title": "Restrict auto channels",
+            "description": "Select from these when in auto mode. ",
+            "depends=": "$.channel === undefined",
+            "items": {
+              "type": "string"
+            }
+          },
+          "hwmode": {
+            "type": "string",
+            "title": "Wireless mode"
+          },
+          "htmode": {
+            "type": "string",
+            "title": "Channel width"
+          },
+          "chanbw": {
+            "type": "integer",
+            "default": 20,
+            "title": "Channel width"
+          },
+          "ht_capab": {
+            "type": "string",
+            "title": "Radio capabilities"
+          },
+          "txpower": {
+            "type": "integer",
+            "title": "Maximum transmit power [dBm]",
+            "description": "Depending on regulatory requirements and wireless usage, the actual transmit power may be reduced by the driver"
+          },
+          "diversity": {
+            "type": "boolean",
+            "default": true,
+            "title": "Automatic antenna detection"
+          },
+          "rxantenna": {
+            "type": "integer",
+            "depends=": "!$.deversity",
+            "title": "Receiving antenna to use",
+            "description": "Use 0 for automatic selection"
+          },
+          "txantenna": {
+            "type": "integer",
+            "title": "Transmition antenna to use",
+            "description": "Use 0 for automatic selection"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country code"
+          },
+          "country_ie": {
+            "type": "boolean",
+            "default": false,
+            "depends=": "$.country",
+            "title": "Country IE advertisement",
+            "description": "Enables IEEE 802.11d country Information Element advertisement"
+          },
+          "distance": {
+            "type": "integer",
+            "title": "Distance Optimization",
+            "description": "Distance to farthest network member in meters. Empty for auto",
+            "minimum": 0,
+            "maximum": 114750
+          },
+          "beacon_int": {
+            "type": "integer",
+            "title": "Beacon interval",
+            "description": "In units of 1024ms",
+            "minimum": 15,
+            "maximum": 65535,
+            "default": 100
+          },
+          "basic_rate": {
+            "type": "array",
+            "title": "Supported basic rates",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supported_rates": {
+            "type": "array",
+            "title": "Supported data rates",
+            "items": {
+              "type": "string"
+            }
+          },
+          "require_mode": {
+            "type": "string",
+            "title": "Minimum mode needed by clients"
+          },
+          "log_level": {
+            "type": "integer",
+            "default": 2,
+            "title": "Log Level",
+            "enum": [0, 1, 2, 3, 4],
+            "enumDescription": [
+              "Verbose",
+              "Debugging",
+              "Information",
+              "Notification",
+              "Warning"
+            ]
+          },
+          "legacy_rates": {
+            "type": "boolean",
+            "default": true,
+            "title": "Allow legacy 802.11b rates"
+          },
+          "frag": {
+            "type": "integer",
+            "title": "Fragmentation Threshold",
+            "description": "Leave empty to disable",
+            "minimum": 256
+          },
+          "rts": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "RTS/CTS Threshold",
+            "description": "Leave empty to disable"
+          },
+          "noscan": {
+            "type": "boolean",
+            "title": "Force 40MHz mode",
+            "description": "Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009."
+          }
+        }
+      }
+    },
+    "@wifi-iface": {
+      "type": "array",
+
+      "items": {
+        "type": "object",
+        "title": "",
+
+        "allOf": [
+          {
+            "type": "object",
+            "$id": "#/mesh",
+            "depends=": "$.mode === 'mesh'",
+            "properties": {
+              "mesh_id": {
+                "type": "string",
+                "title": "Mesh Id"
+              },
+              "mesh_fwding": {
+                "type": "boolean",
+                "default": true,
+                "title": "Forward mesh peer traffic"
+              },
+              "mesh_rssi_threshold": {
+                "type": "integer",
+                "title": "RSSI threshold for joining",
+                "description": "0: not using RSSI threshold / 1: driver default",
+                "default": 0,
+                "minimum": -255,
+                "maximum": 1
+              }
+            }
+          },
+          {
+            "type": "object",
+            "$id": "#/wpa",
+            "depends=": "['ap', 'ap-wds'].includes($.mode) && ['wpa', 'wpa2', 'wpa3', 'wpa3-mixed'].includes($.encryption)",
+
+            "properties": {
+              "auth_server": {
+                "type": "string",
+                "title": "Radius-Authentication-Server",
+                "format": "host"
+              },
+              "auth_port": {
+                "type": "integer",
+                "title": "Radius-Authentication-Port",
+                "default": 1812,
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "auth_secret": {
+                "type": "string",
+                "title": "Radius-Authentication-Secret",
+                "ui": { "role": "password" }
+              },
+              "acct_server": {
+                "type": "string",
+                "title": "Radius-Accounting-Server",
+                "format": "host"
+              },
+              "acct_port": {
+                "type": "integer",
+                "title": "Radius-Accounting-Port",
+                "default": 1813,
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "acct_secret": {
+                "type": "string",
+                "title": "Radius-Accounting-Secret",
+                "ui": { "role": "password" }
+              },
+
+              "dae_client": {
+                "type": "string",
+                "title": "DAE-Client",
+                "format": "host"
+              },
+              "dae_port": {
+                "type": "integer",
+                "title": "DAE-Port",
+                "default": 3799,
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "dae_secret": {
+                "type": "string",
+                "title": "DAE-Secret",
+                "ui": { "role": "password" }
+              }
+            }
+          }
+        ],
+        "properties": {
+          "ifname": {
+            "type": "string",
+            "title": "Interface name",
+            "description": "Override default interface name",
+            "maxLength": 15
+          },
+          "device": {
+            "type": "string",
+            "title": "Radio device"
+          },
+          "network": {
+            "type": "string",
+            "title": "Network",
+
+            "description": "Network(s) you want to attach to this wireless interface"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+
+            "enum": [
+              "ap",
+              "ap-wds",
+              "adhoc",
+              "ahdemo",
+              "sta",
+              "sta-wds",
+              "mesh",
+              "monitor",
+              "wds"
+            ],
+            "ui": { "events": { "onValueChange": "" } }
+          },
+          "ssid": {
+            "type": "string",
+            "title": "Advertised name",
+            "description": "Extended Service Set Identifier (ESSID)",
+            "maxLength": 32,
+            "depends=": "['ap', 'sta', 'adhoc', 'ahdemo', 'monitor', 'ap-wds', 'sta-wds', 'wds'].includes($.mode)"
+          },
+          "hidden": {
+            "type": "boolean",
+            "title": "Hide ESSID",
+            "depends=": "['ap', 'ap-wds'].includes($.mode)"
+          },
+          "bssid": {
+            "type": "string",
+            "format": "macaddr",
+            "title": "BSSID",
+            "description": "Basic Service Set Identifier (BSSID)",
+            "depends=": "['sta', 'adhoc', 'sta-wds'].includes($.mode)"
+          },
+          "macfilter": {
+            "type": "string",
+            "title": "MAC-Address Filter",
+            "enum": ["allow", "deny"],
+            "depends=": "$.mode === 'ap' || $.mode === 'ap-wds'"
+          },
+          "maclist": {
+            "type": "array",
+            "title": "MAC-List",
+            "depends=": "macfilter",
+            "items": {
+              "type": "string",
+              "format": "macaddr"
+            }
+          },
+          "wmm": {
+            "type": "boolean",
+            "title": "WMM Mode",
+            "default": true,
+            "depends=": "['ap', 'ap-wds'].includes($.mode)"
+          },
+          "isolate": {
+            "type": "boolean",
+            "title": "Isolate Clients",
+            "description": "Prevents client-to-client communication",
+            "depends=": "['ap', 'ap-wds'].includes($.mode)"
+          },
+          "short_preamble": {
+            "type": "boolean",
+            "title": "Short Preamble",
+            "default": true
+          },
+          "dtim_period": {
+            "type": "integer",
+            "title": "DTIM Interval",
+            "description": "Delivery Traffic Indication Message Interval",
+            "minimum": 1,
+            "maximum": 255,
+            "default": 2
+          },
+          "wpa_group_rekey": {
+            "type": "integer",
+            "title": "Time interval for rekeying GTK",
+            "description": "In seconds",
+            "default": 600
+          },
+          "skip_inactivity_poll": {
+            "type": "boolean",
+            "title": "Disable Inactivity Polling"
+          },
+          "max_inactivity": {
+            "type": "integer",
+            "title": "Station inactivity limit",
+            "description": "In seconds",
+            "minimum": 0,
+            "default": 300
+          },
+          "max_listen_interval": {
+            "type": "integer",
+            "title": "Maximum allowed Listen Interval",
+            "minimum": 0,
+            "maximum": 65535
+          },
+          "disassoc_low_ack": {
+            "type": "boolean",
+            "title": "Disassociate On Low Acknowledgement",
+            "description": "Allow AP mode to disconnect STAs based on low ACK condition",
+            "default": true
+          },
+
+          "encryption": {
+            "type": "string",
+            "title": "Encryption",
+            "depends=": "['ap', 'sta', 'adhoc', 'ahdemo', 'ap-wds', 'sta-wds', 'mesh'].includes($.mode)",
+
+            "convert": {
+              "fromUCI": "$data === 'wep' ? 'wep-open' : $data && $data.match(/\\+/) ? $data.replace(/\\+.+$/,'') : $data",
+              "toUCI": "$data && ['tkip', 'ccmp', 'tkip+ccmp'].includs($.cipher) ? `${$data}+${$.cipher}` : $data"
+            },
+
+            "ui": {
+              "events": {
+                "onValueChange": "$data && $data.startsWith('wpa') && ($.key = undefined)"
+              }
+            }
+          },
+          "cipher": {
+            "type": "string",
+            "title": "Cipher",
+            "depends=": "$.encryption && ($.encription.startsWith('wpa') || $.encription.startsWith('psk'))",
+            "enum": ["auto", "ccmp", "tkip", "tkip+ccmp"]
+          },
+
+          "key": {
+            "type": "string",
+            "title": "Key",
+            "format": "wpakey",
+            "depends=": "['psk', 'psk2', 'psk+psk2', 'psk-mixed', 'sae', 'sae-mixed'].includes($.encryption)",
+            "ui": {
+              "role": "password",
+              "events": {
+                "onValueChange": "$data && ($.key1 = $.key2 = $.key3 = $.key4 = undefined)"
+              }
+            }
+          },
+
+          "key1": {
+            "type": "string",
+            "title": "Key 1",
+            "format": "wepkey",
+            "depends=": "$.encription?.startsWith('wpe')",
+            "ui": { "role": "password" }
+          },
+          "key2": {
+            "type": "string",
+            "title": "Key 2",
+            "format": "wepkey",
+            "depends=": "$.encription?.startsWith('wpe')",
+            "ui": { "role": "password" }
+          },
+          "key3": {
+            "type": "string",
+            "title": "Key 3",
+            "format": "wepkey",
+            "depends=": "$.encription?.startsWith('wpe')",
+            "ui": { "role": "password" }
+          },
+          "key4": {
+            "type": "string",
+            "title": "Key 4",
+            "format": "wepkey",
+            "depends=": "$.encription?.startsWith('wpe')",
+            "ui": { "role": "password" }
+          }
+        }
+      }
+    }
+  }
+}

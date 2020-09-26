@@ -22,7 +22,15 @@
     "title": "Wireless",
     "acls": ["network"],
     "view": "network/wireless",
+    "param": "id",
     "index": 20
+  },
+  "network/radio": {
+    "title": "Wireless Radio",
+    "acls": ["network"],
+    "view": "network/radio",
+    "param": "id",
+    "index": 22
   },
   "network/switch": {
     "title": "Switch",
