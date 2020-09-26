@@ -15,18 +15,6 @@
     {
       "fileMatch": ["/.stylelintrc"],
       "url": "http://json.schemastore.org/stylelintrc"
-    },
-    {
-      "fileMatch": ["/schemas/views/**/*.view.json"],
-      "url": "./dist/widgetschema/widgets.json"
-    },
-    {
-      "fileMatch": ["/schemas/views/**/*.content.json"],
-      "url": "./dist/widgetschema/widgets.content.json"
-    },
-    {
-      "fileMatch": ["/schemas/uci/*.json"],
-      "url": "./schemas/metaschema.json"
     }
   ],
 
