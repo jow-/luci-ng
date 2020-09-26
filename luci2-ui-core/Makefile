@@ -24,7 +24,7 @@ define Package/luci2-ui-core
   SECTION:=luci2
   CATEGORY:=LuCI2
   TITLE:=Luci2 UI Core
-  DEPENDS:=+rpcd +uhttpd +uhttpd-mod-ubus +luci2-rpc-base 
+  DEPENDS:=+rpcd +uhttpd +uhttpd-mod-ubus +luci2-rpc-base +rpcd-mod-file
 endef
 
 define Package/luci2-ui-core/description

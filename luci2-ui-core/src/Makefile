@@ -6,16 +6,13 @@
 
 all: build
 
-node_modules: package.json
+node_modules: package-lock.json
 	npm ci
 
-icons.yaml: ;
-
-.icons: node_modules icons.yaml
+out/icons: node_modules src/icons.yaml
 	npm run svg
-	touch .icons
 
-prepare: node_modules .icons 
+prepare: node_modules out/icons
 
 build: prepare
 	npm run gen-schema
@@ -23,11 +20,11 @@ build: prepare
 
 compile: build
 
-clean: 
+clean:
 	rm -rf dist
 	rm -rf out
 	rm .icons
-	 
+
 distclean: clean
 	rm -rf node_modules
-	
+
