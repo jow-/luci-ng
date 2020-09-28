@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "ngcc --properties es2015 module main --first-only --create-ivy-entry-points",
-    "start": "ng serve --aot",
+    "start": "ng serve",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint --type-check && prettier -l \"src/**/*.{ts,scss,css,html,json}\" ",

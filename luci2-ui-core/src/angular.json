@@ -56,13 +56,31 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "serve": {
+              "aot": true,
+              "assets": [
+                {
+                  "glob": "*.svg",
+                  "input": "./out/icons",
+                  "output": "/assets/icons/"
+                },
+                {
+                  "glob": "*.js",
+                  "input": "../../luci2-app-base/root/www/luci2/modules",
+                  "output": "/assets/modules/"
+                },
+                "src/assets",
+                "src/favicon.ico",
+                "src/legacy.js"
+              ]
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "luci2:build",
+            "browserTarget": "luci2:build:serve",
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
