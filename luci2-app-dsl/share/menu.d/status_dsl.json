@@ -1,8 +1,0 @@
-{
-    "status/dsl": {
-        "title": "xDSL Status",
-        "acls": [ "status_dsl" ],
-        "view": "status/dsl",
-        "index": 60
-    },
-}

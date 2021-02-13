@@ -1,8 +1,0 @@
-<header class="amf-breadcrumbs">
-	
-	<span ng-repeat="state in $ctrl.dest.path | limitTo:-$ctrl.dest.path.length+1" ng-class="$ctrl.hideClass($index)" >
-		<a ng-if="state.abstract || $last">{{$eval('state.' + $ctrl.labelProperty) || state.name}}</a>
-		<a ng-if="!(state.abstract || $last)"  ui-sref="{{state.name}}">{{$eval('state.' + $ctrl.labelProperty) || state.name}}</a>
-		<md-icon md-svg-icon="chevron-right" ng-if="!$last" />
-	</span>
-</header>
