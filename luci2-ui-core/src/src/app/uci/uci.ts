@@ -41,7 +41,7 @@ export class UciModel2 {
   loadConfig(configName: string): Observable<RxConfig> {
     if (configName in this.configs) return of(this.configs[configName]);
 
-    return this._uci.getConfig(configName).pipe(
+    return this._uci.getConfig(configName, { 4: {} }).pipe(
       map(([data, schema]) => {
         this.schemas[configName] = schema;
         this.reactiveConfig(data, configName);

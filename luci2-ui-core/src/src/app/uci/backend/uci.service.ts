@@ -34,13 +34,16 @@ export class UciService {
     private _injector: Injector
   ) {}
 
-  getConfig(config: string): Observable<[IUciConfigData, SchemaObject]> {
+  getConfig(
+    config: string,
+    returnError?: { [code: number]: any; all?: any } | ((e: any) => any)
+  ): Observable<[IUciConfigData, SchemaObject]> {
     // delayed injection to avoid circular dependency
     const rootContext = this._injector.get(ROOT_EXPR_CONTEXT);
 
     return forkJoin([
       this._ubus
-        .call<IUciConfigData>('uci', 'get', { config })
+        .call<IUciConfigData>('uci', 'get', { config }, true, returnError)
         .pipe(map((r) => (r && r.values) || {})),
 
       loadSchema(
