@@ -27,7 +27,7 @@ export class MenuService {
     if (this._pending) return this._pending;
 
     this._pending = this._ubus.call<any>('luci2.ui', 'menu').pipe(
-      // tslint:disable-next-line:prefer-object-spread
+      // eslint-disable-next-line prefer-object-spread
       map((r) => this._toChildArray(this._toChildTree({ ...r.menu }))),
       map((root) => {
         console.log(this._routes);
@@ -92,19 +92,19 @@ export class MenuService {
 
     if (!node.childs) {
       this._addRoute(node);
-      return <IMenuItemArr>node;
+      return node as IMenuItemArr;
     }
 
     for (const key in node.childs)
       if (node.childs.hasOwnProperty(key)) {
         this._toChildArray(node.childs[key]);
-        childs.push(<IMenuItemArr>node.childs[key]);
+        childs.push(node.childs[key] as IMenuItemArr);
       }
 
     childs.sort((a, b) => (a.index || 0) - (b.index || 0));
 
     if (childs.length) {
-      (<IMenuItemArr>node).childs = childs;
+      (node as IMenuItemArr).childs = childs;
       node.linkTo = childs[0].linkTo || childs[0].link;
     } else {
       delete node.childs;
@@ -112,7 +112,7 @@ export class MenuService {
 
     this._addRoute(node);
 
-    return <IMenuItemArr>node;
+    return node as IMenuItemArr;
   }
 
   private _addRoute(item: IMenuItem): void {

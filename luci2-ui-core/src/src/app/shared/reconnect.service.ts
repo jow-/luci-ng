@@ -54,11 +54,11 @@ export class ReconnectService {
       ...APP_POPUP_OPTS,
       disableClose: true,
 
-      data: <IPopupDialogData>{
+      data: {
         message: 'Waiting to reconnect...',
         spinner: true,
         icon: 'information-outline',
-      },
+      } as IPopupDialogData,
     });
 
     // give an initial time for the device to come up

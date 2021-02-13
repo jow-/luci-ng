@@ -50,90 +50,11 @@ export class UciModel2 {
     );
   }
 
-  private reactiveConfig(rawConfigData: IUciConfigData, configName: string): void {
-    const config: IMap<IUciSectionData[]> = {};
-    const orig: IMap<IUciSectionData[]> = {};
-
-    // add missing sections if there is a default
-    if (this.schemas[configName] && this.schemas[configName].properties) {
-      const properties = this.schemas[configName].properties!;
-
-      Object.keys(properties!)
-        // get missing sections with defaults
-        .filter(
-          (type) =>
-            Array.isArray(properties[type].default) &&
-            !Object.keys(rawConfigData).some(
-              (sec) => type === `@${rawConfigData[sec]['.type']}`
-            )
-        )
-        // add default
-        // TODO: allow to add more than one record
-        .forEach(
-          (type: string) =>
-            (properties[type].default as any[]).length &&
-            (rawConfigData[`__${type}`] = {
-              '.type': type.slice(1),
-              ...(properties[type].default as any)[0],
-            } as IUciSectionData)
-        );
-    }
-
-    // tslint:disable-next-line: forin
-    for (const sectionID in rawConfigData) {
-      let type = rawConfigData[sectionID]['.type'];
-      if (!type) continue;
-      type = `@${type}`;
-
-      if (!config[type]) config[type] = RxObject([]);
-
-      // normalize UCI data
-      const schema = (this.schemas[configName] as SchemaObject)?.properties?.[type];
-      if (
-        schema &&
-        schema.type === 'array' &&
-        !Array.isArray(schema?.items) &&
-        schema.items?.type === 'object'
-      ) {
-        // setup defaults to have proper in-memory representation before creating widget
-        getPropertiesFromSchema(schema.items, Infinity).forEach((prop) => {
-          // TODO: check depends= before applying
-          // TODO: duplicated properties in schema
-          const val = this.toModel(prop.schema, rawConfigData[sectionID][prop.property]);
-          if (typeof val !== 'undefined' || prop.property in rawConfigData[sectionID])
-            rawConfigData[sectionID][prop.property] = val;
-        });
-      }
-
-      config[type].push(RxObject(rawConfigData[sectionID], true));
-
-      // deep clone data to later test for changes
-      if (!orig[type]) orig[type] = [];
-      orig[type].push(JSON.parse(JSON.stringify(rawConfigData[sectionID])));
-    }
-
-    this._orig[configName] = orig;
-    this.configs[configName] = RxObject(config, false, {
-      get: (target: IMap<IUciSectionData[]>, prop: string) => {
-        // check if a type or a named section is being requested
-        if (prop && prop.charAt(0) !== '@') {
-          let result: IUciSectionData | undefined;
-          // tslint:disable-next-line: forin
-          for (const type in target) {
-            result = target[type].find((sec) => sec['.name'] === prop);
-            if (result) return result;
-          }
-        }
-        return target[prop];
-      },
-    });
-  }
-
   getSchema(config: string, type?: string): Observable<Schema | undefined> {
     return this.loadConfig(config).pipe(
       map(() => {
         if (!(config in this.schemas)) return undefined;
-        const schema = <SchemaObject>this.schemas[config];
+        const schema = this.schemas[config] as SchemaObject;
         if (!type) return schema;
         type = type.charAt(0) === '@' ? type : `@${type}`;
         if (!schema.properties || !(type in schema.properties)) return undefined;
@@ -164,7 +85,7 @@ export class UciModel2 {
     let obs: Array<Observable<any>> = [];
 
     const original = this._orig[config][type];
-    const updated = <IUciSectionData[]>this.configs[config][type];
+    const updated = this.configs[config][type] as IUciSectionData[];
 
     original
       .filter((oldSec) => !updated.find((newSec) => newSec['.name'] === oldSec['.name']))
@@ -258,5 +179,84 @@ export class UciModel2 {
     }
 
     return value;
+  }
+
+  private reactiveConfig(rawConfigData: IUciConfigData, configName: string): void {
+    const config: IMap<IUciSectionData[]> = {};
+    const orig: IMap<IUciSectionData[]> = {};
+
+    // add missing sections if there is a default
+    if (this.schemas[configName] && this.schemas[configName].properties) {
+      const properties = this.schemas[configName].properties!;
+
+      Object.keys(properties!)
+        // get missing sections with defaults
+        .filter(
+          (type) =>
+            Array.isArray(properties[type].default) &&
+            !Object.keys(rawConfigData).some(
+              (sec) => type === `@${rawConfigData[sec]['.type']}`
+            )
+        )
+        // add default
+        // TODO: allow to add more than one record
+        .forEach(
+          (type: string) =>
+            (properties[type].default as any[]).length &&
+            (rawConfigData[`__${type}`] = {
+              '.type': type.slice(1),
+              ...(properties[type].default as any)[0],
+            } as IUciSectionData)
+        );
+    }
+
+    // eslint-disable-next-line guard-for-in
+    for (const sectionID in rawConfigData) {
+      let type = rawConfigData[sectionID]['.type'];
+      if (!type) continue;
+      type = `@${type}`;
+
+      if (!config[type]) config[type] = RxObject([]);
+
+      // normalize UCI data
+      const schema = (this.schemas[configName] as SchemaObject)?.properties?.[type];
+      if (
+        schema &&
+        schema.type === 'array' &&
+        !Array.isArray(schema?.items) &&
+        schema.items?.type === 'object'
+      ) {
+        // setup defaults to have proper in-memory representation before creating widget
+        getPropertiesFromSchema(schema.items, Infinity).forEach((prop) => {
+          // TODO: check depends= before applying
+          // TODO: duplicated properties in schema
+          const val = this.toModel(prop.schema, rawConfigData[sectionID][prop.property]);
+          if (typeof val !== 'undefined' || prop.property in rawConfigData[sectionID])
+            rawConfigData[sectionID][prop.property] = val;
+        });
+      }
+
+      config[type].push(RxObject(rawConfigData[sectionID], true));
+
+      // deep clone data to later test for changes
+      if (!orig[type]) orig[type] = [];
+      orig[type].push(JSON.parse(JSON.stringify(rawConfigData[sectionID])));
+    }
+
+    this._orig[configName] = orig;
+    this.configs[configName] = RxObject(config, false, {
+      get: (target: IMap<IUciSectionData[]>, prop: string) => {
+        // check if a type or a named section is being requested
+        if (prop && prop.charAt(0) !== '@') {
+          let result: IUciSectionData | undefined;
+          // eslint-disable-next-line guard-for-in
+          for (const type in target) {
+            result = target[type].find((sec) => sec['.name'] === prop);
+            if (result) return result;
+          }
+        }
+        return target[prop];
+      },
+    });
   }
 }

@@ -46,7 +46,7 @@
     <mat-menu #menuPower="matMenu">
       <div mat-menu-item>
         <mat-icon svgIcon="sync"></mat-icon>
-        <span style="padding-right: 8px;">Auto Refresh</span>
+        <span style="padding-right: 8px">Auto Refresh</span>
         <mat-slide-toggle [(ngModel)]="appState.pollState"></mat-slide-toggle>
       </div>
       <button mat-menu-item (click)="logout()">
@@ -71,8 +71,6 @@
     <ng-content select="[shell-content]"></ng-content>
   </div>
   <div class="footer">
-    <div class="footer-content">
-      Powerd by OpenWrt Luci2
-    </div>
+    <div class="footer-content">Powerd by OpenWrt Luci2</div>
   </div>
 </mat-sidenav-container>

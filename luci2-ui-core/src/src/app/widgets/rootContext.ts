@@ -91,7 +91,7 @@ export function rootContextFactory(
           snack.onAction().subscribe(() => {
             if (typeof onAction === 'string')
               expr
-                .eval(onAction, this, true) // tslint:disable-line: no-invalid-this
+                .eval(onAction, this, true) // eslint-disable-line no-invalid-this
                 .pipe(take(1))
                 .subscribe();
             else if (typeof onAction === 'function') onAction();
@@ -99,6 +99,7 @@ export function rootContextFactory(
 
         return true;
       },
+      // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
       popupMsg(
         message: string,
         cancelLabel?: string | boolean,
@@ -116,6 +117,7 @@ export function rootContextFactory(
           })
           .afterClosed();
       },
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       RxObject,
       $tmp: RxObject({}),
       store: new RxStore(),
@@ -160,7 +162,7 @@ export function rootContextFactory(
         // evaluate in provided context or in the context of the call
         let result: any;
         try {
-          result = expr.eval(expression, context || this); // tslint:disable-line: no-invalid-this
+          result = expr.eval(expression, context || this); // eslint-disable-line no-invalid-this
         } catch (e) {
           return undefined;
         }

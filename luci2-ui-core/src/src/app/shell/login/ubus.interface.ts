@@ -12,5 +12,6 @@ export interface IUbusSession {
   data: { username: string };
   expires: number;
   timeout: number;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   ubus_rpc_session: string;
 }

@@ -48,10 +48,9 @@ export interface IUciPropertiesSchema {
 }
 
 export interface IUciSectionData {
+  [options: string]: string | string[] | any;
   '.anonymous': boolean;
   '.type': string;
   '.name': string;
   '.index'?: number;
-
-  [options: string]: string | string[] | any;
 }

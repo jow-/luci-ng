@@ -24,6 +24,7 @@ export interface IJsonrpcResponse {
   id: string | number | null;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export enum JsonrpcErrorCodes {
   ParseError = -32700,
   InvalidRequest = -32600,

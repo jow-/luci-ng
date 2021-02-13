@@ -27,8 +27,6 @@
     <div *ngIf="errorMessage" class="mat-input-error">{{ errorMessage }}</div>
   </div>
   <div mat-dialog-actions>
-    <button mat-button type="submit" [disabled]="!loginForm.form.valid">
-      Login
-    </button>
+    <button mat-button type="submit" [disabled]="!loginForm.form.valid">Login</button>
   </div>
 </form>

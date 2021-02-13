@@ -26,13 +26,6 @@ export class CgiService {
     document.body.appendChild(this.a);
   }
 
-  private save(data: Blob, name: string): void {
-    this.a.href = window.URL.createObjectURL(data);
-    this.a.download = name;
-    this.a.click();
-    this.a.href = '';
-  }
-
   upload(path: string, mode: string, file: File): Observable<any> {
     const fd = new FormData();
     fd.append('sessionid', this.ubus.sid);
@@ -69,5 +62,12 @@ export class CgiService {
           return of(undefined);
         })
       );
+  }
+
+  private save(data: Blob, name: string): void {
+    this.a.href = window.URL.createObjectURL(data);
+    this.a.download = name;
+    this.a.click();
+    this.a.href = '';
   }
 }

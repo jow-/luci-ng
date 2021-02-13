@@ -35,6 +35,7 @@ export interface IUciOptionSchema {
    * Binding to get the list of valid entries from.
    *
    * To bind to UBUS calls use one of the following
+   *
    * @example [ "ubusObject", "ubusMethod", { params }?, "jsonPath?"] : to bind to the direct response from ubus
    *
    * To bind to other UCI data:
@@ -52,6 +53,7 @@ export interface IUciOptionSchema {
    * If any dependency is unmet the option is disabled
    *
    * They can be specified as:
+   *
    * @example [ "selector", "selector2", "!selector3" ] : only check that options are present and not empty (can be negated)
    * @example { selector: [ "value1", "value2", "!value3"] } each option included as a property is compared against an
    * array of valid values

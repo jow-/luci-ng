@@ -3,6 +3,9 @@
  * Licensed under the MIT license.
  */
 
+/* eslint-disable max-classes-per-file */
+/* eslint-disable no-throw-literal */
+
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -27,14 +30,14 @@ export class JsonrpcRequest implements IJsonrpcRequest {
  * It is a thin wrap over http calls handling the request/response formatting
  * It adds retry interceptors for http errors and jsonrpc errors
  */
-// tslint:disable-next-line:max-classes-per-file
+// eslint-disable-next-line max-classes-per-file
 @Injectable({
   providedIn: 'root',
 })
 export class JsonrpcService {
   private static _headers = new HttpHeaders({
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
+    Accept: 'application/json', // eslint-disable-line @typescript-eslint/naming-convention
+    'Content-Type': 'application/json', // eslint-disable-line @typescript-eslint/naming-convention
   });
 
   private _url = '';

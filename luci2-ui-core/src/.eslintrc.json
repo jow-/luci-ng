@@ -1,0 +1,137 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/ng-cli-compat",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "plugins": ["notice"],
+      "rules": {
+        "@angular-eslint/component-class-suffix": [
+          "error",
+          {
+            "suffixes": ["Component"]
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": ["app", "wdg", "uci", "dyn"],
+            "style": "kebab-case"
+          }
+        ],
+        "@angular-eslint/directive-class-suffix": [
+          "error",
+          {
+            "suffixes": ["Directive"]
+          }
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": ["app", "uci", "dyn"],
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/no-attribute-decorator": "error",
+        "@angular-eslint/no-forward-ref": "error",
+        "@angular-eslint/no-host-metadata-property": "off",
+        "@angular-eslint/no-pipe-impure": "error",
+        "@angular-eslint/use-component-view-encapsulation": "off",
+        "@angular-eslint/use-pipe-decorator": "error",
+        "@typescript-eslint/array-type": [
+          "error",
+          {
+            "default": "array-simple"
+          }
+        ],
+        "@typescript-eslint/ban-types": [
+          "error",
+          {
+            "types": {
+              "Object": {
+                "message": "Avoid using the `Object` type. Did you mean `object`?"
+              },
+              "Function": {
+                "message": "Avoid using the `Function` type. Prefer a specific function type, like `() => void`."
+              },
+              "Boolean": {
+                "message": "Avoid using the `Boolean` type. Did you mean `boolean`?"
+              },
+              "Number": {
+                "message": "Avoid using the `Number` type. Did you mean `number`?"
+              },
+              "String": {
+                "message": "Avoid using the `String` type. Did you mean `string`?"
+              },
+              "Symbol": {
+                "message": "Avoid using the `Symbol` type. Did you mean `symbol`?"
+              }
+            },
+            "extendDefaults": false
+          }
+        ],
+        "@typescript-eslint/consistent-type-definitions": "error",
+        "@typescript-eslint/dot-notation": "off",
+        "@typescript-eslint/explicit-member-accessibility": [
+          "error",
+          {
+            "accessibility": "no-public"
+          }
+        ],
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-require-imports": "error",
+        "@typescript-eslint/no-unused-expressions": [
+          "error",
+          {
+            "allowShortCircuit": true
+          }
+        ],
+        "@typescript-eslint/no-var-requires": "error",
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error"],
+        "notice/notice": [
+          "error",
+          {
+            "mustMatch": "Copyright \\(c\\) \\d{4}",
+            "template": "/**\n  * Copyright (c) <%= YEAR %> Adrian Panella <ianchi74@outlook.com>\n  * This software is released under the MIT License.\n  * https://opensource.org/licenses/MIT\n  */"
+          }
+        ],
+
+        "prefer-arrow/prefer-arrow-functions": [
+          "error",
+          { "allowStandaloneDeclarations": true, "classPropertiesAllowed": false }
+        ],
+
+        "default-case": "error",
+        "import/no-default-export": "error",
+        "import/no-deprecated": "error",
+        "import/no-extraneous-dependencies": "error",
+        "import/order": "error",
+        "max-classes-per-file": ["error", 1],
+        "no-duplicate-case": "error",
+        "no-duplicate-imports": "error",
+        "no-invalid-this": "error",
+        "no-redeclare": "error",
+        "no-sparse-arrays": "error",
+        "no-underscore-dangle": "off",
+        "prefer-object-spread": "error",
+        "prefer-template": "error"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {}
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-// tslint:disable:file-header
+/* eslint-disable */
 /** HACK: force import of environment.ts/environment.prod.ts to load env specific polyfills */
 import 'zone.js/dist/zone';
 

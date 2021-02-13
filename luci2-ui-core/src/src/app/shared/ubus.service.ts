@@ -3,6 +3,8 @@
  * Licensed under the MIT license.
  */
 
+/* eslint-disable no-throw-literal */
+
 import { Inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -92,8 +94,7 @@ export class UbusService implements ILogin {
     method: string,
     params?: object,
     autologin: boolean = true,
-    // tslint:disable-next-line: ban-types
-    returnError?: { all?: any; [code: number]: any } | Function
+    returnError?: { [code: number]: any; all?: any } | ((e: any) => any)
   ): Observable<T> {
     // cache params in object, so that SID can be changed later and be seen by resubscription holding a reference
     const jsonrpcParams = [this.sid, service, method, params || {}];
@@ -286,7 +287,7 @@ export class UbusService implements ILogin {
         result = result.pipe(
           repeatWhen((o) =>
             o.pipe(
-              delay(<number>repeatDelay),
+              delay(repeatDelay as number),
               switchMap(() =>
                 this._appState[GET_OBSERVABLE]('pollState').pipe(
                   filter((s) => s),
@@ -298,7 +299,7 @@ export class UbusService implements ILogin {
         );
       if (jsPathFilter && typeof jsPathFilter === 'string')
         result = result.pipe(
-          map((res) => this._jsPath.query(res, <string>jsPathFilter).values)
+          map((res) => this._jsPath.query(res, jsPathFilter as string).values)
         );
 
       return result.pipe(shareReplay({ bufferSize: 1, refCount: true }));

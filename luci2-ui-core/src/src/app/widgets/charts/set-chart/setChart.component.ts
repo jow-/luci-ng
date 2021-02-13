@@ -39,7 +39,7 @@ export interface SetChartWidgetOptions extends CommonOptionsDef {
 }
 
 @Component({
-  selector: 'set-chart', // tslint:disable-line: component-selector
+  selector: 'set-chart', // eslint-disable-line @angular-eslint/component-selector
   templateUrl: './setChart.component.html',
   styleUrls: ['./setChart.component.scss'],
   encapsulation: ViewEncapsulation.None,

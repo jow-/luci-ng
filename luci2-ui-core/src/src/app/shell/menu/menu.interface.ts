@@ -4,14 +4,13 @@
  */
 
 export interface IMenuItem {
+  [extra: string]: any;
   index: number;
   title: string;
   tabbed?: boolean;
   view?: string;
   link: string;
   linkTo?: string;
-
-  [extra: string]: any;
 }
 
 export interface IMenuItemObj extends IMenuItem {
