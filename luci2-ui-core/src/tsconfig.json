@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "downlevelIteration": true,
-    "module": "esnext",
+    "module": "es2020",
     "outDir": "./dist/out-tsc",
     "baseUrl": "src",
     "sourceMap": true,
@@ -21,8 +21,6 @@
   },
   "angularCompilerOptions": {
     "preserveWhitespaces": false,
-    "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
     "strictInjectionParameters": true,
     "fullTemplateTypeCheck": true
   }
